@@ -357,6 +357,36 @@ input,select{font:inherit;color:inherit}
 .sync i{width:7px;height:7px;border-radius:4px;background:var(--line);display:inline-block}
 .sync.on i{background:#3BA66B}
 
+/* top-right buttons: search · mic · language */
+.topbtns{display:flex;gap:8px;align-items:center;flex:none}
+.topbtns .lang-mini svg{width:20px;height:20px}
+.topbtns .lang-mini.mic{background:var(--blue);color:#fff;box-shadow:0 8px 20px -10px rgba(31,95,168,.6)}
+/* voice sheet */
+.vz{display:flex;flex-direction:column;align-items:center;gap:14px;padding:6px 0 4px;text-align:center}
+.vz .orb{width:96px;height:96px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;position:relative}
+.vz .orb svg{width:40px;height:40px}
+.vz .orb::before{content:"";position:absolute;inset:-10px;border-radius:50%;border:3px solid var(--blue);opacity:.35;animation:pulse 1.4s ease-out infinite}
+.vz.idle .orb::before{animation:none;opacity:0}
+.vz.idle .orb{background:var(--soft);color:var(--muted)}
+@keyframes pulse{0%{transform:scale(.85);opacity:.6}100%{transform:scale(1.25);opacity:0}}
+.vz .heard{font-size:17px;font-weight:600;min-height:24px;line-height:1.35;padding:0 6px}
+.vz .heard.dim{color:var(--muted);font-weight:500}
+.vz .tip{font-size:12.5px;color:var(--muted);line-height:1.4}
+.vz .alt{width:100%;display:flex;gap:8px}
+.vz .alt input{flex:1}
+.vl{display:flex;flex-direction:column;gap:8px;overflow:auto;min-height:0}
+.vl .vr{display:flex;align-items:center;gap:10px;background:var(--soft);border-radius:14px;padding:10px 12px;min-height:56px;text-align:left;width:100%;border:2px solid transparent}
+.vl .vr.bad{border-color:var(--orange);background:var(--orange-soft)}
+.vl .vr .jc{font-size:12px;font-weight:700;padding:4px 9px;border-radius:9px;background:var(--card);color:var(--blue-ink);flex:none;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vl .vr.bad .jc{color:var(--orange);background:var(--card)}
+.vl .vr .mid{flex:1;min-width:0}
+.vl .vr .mid b{display:block;font-size:15px}
+.vl .vr .mid small{display:block;font-size:12px;color:var(--muted)}
+.vl .vr .amt{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;flex:none}
+.vl .vr .x{width:32px;height:32px;border-radius:9px;background:var(--card);color:var(--muted);flex:none;font-size:14px;display:flex;align-items:center;justify-content:center}
+.vl .ok{color:var(--green);font-weight:700;font-size:15px;padding:4px 2px}
+.vl .warnline{font-size:13px;color:var(--orange);font-weight:600;padding:0 2px}
+
 /* lock (family PIN) */
 .lock{position:fixed;inset:0;background:var(--bg);z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px}
 .lock.on{display:flex}
@@ -436,7 +466,7 @@ input,select{font:inherit;color:inherit}
 
 <!-- HOME -->
 <section class="screen on" id="s-home">
-  <div class="top"><div><h1 id="h-month"></h1><div class="sub" id="h-day"></div></div><button class="lang-mini" id="lang-mini"></button></div>
+  <div class="top"><div><h1 id="h-month"></h1><div class="sub" id="h-day"></div></div><div class="topbtns"><button class="lang-mini" id="srch-mini" aria-label="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button><button class="lang-mini mic" id="mic-mini" aria-label="voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg></button><button class="lang-mini" id="lang-mini"></button></div></div>
   <div class="days" id="days"></div>
   <div class="hero" id="hero"></div>
   <div class="card incard" id="in-card"></div>
@@ -571,7 +601,7 @@ const I = {
     fixedother:'तय/अन्य',admission:'एडमिशन',festival:'त्योहार/उपहार',repair:'मरम्मत',cloth:'कपड़े',medi:'मेडिक्लेम',
     leftmonth:'इस महीने बचा है',outof:'गया',planned:'योजना',dailyleft:'रोज़ के लिए',perday:'/दिन',cancel:'रहने दें',ok:'ठीक है',markpaid:'दिया — टिक करें',
     untickq:'टिक हटाएँ?',unticksub:'यह फिर "बाकी" में आ जाएगा',unticked:'टिक हट गया',enteramt:'कितना दिया? (₹)',whatfor:'किस चीज़ का?',pickitem:'चीज़ चुनें',change:'बदलें',newfixed:'नया तय खर्च',namehint:'नाम लिखें',
-    pot:'पॉट',pothint:'पॉट = अब तक जमा − निकाला। निकासी: + लिखें → तय/अन्य → "पॉट से निकासी"',potwithdraw:'पॉट से निकासी',target:'लक्ष्य',monthsmore:'महीने और',targetmet:'लक्ष्य पूरा 🎉',flipsip:'₹ अब SIP में मोड़ें',flipsub:'इमरजेंसी फ़ंड भर गया। हर महीने की इमरजेंसी रक़म अब SIP में जाएगी।',closeq:'बंद करें?',jarsleft:'घड़ों में बचा',potscarry:'पॉट आगे',closehint:'बचा हुआ रोज़ का पैसा इमरजेंसी फ़ंड में जाएगा, प्रावधान के पॉट अगले महीने चलेंगे, और पिछले महीने की समीक्षा सुरक्षित रहेगी।',later:'बाद में',closenow:'बंद करें',closedok:'बंद',closedon:'महीना बंद',swept:'बचत में',emertarget:'इमरजेंसी लक्ष्य (₹)',potcarry:'पॉट में पहले से',nowover:'अब योजना से',abovepl:'ऊपर',whospent:'किसने कितना',thisweek:'इस हफ़्ते (7 दिन)',share:'शेयर',weekof:'हफ़्ता',overdue:'बाकी रह गया',duesoon:'इस हफ़्ते देना है',ghartitle:'घर का हिसाब',copied:'कॉपी हो गया — WhatsApp में पेस्ट करें',undo:'पूर्ववत',whoonce:'एक बार चुन लें — फिर याद रहेगा',dupq:'अभी-अभी यही लिखा था — फिर से लिखें?',minago:'मिनट पहले',yeswrite:'हाँ, लिखें',addphoto:'बिल की फ़ोटो (वैकल्पिक)',photoadded:'फ़ोटो लग गई',photofail:'फ़ोटो अपलोड नहीं हुई — एंट्री बिना फ़ोटो सेव हुई',bill:'बिल',viewbill:'बिल देखें',chgamt:'रक़म बदलें',chgdate:'तारीख़ बदलें',chgnote:'नोट बदलें',notehint:'नोट (वैकल्पिक) — जैसे: अल्ट्रासाउंड, कॉपी',closeb:'बंद करें',moneyin:'पैसे आए',received:'मिला',tocome:'आना बाकी',inhand:'हाथ में',addinflow:'पैसे मिले — लिखें',when2:'कब मिले',fromwho:'कहाँ से (वैकल्पिक)',fromhint:'जैसे: युक्ति, दुकान',removeinflow:'यह रसीद हटाएँ?',emerdone:'जमा हो गया',emerpending:'जमा करना है',sipdone:'दोनों हो गए',sippending:'करना है',markdone:'हो गया — टिक करें',lastmonth:'पिछला महीना',nextmonth:'अगला महीना',overby:'ज़्यादा',pin:'परिवार PIN',pinhint:'4 अंक। लिंक जिसके पास भी हो, बिना PIN नहीं खुलेगा। हर फ़ोन पर एक बार डालना है।',pinenter:'PIN डालें',pinwrong:'ग़लत PIN — फिर से',pinfield:'PIN (4 अंक · खाली = बंद)',pinbad:'PIN में 4 अंक चाहिए',export:'Excel भेजें',exporthint:'सभी महीने, सभी एंट्री, आमदनी — एक फ़ाइल (CA के लिए / बैकअप)',exporting:'फ़ाइल बन रही है…',exported:'Excel तैयार',synced:'सिंक',justnow:'अभी',syncnow:'सिंक करें',syncing:'सिंक हो रहा…',search:'खोजें — जैसे: अल्ट्रासाउंड, कॉपी',nomatch:'कुछ नहीं मिला',holdjar:'घड़ा दबाकर रखें = सीधे उसमें लिखें',festmode:'त्योहार मोड',festhint:'इन तारीख़ों में त्योहार का खर्च अलग पॉट से जाएगा — घड़े लाल नहीं होंगे। पॉट = त्योहार/उपहार प्रावधान + पिछला बचा।',festname:'त्योहार का नाम',festfrom:'से',festto:'तक',festpot:'त्योहार पॉट',festleft:'पॉट में बचा',festover:'पॉट ख़त्म — आगे का घड़ों से',feststarts:'शुरू',festlog:'त्योहार का खर्च यहाँ',todaytot:'आज कुल',addentry:'एंट्री जोड़ें',addhere:'इसी घड़े में और लिखें — तारीख़ चुनें',addbook:'बही में एंट्री जोड़ें',whichjar:'किस घड़े में?',tolog:'तय खर्च → लिखें स्क्रीन'},
+    pot:'पॉट',pothint:'पॉट = अब तक जमा − निकाला। निकासी: + लिखें → तय/अन्य → "पॉट से निकासी"',potwithdraw:'पॉट से निकासी',target:'लक्ष्य',monthsmore:'महीने और',targetmet:'लक्ष्य पूरा 🎉',flipsip:'₹ अब SIP में मोड़ें',flipsub:'इमरजेंसी फ़ंड भर गया। हर महीने की इमरजेंसी रक़म अब SIP में जाएगी।',closeq:'बंद करें?',jarsleft:'घड़ों में बचा',potscarry:'पॉट आगे',closehint:'बचा हुआ रोज़ का पैसा इमरजेंसी फ़ंड में जाएगा, प्रावधान के पॉट अगले महीने चलेंगे, और पिछले महीने की समीक्षा सुरक्षित रहेगी।',later:'बाद में',closenow:'बंद करें',closedok:'बंद',closedon:'महीना बंद',swept:'बचत में',emertarget:'इमरजेंसी लक्ष्य (₹)',potcarry:'पॉट में पहले से',nowover:'अब योजना से',abovepl:'ऊपर',whospent:'किसने कितना',thisweek:'इस हफ़्ते (7 दिन)',share:'शेयर',weekof:'हफ़्ता',overdue:'बाकी रह गया',duesoon:'इस हफ़्ते देना है',ghartitle:'घर का हिसाब',copied:'कॉपी हो गया — WhatsApp में पेस्ट करें',undo:'पूर्ववत',whoonce:'एक बार चुन लें — फिर याद रहेगा',dupq:'अभी-अभी यही लिखा था — फिर से लिखें?',minago:'मिनट पहले',yeswrite:'हाँ, लिखें',addphoto:'बिल की फ़ोटो (वैकल्पिक)',photoadded:'फ़ोटो लग गई',photofail:'फ़ोटो अपलोड नहीं हुई — एंट्री बिना फ़ोटो सेव हुई',bill:'बिल',viewbill:'बिल देखें',chgamt:'रक़म बदलें',chgdate:'तारीख़ बदलें',chgnote:'नोट बदलें',notehint:'नोट (वैकल्पिक) — जैसे: अल्ट्रासाउंड, कॉपी',closeb:'बंद करें',moneyin:'पैसे आए',received:'मिला',tocome:'आना बाकी',inhand:'हाथ में',addinflow:'पैसे मिले — लिखें',when2:'कब मिले',fromwho:'कहाँ से (वैकल्पिक)',fromhint:'जैसे: युक्ति, दुकान',removeinflow:'यह रसीद हटाएँ?',emerdone:'जमा हो गया',emerpending:'जमा करना है',sipdone:'दोनों हो गए',sippending:'करना है',markdone:'हो गया — टिक करें',lastmonth:'पिछला महीना',nextmonth:'अगला महीना',overby:'ज़्यादा',pin:'परिवार PIN',pinhint:'4 अंक। लिंक जिसके पास भी हो, बिना PIN नहीं खुलेगा। हर फ़ोन पर एक बार डालना है।',pinenter:'PIN डालें',pinwrong:'ग़लत PIN — फिर से',pinfield:'PIN (4 अंक · खाली = बंद)',pinbad:'PIN में 4 अंक चाहिए',export:'Excel भेजें',exporthint:'सभी महीने, सभी एंट्री, आमदनी — एक फ़ाइल (CA के लिए / बैकअप)',exporting:'फ़ाइल बन रही है…',exported:'Excel तैयार',synced:'सिंक',justnow:'अभी',syncnow:'सिंक करें',syncing:'सिंक हो रहा…',search:'खोजें — जैसे: अल्ट्रासाउंड, कॉपी',nomatch:'कुछ नहीं मिला',holdjar:'घड़ा दबाकर रखें = सीधे उसमें लिखें',festmode:'त्योहार मोड',festhint:'इन तारीख़ों में त्योहार का खर्च अलग पॉट से जाएगा — घड़े लाल नहीं होंगे। पॉट = त्योहार/उपहार प्रावधान + पिछला बचा।',festname:'त्योहार का नाम',festfrom:'से',festto:'तक',festpot:'त्योहार पॉट',festleft:'पॉट में बचा',festover:'पॉट ख़त्म — आगे का घड़ों से',feststarts:'शुरू',festlog:'त्योहार का खर्च यहाँ',todaytot:'आज कुल',addentry:'एंट्री जोड़ें',addhere:'इसी घड़े में और लिखें — तारीख़ चुनें',addbook:'बही में एंट्री जोड़ें',whichjar:'किस घड़े में?',tolog:'तय खर्च → लिखें स्क्रीन',vtitle:'बोलकर लिखें',vlisten:'बोलिए…',vtip:'जैसे: "सब्ज़ी में 20 रुपये अरबी और 40 रुपये तोरई, कल" · "किराना 500" · "4 अक्टूबर पनीर 120"',vdone:'हो गया',vagain:'फिर बोलें',vtype:'या टाइप करें',vnone:'कुछ समझ नहीं आया — फिर बोलें या टाइप करें',vreview:'यह लिखूँ?',vreviewsub:'ग़लत घड़ा? पंक्ति दबाकर बदलें · ✕ से हटाएँ',vpick:'घड़ा चुनें',vsaveN:'एंट्री सेव करें',vbad:'पहले हर पंक्ति का घड़ा चुनें',vadded:'लिख लिया ✓',vaddedsub:'बही और घर स्क्रीन पर दिख रहा है',vundoall:'सब हटाएँ',vnosr:'इस फ़ोन का ब्राउज़र आवाज़ नहीं सुनता — टाइप करें',vmicerr:'माइक नहीं चला — अनुमति दें या टाइप करें'},
   en:{babylon:'Babylon · paid first',fixed:'Fixed',variable:'Variable',today:"Today's entries",jarhint:'The colour is what is left. Orange = empty before the 31st at this pace. Hold a jar to log straight into it.',
     logtitle:'Log a spend',logsub:'Day → jar → amount → save',whichitem:'What was it for?',sumtotal:'Total',other:'Other',review:'Month review',spent:'Total out',saved2:'Saved / left',over:'Overspent',under:'Underspent',nothingover:'No category went over plan',loading:'Loading…',baseline:'No separate plan saved for this month — compared with the current plan',current:'Current month',closed:'Closed month',noentries:'No entries for this month yet — use + Log and pick a date',savrate:'Savings rate',when:'When was it spent?',today2c:'Today',yesterday:'Yesterday',pickdate:'Date',daysago:'days ago',who:'Who spent?',save:'Save',book:'Day Book',outsofar:'Out so far',leftof:'Left',tapundo:'Tap an entry to change its date or amount, or remove it',
     snap:'₹ Snapshot',planactual:'Plan vs actual',settings:'Settings',language:'Language',iam:'I am',income:'Monthly income',corpus:'Total saved so far',corpusnote:"Including this month's deposit — this is what the cards show",addfixed:'+ Add fixed item',jarsplan:'Jar plan',saveset:'Save settings',
@@ -584,7 +614,7 @@ const I = {
     fixedother:'Fixed/other',admission:'Admission',festival:'Festival/gifts',repair:'Repair',cloth:'Clothing',medi:'Mediclaim',
     leftmonth:'Left this month',outof:'out',planned:'plan',dailyleft:'For daily spends',perday:'/day',cancel:'Cancel',ok:'OK',markpaid:'Paid — tick it',
     untickq:'Remove the tick?',unticksub:'It will show as pending again',unticked:'Tick removed',enteramt:'How much was paid? (₹)',whatfor:'What for?',pickitem:'Pick an item',change:'Change',newfixed:'New fixed item',namehint:'Type a name',
-    pot:'Pot',pothint:'Pot = set aside so far − withdrawn. Withdraw: + Log → Fixed/other → "Withdraw from pot"',potwithdraw:'Withdraw from pot',target:'target',monthsmore:'months to go',targetmet:'Target reached 🎉',flipsip:'Move ₹ to SIP now',flipsub:'Emergency fund is full. The monthly emergency amount will go to SIP from now on.',closeq:'close?',jarsleft:'Left in jars',potscarry:'Pots carried',closehint:'Unspent daily money goes to the emergency fund, provision pots roll into next month, and last month\'s review is saved.',later:'Later',closenow:'Close month',closedok:'closed',closedon:'Month closed',swept:'swept to savings',emertarget:'Emergency target (₹)',potcarry:'Already in pot',nowover:'now',abovepl:'over plan',whospent:'Who spent',thisweek:'This week (7 days)',share:'Share',weekof:'Week',overdue:'Overdue',duesoon:'Due this week',ghartitle:'Ghar Ledger',copied:'Copied — paste in WhatsApp',undo:'Undo',whoonce:'Pick once — the phone remembers',dupq:'Same thing was logged a moment ago — log again?',minago:'min ago',yeswrite:'Yes, log it',addphoto:'Bill photo (optional)',photoadded:'Photo attached',photofail:'Photo upload failed — entry saved without it',bill:'Bill',viewbill:'View bill',chgamt:'Change amount',chgdate:'Change date',chgnote:'Change note',notehint:'Note (optional) — e.g. ultrasound, notebook',closeb:'Close',moneyin:'Money in',received:'Received',tocome:'To come',inhand:'In hand',addinflow:'Money received — add',when2:'When',fromwho:'From (optional)',fromhint:'e.g. Yukti, shop',removeinflow:'Remove this receipt?',emerdone:'Deposited',emerpending:'To deposit',sipdone:'Both done',sippending:'Pending',markdone:'Done — tick it',lastmonth:'Previous month',nextmonth:'Next month',overby:'over',pin:'Family PIN',pinhint:'4 digits. Anyone with the link needs it. Entered once per phone.',pinenter:'Enter PIN',pinwrong:'Wrong PIN — try again',pinfield:'PIN (4 digits · blank = off)',pinbad:'PIN needs 4 digits',export:'Send Excel',exporthint:'All months, every entry, money in — one file (for your CA / backup)',exporting:'Building file…',exported:'Excel ready',synced:'synced',justnow:'just now',syncnow:'Sync now',syncing:'Syncing…',search:'Search — e.g. ultrasound, notebook',nomatch:'No match',holdjar:'Hold a jar = log straight into it',festmode:'Festival mode',festhint:'Between these dates festival spends come from their own pot — jars stay green. Pot = Festival/gifts provision + carried balance.',festname:'Festival name',festfrom:'From',festto:'To',festpot:'Festival pot',festleft:'Left in pot',festover:'Pot used up — rest comes from jars',feststarts:'starts',festlog:'Festival spends go here',todaytot:'Today',addentry:'Add entry',addhere:'Add more to this jar — pick the date',addbook:'Add an entry to the book',whichjar:'Which jar?',tolog:'Fixed item → Log screen'}
+    pot:'Pot',pothint:'Pot = set aside so far − withdrawn. Withdraw: + Log → Fixed/other → "Withdraw from pot"',potwithdraw:'Withdraw from pot',target:'target',monthsmore:'months to go',targetmet:'Target reached 🎉',flipsip:'Move ₹ to SIP now',flipsub:'Emergency fund is full. The monthly emergency amount will go to SIP from now on.',closeq:'close?',jarsleft:'Left in jars',potscarry:'Pots carried',closehint:'Unspent daily money goes to the emergency fund, provision pots roll into next month, and last month\'s review is saved.',later:'Later',closenow:'Close month',closedok:'closed',closedon:'Month closed',swept:'swept to savings',emertarget:'Emergency target (₹)',potcarry:'Already in pot',nowover:'now',abovepl:'over plan',whospent:'Who spent',thisweek:'This week (7 days)',share:'Share',weekof:'Week',overdue:'Overdue',duesoon:'Due this week',ghartitle:'Ghar Ledger',copied:'Copied — paste in WhatsApp',undo:'Undo',whoonce:'Pick once — the phone remembers',dupq:'Same thing was logged a moment ago — log again?',minago:'min ago',yeswrite:'Yes, log it',addphoto:'Bill photo (optional)',photoadded:'Photo attached',photofail:'Photo upload failed — entry saved without it',bill:'Bill',viewbill:'View bill',chgamt:'Change amount',chgdate:'Change date',chgnote:'Change note',notehint:'Note (optional) — e.g. ultrasound, notebook',closeb:'Close',moneyin:'Money in',received:'Received',tocome:'To come',inhand:'In hand',addinflow:'Money received — add',when2:'When',fromwho:'From (optional)',fromhint:'e.g. Yukti, shop',removeinflow:'Remove this receipt?',emerdone:'Deposited',emerpending:'To deposit',sipdone:'Both done',sippending:'Pending',markdone:'Done — tick it',lastmonth:'Previous month',nextmonth:'Next month',overby:'over',pin:'Family PIN',pinhint:'4 digits. Anyone with the link needs it. Entered once per phone.',pinenter:'Enter PIN',pinwrong:'Wrong PIN — try again',pinfield:'PIN (4 digits · blank = off)',pinbad:'PIN needs 4 digits',export:'Send Excel',exporthint:'All months, every entry, money in — one file (for your CA / backup)',exporting:'Building file…',exported:'Excel ready',synced:'synced',justnow:'just now',syncnow:'Sync now',syncing:'Syncing…',search:'Search — e.g. ultrasound, notebook',nomatch:'No match',holdjar:'Hold a jar = log straight into it',festmode:'Festival mode',festhint:'Between these dates festival spends come from their own pot — jars stay green. Pot = Festival/gifts provision + carried balance.',festname:'Festival name',festfrom:'From',festto:'To',festpot:'Festival pot',festleft:'Left in pot',festover:'Pot used up — rest comes from jars',feststarts:'starts',festlog:'Festival spends go here',todaytot:'Today',addentry:'Add entry',addhere:'Add more to this jar — pick the date',addbook:'Add an entry to the book',whichjar:'Which jar?',tolog:'Fixed item → Log screen',vtitle:'Speak to log',vlisten:'Listening…',vtip:'e.g. "sabji 20 rupees arbi and 40 rupees torai, yesterday" · "grocery 500" · "4 October paneer 120"',vdone:'Done',vagain:'Speak again',vtype:'or type it',vnone:'Could not understand — speak again or type',vreview:'Log these?',vreviewsub:'Wrong jar? Tap the row to change · ✕ removes it',vpick:'Pick a jar',vsaveN:'entries — save',vbad:'Pick a jar for every row first',vadded:'Logged ✓',vaddedsub:'Now in the Book and on Home',vundoall:'Remove all',vnosr:'This phone\'s browser cannot hear — type it instead',vmicerr:'Mic did not start — allow it, or type'}
 };
 let lang = 'hi';
 try{ lang = localStorage.getItem('gl-lang') || 'hi'; }catch(e){}
@@ -1692,6 +1722,175 @@ async function exportExcel(){
     setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 3000); toast('✓ ' + t('exported'));
   }catch(e){ toast('⚠ ' + (e && e.message || 'export')); }
   finally{ btn.disabled = false; }
+}
+
+/* ---------- search button + voice entry ---------- */
+document.getElementById('srch-mini').onclick = ()=>{ go('book'); setTimeout(()=>{ const q = document.getElementById('book-q'); q.focus(); }, 80); };
+document.getElementById('mic-mini').onclick = ()=>voiceEntry();
+
+// jar / item aliases (lower-case, Roman + Devanagari). Plan names are added at run time.
+const V_ALIAS = {
+  veg:['sabji','sabzi','sabjee','subzi','sabzee','vegetable','vegetables','veg','सब्ज़ी','सब्जी','सब्ज़ियाँ','सब्जियां','तरकारी'],
+  fruit:['fruit','fruits','fal','phal','फल'],
+  paneer:['paneer','panir','पनीर'],
+  fun:['entmt','entertainment','fun','movie','film','manoranjan','मनोरंजन','फ़िल्म','फिल्म','मूवी','outing','bahar','बाहर','restaurant','रेस्टोरेंट','swiggy','zomato'],
+  med:['medical','medicine','medicines','dawa','dawai','davai','doctor','दवा','दवाई','डॉक्टर','मेडिकल'],
+  stat:['stat','stationery','stationary','copy','notebook','pen','other','others','anya','स्टेशनरी','कॉपी','पेन','अन्य','बाकी'],
+  deepak:['deepak','diya','deepk','दीपक','दिया'],
+  phool:['phool','phul','flower','flowers','फूल'],
+  mandir:['mandir','temple','chadhava','मंदिर','चढ़ावा','पूजा','puja','pooja'],
+  grocery:['grocery','groceries','kirana','kiraana','किराना','राशन','ration'],
+  cosmetic:['cosmetic','cosmetics','कॉस्मेटिक','कॉस्मेटिक्स','saundarya','makeup','मेकअप'],
+  milk:['milk','doodh','dudh','दूध'],
+  gas:['gas','cylinder','गैस','सिलेंडर'],
+  atta:['atta','aata','आटा'],
+  oil:['oil','tel','तेल'],
+  petrol:['petrol','पेट्रोल','diesel','डीज़ल','fuel'],
+  school:['school','fees','fee','स्कूल','फ़ीस','फीस'],
+  jio:['jio','recharge','जियो','रिचार्ज'],
+  torrent:['torrent','bijli','electricity','टॉरेंट','बिजली','light bill'],
+  society:['society','सोसाइटी','maintenance'],
+  kuda:['kuda','kooda','कूड़ा','garbage'],
+  ott:['netflix','hotstar','ott','नेटफ़्लिक्स','हॉटस्टार'],
+  ghee1:['ghee','ghi','घी']
+};
+const V_FILL = new Set(['add','ad','on','at','of','ko','को','ऐड','एड','under','in','into','for','to','the','a','an','and','aur','or','ka','ki','ke','ko','se','me','mein','main','mai','may','wala','wale','wali','rupaye','rupay','rupee','rupees','rupya','rupaiya','rs','rupees','rupaya','inr','₹','और','में','मे','का','की','के','को','से','वाला','वाले','वाली','रुपये','रुपए','रुपया','रु','रूपये','रूपए','जोड़ो','जोड़','जोड़ें','लिखो','लिख','लिखें','डालो','डाल','entry','एंट्री','kharch','kharcha','खर्च','खर्चा','hua','हुआ','hue','हुए','liya','लिया','liye','लिए','aaya','आया','diya','दिया','gaya','गया','gaye','गए','ke liye','जी','ji','please','प्लीज़','ok','ओके','hai','है','tha','था','the','थे','thi','थी','log','लॉग','likh','likho','entry','paise','paisa','पैसे','पैसा','worth','का','kuch','कुछ','bhi','भी','phir','फिर','tak','तक','par','पर','dalna','डालना','kar','कर','do','दो','karo','करो','dena','देना','de','दे']);
+const V_NUMW = {'ek':1,'एक':1,'do':2,'दो':2,'teen':3,'tin':3,'तीन':3,'char':4,'chaar':4,'चार':4,'panch':5,'paanch':5,'पाँच':5,'पांच':5,'chhe':6,'cheh':6,'छह':6,'छः':6,'saat':7,'sat':7,'सात':7,'aath':8,'ath':8,'आठ':8,'nau':9,'नौ':9,'das':10,'dus':10,'दस':10,'gyarah':11,'ग्यारह':11,'barah':12,'बारह':12,'terah':13,'तेरह':13,'chaudah':14,'चौदह':14,'pandrah':15,'पंद्रह':15,'solah':16,'सोलह':16,'satrah':17,'सत्रह':17,'atharah':18,'अठारह':18,'unnis':19,'उन्नीस':19,'bees':20,'bis':20,'बीस':20,'pachis':25,'पच्चीस':25,'tees':30,'तीस':30,'chalis':40,'chaalis':40,'चालीस':40,'pachas':50,'pachaas':50,'पचास':50,'sath':60,'saath':60,'साठ':60,'sattar':70,'सत्तर':70,'assi':80,'अस्सी':80,'nabbe':90,'नब्बे':90,'sau':100,'so':100,'सौ':100,'dhai':250,'ढाई':250,'hazar':1000,'hazaar':1000,'हज़ार':1000,'हजार':1000,'thousand':1000,'hundred':100,'ten':10,'twenty':20,'thirty':30,'forty':40,'fifty':50,'sixty':60,'seventy':70,'eighty':80,'ninety':90,'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,'fifteen':15,'twelve':12,'eleven':11};
+const V_DEV = {'०':'0','१':'1','२':'2','३':'3','४':'4','५':'5','६':'6','७':'7','८':'8','९':'9'};
+function vAliasMap(){
+  const M = {};
+  const put = (w, tgt) => { w = String(w||'').toLowerCase().trim(); if(w) M[w] = tgt; };
+  Object.entries(V_ALIAS).forEach(([k, ws])=>{ const tgt = plan.jars.find(j=>j.id===k) ? {kind:'jar', id:k} : (plan.fixed.find(f=>f.id===k) ? {kind:'fix', id:k} : null); if(tgt) ws.forEach(w=>put(w, tgt)); });
+  plan.jars.forEach(j=>{ put(j.name, {kind:'jar', id:j.id}); put(j.hi, {kind:'jar', id:j.id}); });
+  plan.fixed.forEach(f=>{ put(f.name, {kind:'fix', id:f.id}); put(f.hi, {kind:'fix', id:f.id}); });
+  return M;
+}
+function vMonthIndex(w){ w = w.toLowerCase().replace(/\.$/,''); for(const L of ['en','hi']){ const i = MONTHS[L].findIndex(m=>m.toLowerCase()===w || m.toLowerCase().slice(0,3)===w.slice(0,3) && w.length>=3 && L==='en'); if(i>=0) return i; } const hiShort = ['जन','फर','मार्च','अप्रैल','मई','जून','जुला','अग','सित','अक्टू','अक्तू','नव','दिस']; const j = hiShort.findIndex(m=>w.startsWith(m)); if(j>=0) return j===10?9:(j>10?j-1:j); return -1; }
+// parse one spoken/typed sentence into entries
+function parseVoice(text){
+  const M = vAliasMap();
+  let tx = String(text||'').toLowerCase().replace(/[०-९]/g, d=>V_DEV[d]).replace(/₹/g,' ').replace(/(\d)\s*(?:rs|रु)\b/g,'$1 ').replace(/[,.;!?।]/g,' ').replace(/\s+/g,' ').trim();
+  // date
+  let date = new Date(TODAY_D); let dateWord = '';
+  const dayRe = /\b(\d{1,2})(?:st|nd|rd|th)?\s*(?:of\s+)?(?:(tarikh|tareekh|तारीख़|तारीख)|([a-zA-Zऀ-ॿ]+))?/g;
+  const setDay = (d, mi) => { if(d<1||d>31) return false; const m = mi>=0 ? mi : now.getMonth(); const nd = new Date(now.getFullYear(), m, d); if(nd > TODAY_D) nd.setFullYear(nd.getFullYear()-1); date = nd; return true; };
+  let m;
+  const wordIn = re => { const r = new RegExp('(?:^|\\s)(' + re + ')(?=\\s|$)'); const mm = r.exec(tx); return mm ? mm[1] : ''; };
+  if((m = wordIn('parson|parso|परसों|परसो|day before yesterday'))){ date.setDate(date.getDate()-2); dateWord = m; }
+  else if((m = wordIn('kal|कल|yesterday'))){ date.setDate(date.getDate()-1); dateWord = m; }
+  else if((m = wordIn('aaj|आज|today'))){ dateWord = m; }
+  if(!dateWord){
+    // "4 october", "4 अक्टूबर", "october 4", "4 tarikh", "4th"
+    const toks = tx.split(' ');
+    for(let i=0;i<toks.length;i++){
+      const w = toks[i]; const n = /^(\d{1,2})(?:st|nd|rd|th)?$/.exec(w);
+      if(n){ const nx = toks[i+1]||''; if(/^(tarikh|tareekh|तारीख़|तारीख|ko|को)$/.test(nx)){ if(setDay(+n[1], -1)){ dateWord = w+' '+nx; break; } }
+        const mi = nx ? vMonthIndex(nx) : -1; if(mi>=0 && setDay(+n[1], mi)){ dateWord = w+' '+nx; break; }
+        if(/^\d{1,2}(st|nd|rd|th)$/.test(w) && setDay(+n[1], -1)){ dateWord = w; break; } }
+      const mi2 = vMonthIndex(w); const n2 = /^(\d{1,2})(?:st|nd|rd|th)?$/.exec(toks[i+1]||'');
+      if(mi2>=0 && n2 && setDay(+n2[1], mi2)){ dateWord = w+' '+toks[i+1]; break; }
+    }
+  }
+  if(dateWord) tx = (' '+tx+' ').replace(' '+dateWord+' ',' ').trim();
+  // tokens → items
+  const toks = tx.split(' ').filter(Boolean);
+  const items = []; let cur = null, pendNote = [], curTarget = null;
+  const numOf = w => { if(/^\d+$/.test(w)) return +w; if(V_NUMW[w]!=null) return V_NUMW[w]; return null; };
+  // merge number words: "do sau bees" → 220, "dhai sau" → 250, "5 sau" → 500
+  const merged = [];
+  for(let i=0;i<toks.length;i++){
+    let w = toks[i]; let v = numOf(w);
+    if(v==null){ merged.push(w); continue; }
+    let j = i+1, total = v;
+    while(j<toks.length){ const nv = numOf(toks[j]); if(nv==null) break;
+      if(nv===100 || nv===1000){ total = (total===250 && nv===100) ? 250 : total*nv; }
+      else if(nv===250 && total===0){ total = 250; }
+      else total += nv; j++; }
+    merged.push(String(total)); i = j-1;
+  }
+  for(let i=0;i<merged.length;i++){
+    const w = merged[i];
+    const tgt = M[w];
+    if(tgt){
+      // a jar/item word after an amount, with no further amount coming, is a note ("kirana 500 atta")
+      let k = i+1; while(k<merged.length && V_FILL.has(merged[k])) k++;
+      const amountAhead = merged.slice(k).some(x=>/^\d+$/.test(x));
+      if(cur && cur.target && !amountAhead){ cur.note = (cur.note ? cur.note+' ' : '') + w; continue; }
+      curTarget = tgt; if(cur && !cur.target) cur.target = tgt; continue; }
+    const n = /^\d+$/.test(w) ? +w : null;
+    if(n!=null && n>0){ cur = {amt:n, target:curTarget, note:pendNote.splice(0).join(' ')}; items.push(cur); continue; }
+    if(V_FILL.has(w)) continue;
+    if(cur) cur.note = (cur.note ? cur.note+' ' : '') + w; else pendNote.push(w);
+  }
+  // two-word aliases (e.g. "light bill") are rare; a trailing note before any amount is dropped
+  items.forEach(it=>{ if(it.note) it.note = it.note.replace(/\s+/g,' ').trim().slice(0,60); });
+  return {items, date, heard:text};
+}
+let vSR = null;
+function voiceEntry(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let heard = '', final = false, rec = null;
+  const stop = ()=>{ try{ rec && rec.stop(); }catch(e){} rec = null; };
+  const start = (body) => {
+    const orb = body.querySelector('.vz'), h = body.querySelector('.heard');
+    if(!SR){ orb.classList.add('idle'); h.textContent = t('vnosr'); h.classList.add('dim'); body.querySelector('#v-type').focus(); return; }
+    try{
+      rec = new SR(); rec.lang = lang==='hi' ? 'hi-IN' : 'en-IN'; rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
+      rec.onresult = ev => { let s=''; for(let i=0;i<ev.results.length;i++) s += ev.results[i][0].transcript + ' '; heard = s.trim(); h.textContent = heard; h.classList.remove('dim'); if(ev.results[ev.results.length-1].isFinal){ final = true; } };
+      rec.onerror = ev => { orb.classList.add('idle'); if(ev.error!=='aborted' && ev.error!=='no-speech'){ h.textContent = t('vmicerr'); h.classList.add('dim'); } };
+      rec.onend = ()=>{ orb.classList.add('idle'); rec = null; if(heard){ setTimeout(()=>{ const b = document.getElementById('v-go'); if(b) b.click(); }, 250); } };
+      rec.start(); buzz(8);
+    }catch(e){ orb.classList.add('idle'); h.textContent = t('vmicerr'); h.classList.add('dim'); }
+  };
+  const html = `<div class="vz"><div class="orb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M9 21h6"/></svg></div>
+    <div class="heard dim">${t('vlisten')}</div><div class="tip">${t('vtip')}</div>
+    <div class="alt"><input class="txt" id="v-type" placeholder="${t('vtype')}" inputmode="text" autocomplete="off"><button class="btn" id="v-go" style="min-height:46px;padding:0 16px;font-size:15px">${t('vdone')}</button></div></div>`;
+  ask({title:t('vtitle'), html, cancelText:t('cancel'), onOpen: body => {
+    start(body);
+    const inp = body.querySelector('#v-type');
+    inp.onkeydown = e => { if(e.key==='Enter') body.querySelector('#v-go').click(); };
+    body.querySelector('#v-go').onclick = ()=>{ stop(); const txt = (inp.value.trim() || heard).trim(); if(!txt){ body.querySelector('.heard').textContent = t('vnone'); body.querySelector('.heard').classList.add('dim'); return; } voiceReview(parseVoice(txt)); };
+  }}).then(()=>stop());
+}
+function vTargetName(tg){ if(!tg) return ''; if(tg.kind==='jar'){ const j = plan.jars.find(x=>x.id===tg.id); return j ? nm(j) : tg.id; } const f = plan.fixed.find(x=>x.id===tg.id); return f ? nm(f) : tg.id; }
+async function voiceReview(R){
+  if(!R.items.length){ toast('⚠ ' + t('vnone')); return voiceEntry(); }
+  const ds = `${DAYS[lang][R.date.getDay()]}, ${shortDate(R.date.getDate(), R.date.getMonth())}`;
+  const bad = R.items.filter(it=>!it.target).length;
+  const html = `<div class="vl">${R.items.map((it,i)=>`<button class="vr ${it.target?'':'bad'}" data-vi="${i}"><span class="jc">${it.target ? vTargetName(it.target) : '? '+t('vpick')}</span><span class="mid"><b>${it.note || (it.target ? vTargetName(it.target) : '')}</b><small>${ds}${me?' · '+me:''}</small></span><span class="amt">${inr(it.amt)}</span><span class="x" data-vx="${i}">✕</span></button>`).join('')}
+    ${bad ? `<div class="warnline">${t('vbad')}</div>` : ''}<div class="hint" style="text-align:left">${t('vreviewsub')} · "${R.heard}"</div></div>`;
+  const v = await new Promise(res=>{
+    ask({title:t('vreview'), sub:`${R.items.length} ${t('entries')} · ${inr(R.items.reduce((a,x)=>a+x.amt,0))} · ${ds}`, html, cancelText:t('cancel'), onOpen: body => {
+      body.querySelectorAll('[data-vx]').forEach(x=>x.onclick = ev => { ev.stopPropagation(); R.items.splice(+x.dataset.vx, 1); res('redo'); });
+      body.querySelectorAll('[data-vi]').forEach(b=>b.onclick = async ()=>{ const i = +b.dataset.vi;
+        const L = plan.jars.map(j=>({key:'jar:'+j.id, grp:t('variable'), label:nm(j), amt:0})).concat(plan.fixed.map(f=>({key:'fix:'+f.id, grp:t('fixed'), label:nm(f), amt:0})));
+        const it = await ask({title:t('vpick'), sub:`${R.items[i].note||''} · ${inr(R.items[i].amt)}`, list:L});
+        if(it){ const [kind,id] = it.key.split(':'); R.items[i].target = {kind, id}; } res('redo'); });
+      const bts = document.getElementById('sh-b'); const sv = document.createElement('button'); sv.className = 'btn'; sv.textContent = `${R.items.length} ${t('vsaveN')}`; sv.disabled = !!bad; sv.onclick = ()=>res('save'); bts.appendChild(sv);
+      const ag = document.createElement('button'); ag.className = 'btn ghost'; ag.textContent = '🎤 ' + t('vagain'); ag.onclick = ()=>res('again'); bts.insertBefore(ag, bts.firstChild);
+    }}).then(x=>res(x));
+  });
+  if(v==='redo') return voiceReview(R);
+  if(v==='again') return voiceEntry();
+  if(v!=='save') return;
+  if(!me){ const w = await ask({title:t('who'), sub:t('whoonce'), buttons: plan.members.map(m=>({text:m, value:m}))}); if(!w) return; me = w; try{localStorage.setItem('gl-me',me);}catch(e){} }
+  const d = R.date.getDate(), mk = R.date.getFullYear()+'-'+pad2(R.date.getMonth()+1);
+  const done = [];
+  for(const it of R.items){
+    if(it.target.kind==='jar'){
+      const id = await addEntry({ts:Date.now(), month:mk, day:d, cat:'var', catId:it.target.id, amt:it.amt, by:me, note:it.note, photo:''});
+      done.push({id, label:vTargetName(it.target) + (it.note?' · '+it.note:''), amt:it.amt});
+    } else {
+      const f = plan.fixed.find(x=>x.id===it.target.id); const item = itemList().find(x=>x.key===it.target.id);
+      if(item && mk===MKEY && applyTick(item, it.amt, d)){ if(paid[item.key] && it.note){ paid[item.key].note = it.note; saveCfg(); } done.push({paidId:item.key, label:nm(f) + (it.note?' · '+it.note:''), amt:it.amt}); }
+      else { const id = await addEntry({ts:Date.now(), month:mk, day:d, cat:'fix', catId:it.target.id, amt:it.amt, by:me, note:nm(f) + (it.note?' · '+it.note:''), photo:''}); done.push({id, label:nm(f) + (it.note?' · '+it.note:''), amt:it.amt}); }
+    }
+  }
+  if(mk!==MKEY) delete viewCache[mk];
+  buzz([10,40,18,40,10]); renderAll(); go(mk===MKEY && d===TODAY ? 'home' : 'book'); if(mk!==MKEY) viewMonth = mk;
+  const proof = `<div class="vl"><div class="ok">✓ ${done.length} ${t('entries')} · ${inr(done.reduce((a,x)=>a+x.amt,0))}</div>${done.map(x=>`<div class="vr"><span class="mid"><b>${x.label}</b><small>${ds} · ${me}</small></span><span class="amt">${inr(x.amt)}</span></div>`).join('')}<div class="hint" style="text-align:left">${t('vaddedsub')}</div></div>`;
+  const u = await new Promise(res=>{ ask({title:t('vadded'), html:proof, cancelText:t('ok'), onOpen: ()=>{ const bts = document.getElementById('sh-b'); const b = document.createElement('button'); b.className='btn danger'; b.textContent = t('vundoall'); b.onclick=()=>res('undo'); bts.insertBefore(b, bts.firstChild); }}).then(x=>res(x)); });
+  if(u==='undo'){ document.getElementById('sheet').classList.remove('on'); for(const x of done){ if(x.id) await delEntry(x.id); else if(x.paidId && paid[x.paidId]){ delete paid[x.paidId]; } } saveCfg(); if(mk!==MKEY) delete viewCache[mk]; renderAll(); toast(t('deleted')); }
 }
 
 /* ---------- nav + toast ---------- */
