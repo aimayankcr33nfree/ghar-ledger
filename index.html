@@ -104,11 +104,17 @@ input,select{font:inherit;color:inherit}
 .pad button{min-height:58px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:24px}
 .pad button.op{background:var(--soft);font-size:18px}
 .who{display:flex;gap:8px}
+.dates{display:flex;gap:8px}
+.dates button,.dates label{flex:1;min-height:48px;border-radius:12px;border:2px solid var(--line);background:var(--card);font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;position:relative;cursor:pointer}
+.dates .on{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.dates input[type=date]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.dsel{font-size:15px;text-align:center;color:var(--ink);font-weight:600}
+.dsel.past{color:var(--orange)}
 .who button{flex:1;min-height:48px;border-radius:12px;border:2px solid var(--line);background:var(--card);font-size:15px;font-weight:600}
 .who button.on{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
 .day-h{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px}
 .day-h .t{font-weight:700;font-size:16px}
-.tag{font-size:11px;padding:2px 8px;border-radius:8px;width:64px;text-align:center;flex:none}
+.tag{font-size:11px;padding:2px 8px;border-radius:8px;width:64px;text-align:center;flex:none;align-self:center;line-height:1.4}
 .tag.bab{background:var(--blue-soft);color:var(--blue)}
 .tag.fix{background:var(--soft);color:var(--ink)}
 .tag.var{background:var(--orange-soft);color:var(--orange)}
@@ -175,6 +181,11 @@ input,select{font:inherit;color:inherit}
 <!-- LOG -->
 <section class="screen" id="s-log">
   <div class="hdr"><h1 data-i="logtitle"></h1><div class="sub" data-i="logsub"></div></div>
+  <div class="sec">
+    <div class="hint" style="text-align:left" data-i="when"></div>
+    <div class="dates" id="dates"></div>
+    <div class="dsel" id="dsel"></div>
+  </div>
   <div class="cats" id="cats"></div>
   <div class="amtbox"><span class="cur">₹</span><span class="num" id="amt">0</span></div>
   <div class="pad" id="pad"></div>
@@ -237,7 +248,7 @@ input,select{font:inherit;color:inherit}
 /* ---------- i18n ---------- */
 const I = {
   hi:{babylon:'बेबीलोन · सबसे पहले',fixed:'तय खर्च',today:'आज की एंट्री',jarhint:'दिन = इस रफ़्तार से घड़ा कितने दिन चलेगा। नारंगी = 31 से पहले खाली।',
-    logtitle:'खर्च लिखें',logsub:'घड़ा चुनें, रक़म दबाएँ, सेव करें',who:'किसने खर्च किया?',save:'सेव करें',book:'बही',outsofar:'अब तक गया',leftof:'बचा है',tapundo:'किसी एंट्री को दबाकर हटाएँ',
+    logtitle:'खर्च लिखें',logsub:'दिन चुनें, घड़ा चुनें, रक़म दबाएँ, सेव करें',when:'कब का खर्च?',today2c:'आज',yesterday:'कल',pickdate:'तारीख़ चुनें',daysago:'दिन पहले',who:'किसने खर्च किया?',save:'सेव करें',book:'बही',outsofar:'अब तक गया',leftof:'बचा है',tapundo:'किसी एंट्री को दबाकर हटाएँ',
     snap:'₹ का हिसाब',planactual:'योजना बनाम असल',settings:'सेटिंग',language:'भाषा',iam:'मैं हूँ',income:'महीने की आमदनी',corpus:'अब तक जमा (कुल)',addfixed:'+ तय खर्च जोड़ें',jarsplan:'घड़ों की योजना',saveset:'सेटिंग सेव करें',
     't-home':'घर','t-book':'बही','t-log':'लिखें','t-snap':'हिसाब','t-set':'सेटिंग',
     day:'दिन',of:'में से',left:'दिन बाकी',done:'हो गया',notdone:'बाकी',total:'कुल जमा',month:'इस महीने',showall:'सब देखें',showless:'कम दिखाएँ',paid:'दिया',due:'देना है',today2:'आज',
@@ -247,7 +258,7 @@ const I = {
     remove:'हटाएँ',confirmdel:'यह एंट्री हटाएँ?',sipn:'SIP नाम',emerg:'इमरजेंसी फ़ंड',amma:'अम्मा',ghar:'घर',once:'एक बार',rec:'बार-बार',entries:'एंट्री',settingssaved:'सेटिंग सेव हो गई',
     fixedother:'तय/अन्य',admission:'एडमिशन',festival:'त्योहार/उपहार',repair:'मरम्मत',cloth:'कपड़े',medi:'मेडिक्लेम'},
   en:{babylon:'Babylon · paid first',fixed:'Fixed',today:"Today's entries",jarhint:'Days = how long the jar lasts at this pace. Orange = empty before the 31st.',
-    logtitle:'Log a spend',logsub:'Pick a jar, type the amount, save',who:'Who spent?',save:'Save',book:'Day Book',outsofar:'Out so far',leftof:'Left',tapundo:'Tap an entry to remove it',
+    logtitle:'Log a spend',logsub:'Pick the day, the jar, the amount, save',when:'When was it spent?',today2c:'Today',yesterday:'Yesterday',pickdate:'Pick date',daysago:'days ago',who:'Who spent?',save:'Save',book:'Day Book',outsofar:'Out so far',leftof:'Left',tapundo:'Tap an entry to remove it',
     snap:'₹ Snapshot',planactual:'Plan vs actual',settings:'Settings',language:'Language',iam:'I am',income:'Monthly income',corpus:'Corpus so far (total)',addfixed:'+ Add fixed item',jarsplan:'Jar plan',saveset:'Save settings',
     't-home':'Home','t-book':'Book','t-log':'Log','t-snap':'Snapshot','t-set':'Settings',
     day:'Day',of:'of',left:'days left',done:'Done',notdone:'Pending',total:'Total so far',month:'This month',showall:'Show all',showless:'Show less',paid:'paid',due:'due',today2:'today',
@@ -367,11 +378,11 @@ async function saveCfg(){
 }
 async function addEntry(e){
   if(sb){
-    const {error} = await sb.from('entries').insert({month:MKEY, ts:e.ts, day:e.day, cat:e.cat, cat_id:e.catId, amt:e.amt, who:e.by, note:e.note||''});
+    const {error} = await sb.from('entries').insert({month:e.month||MKEY, ts:e.ts, day:e.day, cat:e.cat, cat_id:e.catId, amt:e.amt, who:e.by, note:e.note||''});
     if(!error){ await pullEntries(); localSave(); renderAll(); return; }
     toast('⚠ ' + error.message);
   }
-  entries.push(Object.assign({id:'l'+Date.now()}, e)); localSave(); renderAll();
+  if((e.month||MKEY)===MKEY){ entries.push(Object.assign({id:'l'+Date.now()}, e)); localSave(); renderAll(); }
 }
 async function delEntry(id){
   if(sb && !String(id).startsWith('l')){
@@ -457,7 +468,27 @@ function entryName(e){
 
 /* ---------- log ---------- */
 let sel = null, amt = '';
+const pad2 = n => String(n).padStart(2,'0');
+const isoOf = d => d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
+const TODAY_D = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+let selDate = new Date(TODAY_D);
+function daysAgo(d){ return Math.round((TODAY_D - d)/86400000); }
+function renderDates(){
+  const ago = daysAgo(selDate);
+  const minD = new Date(now.getFullYear(), now.getMonth()-1, 1);
+  document.getElementById('dates').innerHTML =
+    `<button class="${ago===0?'on':''}" data-ago="0">${t('today2c')}</button>`+
+    `<button class="${ago===1?'on':''}" data-ago="1">${t('yesterday')}</button>`+
+    `<label class="${ago>1?'on':''}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>${t('pickdate')}<input type="date" id="pickd" min="${isoOf(minD)}" max="${isoOf(TODAY_D)}" value="${isoOf(selDate)}" aria-label="${t('pickdate')}"></label>`;
+  document.querySelectorAll('[data-ago]').forEach(b=>b.onclick=()=>{ selDate = new Date(TODAY_D); selDate.setDate(selDate.getDate()-parseInt(b.dataset.ago,10)); renderLog(); });
+  const pk = document.getElementById('pickd');
+  pk.onchange = ()=>{ if(!pk.value) return; const [y,m,d] = pk.value.split('-').map(Number); let nd = new Date(y,m-1,d); if(nd>TODAY_D) nd=new Date(TODAY_D); if(nd<minD) nd=new Date(minD); selDate = nd; renderLog(); };
+  const ds = document.getElementById('dsel');
+  ds.textContent = `${DAYS[lang][selDate.getDay()]}, ${selDate.getDate()} ${MONTHS[lang][selDate.getMonth()]}` + (ago>1 ? ` · ${ago} ${t('daysago')}` : '');
+  ds.className = 'dsel' + (ago>0?' past':'');
+}
 function renderLog(){
+  renderDates();
   const cats = plan.jars.map(j=>({id:j.id, cat:'var', label:nm(j), left:inr(j.plan-jarSpent(j.id))})).concat([{id:'fix', cat:'fix', label:t('fixedother'), left:''}]);
   document.getElementById('cats').innerHTML = cats.map(c=>`<button class="cat ${sel===c.id?'on':''}" data-cat="${c.id}"><div class="nm">${c.label}</div><div class="lf num">${c.left}</div></button>`).join('');
   document.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ sel=b.dataset.cat; renderLog(); });
@@ -475,8 +506,11 @@ function renderWho(id){
 document.getElementById('save').onclick = async ()=>{
   const a = parseInt(amt,10); let note = '';
   if(sel==='fix'){ note = prompt(lang==='hi'?'किस चीज़ का? (जैसे: घी, पेट्रोल)':'What for? (e.g. ghee, petrol)') || ''; }
-  await addEntry({ts:Date.now(), day:TODAY, cat: sel==='fix'?'fix':'var', catId: sel, amt:a, by:me, note});
-  toast('✓ ' + t('saved') + ' · ' + inr(a)); amt=''; sel=null; go('home');
+  const mk = selDate.getFullYear()+'-'+pad2(selDate.getMonth()+1);
+  const ago = daysAgo(selDate);
+  await addEntry({ts:Date.now(), month:mk, day:selDate.getDate(), cat: sel==='fix'?'fix':'var', catId: sel, amt:a, by:me, note});
+  toast('✓ ' + t('saved') + ' · ' + inr(a) + (ago>0 ? ' · ' + selDate.getDate() + ' ' + MONTHS[lang][selDate.getMonth()] : ''));
+  amt=''; sel=null; selDate = new Date(TODAY_D); go(ago>0 ? 'book' : 'home');
 };
 
 /* ---------- day book ---------- */
