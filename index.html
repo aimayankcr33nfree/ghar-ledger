@@ -110,6 +110,21 @@ input,select{font:inherit;color:inherit}
 .dates input[type=date]{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
 .dsel{font-size:15px;text-align:center;color:var(--ink);font-weight:600}
 .dsel.past{color:var(--orange)}
+.msw{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px}
+.msw button{min-width:52px;min-height:48px;border-radius:10px;font-size:22px;color:var(--blue)}
+.msw button:disabled{color:var(--line)}
+.msw .m{font-size:18px;font-weight:700;text-align:center;flex:1}
+.msw .m small{display:block;font-size:12px;font-weight:400;color:var(--muted)}
+.review{display:flex;flex-direction:column;gap:10px}
+.review .big{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.review .big .v{font-size:24px}
+.review h3{margin:6px 0 0;font-size:15px}
+.review .li{display:flex;justify-content:space-between;font-size:14px;gap:8px;min-height:28px;align-items:center}
+.items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.items button{min-height:52px;border-radius:12px;border:2px solid var(--line);background:var(--card);font-size:14px;font-weight:600;text-align:left;padding:6px 10px;display:flex;flex-direction:column;justify-content:center}
+.items button small{font-weight:400;color:var(--muted);font-size:12px}
+.items button.on{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.items .grp{grid-column:1/-1;font-size:12px;color:var(--muted);margin-top:4px}
 .who button{flex:1;min-height:48px;border-radius:12px;border:2px solid var(--line);background:var(--card);font-size:15px;font-weight:600}
 .who button.on{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
 .day-h{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px}
@@ -187,6 +202,10 @@ input,select{font:inherit;color:inherit}
     <div class="dsel" id="dsel"></div>
   </div>
   <div class="cats" id="cats"></div>
+  <div class="sec" id="items-wrap" style="display:none">
+    <div class="hint" style="text-align:left" data-i="whichitem"></div>
+    <div class="items" id="items"></div>
+  </div>
   <div class="amtbox"><span class="cur">₹</span><span class="num" id="amt">0</span></div>
   <div class="pad" id="pad"></div>
   <div class="sec">
@@ -198,7 +217,9 @@ input,select{font:inherit;color:inherit}
 
 <!-- DAY BOOK -->
 <section class="screen" id="s-book">
-  <div class="hdr"><h1 data-i="book"></h1><div class="sub" id="book-sub"></div></div>
+  <div class="hdr"><h1 data-i="book"></h1></div>
+  <div class="msw" id="msw-book"></div>
+  <div class="sub hint" id="book-sub"></div>
   <div class="grid3" style="grid-template-columns:repeat(2,minmax(0,1fr))">
     <div class="card"><div class="hint" style="text-align:left" data-i="outsofar"></div><div class="num" style="font-size:22px" id="b-out"></div></div>
     <div class="card"><div class="hint" style="text-align:left" data-i="leftof"></div><div class="num" style="font-size:22px" id="b-left"></div></div>
@@ -210,7 +231,10 @@ input,select{font:inherit;color:inherit}
 
 <!-- SNAPSHOT -->
 <section class="screen" id="s-snap">
-  <div class="hdr"><h1 data-i="snap"></h1><div class="sub" id="snap-sub"></div></div>
+  <div class="hdr"><h1 data-i="snap"></h1></div>
+  <div class="msw" id="msw-snap"></div>
+  <div class="sub hint" id="snap-sub"></div>
+  <div class="card review" id="review"></div>
   <div class="card" id="cascade" style="display:flex;flex-direction:column;gap:12px"></div>
   <div class="gap" id="gapbox"></div>
   <div class="sec">
@@ -248,7 +272,7 @@ input,select{font:inherit;color:inherit}
 /* ---------- i18n ---------- */
 const I = {
   hi:{babylon:'बेबीलोन · सबसे पहले',fixed:'तय खर्च',today:'आज की एंट्री',jarhint:'दिन = इस रफ़्तार से घड़ा कितने दिन चलेगा। नारंगी = 31 से पहले खाली।',
-    logtitle:'खर्च लिखें',logsub:'दिन चुनें, घड़ा चुनें, रक़म दबाएँ, सेव करें',when:'कब का खर्च?',today2c:'आज',yesterday:'कल',pickdate:'तारीख़ चुनें',daysago:'दिन पहले',who:'किसने खर्च किया?',save:'सेव करें',book:'बही',outsofar:'अब तक गया',leftof:'बचा है',tapundo:'किसी एंट्री को दबाकर हटाएँ',
+    logtitle:'खर्च लिखें',logsub:'दिन चुनें, घड़ा चुनें, रक़म दबाएँ, सेव करें',whichitem:'किस चीज़ का?',sumtotal:'कुल',other:'अन्य',review:'महीने की समीक्षा',spent:'कुल खर्च',saved2:'बचत / बचा',over:'ज़्यादा खर्च हुआ',under:'कम खर्च हुआ',nothingover:'कोई मद योजना से ऊपर नहीं',loading:'लोड हो रहा है…',baseline:'इस महीने की अलग योजना नहीं थी — अभी की योजना से तुलना',current:'चालू महीना',closed:'बंद महीना',noentries:'इस महीने की कोई एंट्री नहीं — + लिखें में तारीख़ चुनकर डालें',savrate:'बचत दर',when:'कब का खर्च?',today2c:'आज',yesterday:'कल',pickdate:'तारीख़ चुनें',daysago:'दिन पहले',who:'किसने खर्च किया?',save:'सेव करें',book:'बही',outsofar:'अब तक गया',leftof:'बचा है',tapundo:'किसी एंट्री को दबाकर हटाएँ',
     snap:'₹ का हिसाब',planactual:'योजना बनाम असल',settings:'सेटिंग',language:'भाषा',iam:'मैं हूँ',income:'महीने की आमदनी',corpus:'अब तक जमा (कुल)',addfixed:'+ तय खर्च जोड़ें',jarsplan:'घड़ों की योजना',saveset:'सेटिंग सेव करें',
     't-home':'घर','t-book':'बही','t-log':'लिखें','t-snap':'हिसाब','t-set':'सेटिंग',
     day:'दिन',of:'में से',left:'दिन बाकी',done:'हो गया',notdone:'बाकी',total:'कुल जमा',month:'इस महीने',showall:'सब देखें',showless:'कम दिखाएँ',paid:'दिया',due:'देना है',today2:'आज',
@@ -258,7 +282,7 @@ const I = {
     remove:'हटाएँ',confirmdel:'यह एंट्री हटाएँ?',sipn:'SIP नाम',emerg:'इमरजेंसी फ़ंड',amma:'अम्मा',ghar:'घर',once:'एक बार',rec:'बार-बार',entries:'एंट्री',settingssaved:'सेटिंग सेव हो गई',
     fixedother:'तय/अन्य',admission:'एडमिशन',festival:'त्योहार/उपहार',repair:'मरम्मत',cloth:'कपड़े',medi:'मेडिक्लेम'},
   en:{babylon:'Babylon · paid first',fixed:'Fixed',today:"Today's entries",jarhint:'Days = how long the jar lasts at this pace. Orange = empty before the 31st.',
-    logtitle:'Log a spend',logsub:'Pick the day, the jar, the amount, save',when:'When was it spent?',today2c:'Today',yesterday:'Yesterday',pickdate:'Pick date',daysago:'days ago',who:'Who spent?',save:'Save',book:'Day Book',outsofar:'Out so far',leftof:'Left',tapundo:'Tap an entry to remove it',
+    logtitle:'Log a spend',logsub:'Pick the day, the jar, the amount, save',whichitem:'What was it for?',sumtotal:'Total',other:'Other',review:'Month review',spent:'Total out',saved2:'Saved / left',over:'Overspent',under:'Underspent',nothingover:'No category went over plan',loading:'Loading…',baseline:'No separate plan saved for this month — compared with the current plan',current:'Current month',closed:'Closed month',noentries:'No entries for this month yet — use + Log and pick a date',savrate:'Savings rate',when:'When was it spent?',today2c:'Today',yesterday:'Yesterday',pickdate:'Pick date',daysago:'days ago',who:'Who spent?',save:'Save',book:'Day Book',outsofar:'Out so far',leftof:'Left',tapundo:'Tap an entry to remove it',
     snap:'₹ Snapshot',planactual:'Plan vs actual',settings:'Settings',language:'Language',iam:'I am',income:'Monthly income',corpus:'Corpus so far (total)',addfixed:'+ Add fixed item',jarsplan:'Jar plan',saveset:'Save settings',
     't-home':'Home','t-book':'Book','t-log':'Log','t-snap':'Snapshot','t-set':'Settings',
     day:'Day',of:'of',left:'days left',done:'Done',notdone:'Pending',total:'Total so far',month:'This month',showall:'Show all',showless:'Show less',paid:'paid',due:'due',today2:'today',
@@ -355,6 +379,7 @@ async function pullEntries(){
   entries = data.map(fromRow);
 }
 async function pullAll(){
+  if(viewMonth!==MKEY && viewCache[viewMonth] && !viewCache[viewMonth].loading){ delete viewCache[viewMonth]; }
   try{ await pullMonth(); await pullEntries(); localSave(); setSync(true); }
   catch(e){ setSync(false); }
   renderAll();
@@ -403,7 +428,7 @@ const fixedPaidTotal = () => Object.values(paid).reduce((a,p)=>a+(p.amt||0),0);
 const varSpent = () => entries.filter(e=>e.cat==='var').reduce((a,e)=>a+e.amt,0);
 const fixOther = () => entries.filter(e=>e.cat==='fix').reduce((a,e)=>a+e.amt,0);
 const babDone = () => (plan.emergency.done?plan.emergency.plan:0) + plan.sips.reduce((a,s)=>a+(s.done?s.plan:0),0) + (plan.provDone?provTotal():0);
-const outSoFar = () => babDone() + fixedPaidTotal() + fixOther() + varSpent();
+const outSoFar = () => babDone() + fixedPaidTotal() + fixOther() + varSpent() + entries.filter(e=>e.cat==='bab').reduce((a,e)=>a+e.amt,0);
 
 /* ---------- render ---------- */
 function renderAll(){ document.querySelectorAll('[data-i]').forEach(el=>el.textContent=t(el.dataset.i)); document.documentElement.lang = lang;
@@ -462,12 +487,11 @@ function togglePaid(id){
   saveCfg(); renderAll();
 }
 function entryName(e){
-  if(e.cat==='var'){ const j = plan.jars.find(j=>j.id===e.catId); return j?nm(j):e.catId; }
-  return e.note || t('fixedother');
+  return entryNameP(e, plan);
 }
 
 /* ---------- log ---------- */
-let sel = null, amt = '';
+let sel = null, amt = '', item = null;
 const pad2 = n => String(n).padStart(2,'0');
 const isoOf = d => d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());
 const TODAY_D = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -491,70 +515,186 @@ function renderLog(){
   renderDates();
   const cats = plan.jars.map(j=>({id:j.id, cat:'var', label:nm(j), left:inr(j.plan-jarSpent(j.id))})).concat([{id:'fix', cat:'fix', label:t('fixedother'), left:''}]);
   document.getElementById('cats').innerHTML = cats.map(c=>`<button class="cat ${sel===c.id?'on':''}" data-cat="${c.id}"><div class="nm">${c.label}</div><div class="lf num">${c.left}</div></button>`).join('');
-  document.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ sel=b.dataset.cat; renderLog(); });
+  document.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ sel=b.dataset.cat; item=null; renderLog(); });
+  const iw = document.getElementById('items-wrap');
+  if(sel==='fix'){
+    iw.style.display='flex';
+    const its = itemList();
+    let html = '', grp = '';
+    its.forEach(it=>{ if(it.grp!==grp){ grp=it.grp; html += `<div class="grp">${grp}</div>`; }
+      html += `<button class="${item&&item.key===it.key?'on':''}" data-item="${it.key}">${it.label}${it.amt?`<small class="num">${inr(it.amt)}</small>`:''}</button>`; });
+    document.getElementById('items').innerHTML = html;
+    document.querySelectorAll('[data-item]').forEach(b=>b.onclick=()=>{ item = its.find(x=>x.key===b.dataset.item); if(!amt && item.amt) amt = String(item.amt); renderLog(); });
+  } else { iw.style.display='none'; }
   document.getElementById('amt').textContent = amt ? parseInt(amt,10).toLocaleString('en-IN') : '0';
   const keys = ['1','2','3','4','5','6','7','8','9','⌫','0','C'];
   document.getElementById('pad').innerHTML = keys.map(k=>`<button class="${isNaN(k)?'op':''}" data-k="${k}">${k}</button>`).join('');
   document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{ const k=b.dataset.k; if(k==='⌫') amt=amt.slice(0,-1); else if(k==='C') amt=''; else if(amt.length<6) amt+=k; renderLog(); });
   renderWho('who');
-  document.getElementById('save').disabled = !(sel && parseInt(amt,10)>0 && me);
+  document.getElementById('save').disabled = !(sel && parseInt(amt,10)>0 && me && (sel!=='fix' || item));
 }
 function renderWho(id){
   document.getElementById(id).innerHTML = plan.members.map(m=>`<button class="${me===m?'on':''}" data-who="${m}">${m}</button>`).join('');
   document.querySelectorAll('#'+id+' [data-who]').forEach(b=>b.onclick=()=>{ me=b.dataset.who; try{localStorage.setItem('gl-me',me);}catch(e){} renderLog(); renderSettings(); });
 }
 document.getElementById('save').onclick = async ()=>{
-  const a = parseInt(amt,10); let note = '';
-  if(sel==='fix'){ note = prompt(lang==='hi'?'किस चीज़ का? (जैसे: घी, पेट्रोल)':'What for? (e.g. ghee, petrol)') || ''; }
+  const a = parseInt(amt,10); let note = '', cat = 'var', catId = sel;
   const mk = selDate.getFullYear()+'-'+pad2(selDate.getMonth()+1);
   const ago = daysAgo(selDate);
-  await addEntry({ts:Date.now(), month:mk, day:selDate.getDate(), cat: sel==='fix'?'fix':'var', catId: sel, amt:a, by:me, note});
+  if(sel==='fix'){
+    if(item.key==='other'){ note = prompt(lang==='hi'?'किस चीज़ का? (जैसे: पेट्रोल)':'What for? (e.g. petrol)') || t('other'); cat='fix'; catId='fix'; }
+    else if(mk===MKEY && applyTick(item, a, selDate.getDate())){ toast('✓ ' + item.label + ' · ' + inr(a)); amt=''; sel=null; item=null; selDate=new Date(TODAY_D); go('home'); return; }
+    else { cat = item.cat; catId = item.key; note = item.label; }
+  }
+  await addEntry({ts:Date.now(), month:mk, day:selDate.getDate(), cat, catId, amt:a, by:me, note});
+  if(mk!==MKEY){ viewMonth = mk; delete viewCache[mk]; }
   toast('✓ ' + t('saved') + ' · ' + inr(a) + (ago>0 ? ' · ' + selDate.getDate() + ' ' + MONTHS[lang][selDate.getMonth()] : ''));
-  amt=''; sel=null; selDate = new Date(TODAY_D); go(ago>0 ? 'book' : 'home');
+  amt=''; sel=null; item=null; selDate = new Date(TODAY_D); go(ago>0 ? 'book' : 'home');
 };
+
+/* ---------- items (fixed + babylon) for the picker ---------- */
+function itemList(){
+  const L = [];
+  const gb = t('babylon').split(' ')[0], gf = t('fixed');
+  L.push({key:'emergency', cat:'bab', grp:gb, label:t('emer'), amt:plan.emergency.plan});
+  plan.sips.forEach((s,i)=>L.push({key:'sip'+i, cat:'bab', grp:gb, label:'SIP · '+s.name, amt:s.plan}));
+  L.push({key:'prov', cat:'bab', grp:gb, label:t('prov'), amt:provTotal()});
+  plan.fixed.forEach(f=>L.push({key:f.id, cat:'fix', grp:gf, label:nm(f), amt:f.amt||0}));
+  L.push({key:'other', cat:'fix', grp:gf, label:t('other'), amt:0});
+  return L;
+}
+// current month: logging a bill / babylon item = ticking it on Home
+function applyTick(it, a, day){
+  if(it.key==='emergency'){ if(plan.emergency.done) return false; plan.emergency.done=true; plan.emergency.plan=a; corpus.emergency+=a; }
+  else if(it.key.startsWith('sip')){ const s = plan.sips[+it.key.slice(3)]; if(!s||s.done) return false; s.done=true; s.plan=a; corpus.sip+=a; }
+  else if(it.key==='prov'){ if(plan.provDone) return false; plan.provDone=true; }
+  else { if(paid[it.key]) return false; paid[it.key]={day, amt:a, by:me}; }
+  saveCfg(); renderAll(); return true;
+}
+
+/* ---------- month view (current or closed months) ---------- */
+let viewMonth = MKEY;
+const viewCache = {};
+const FIRST_MONTH = '2026-09';
+function shiftMonth(key, n){ const [y,m] = key.split('-').map(Number); const d = new Date(y, m-1+n, 1); return d.getFullYear()+'-'+pad2(d.getMonth()+1); }
+function monthName(key){ const [y,m] = key.split('-').map(Number); return MONTHS[lang][m-1] + ' ' + y; }
+async function loadMonth(key){
+  if(key===MKEY || viewCache[key]) return;
+  viewCache[key] = {loading:true};
+  try{
+    const r = await sb.from('months').select('data').eq('id', key).maybeSingle();
+    const e = await sb.from('entries').select('*').eq('month', key).order('ts');
+    const d = r.data ? r.data.data : null;
+    viewCache[key] = { plan: d&&d.plan ? d.plan : JSON.parse(JSON.stringify(plan)), corpus: d&&d.corpus || corpus, paid: d&&d.paid || {}, entries: (e.data||[]).map(fromRow), baseline: !d };
+    if(!d){ const P = viewCache[key].plan; P.emergency.done=false; P.sips.forEach(s=>s.done=false); P.provDone=false; }
+  }catch(err){ viewCache[key] = { plan: JSON.parse(JSON.stringify(plan)), corpus, paid:{}, entries:[], baseline:true }; }
+  renderBook(); renderSnap();
+}
+function ds(){
+  if(viewMonth===MKEY) return {key:MKEY, plan, corpus, paid, entries, live:true};
+  const c = viewCache[viewMonth];
+  if(!c || c.loading){ if(!c) loadMonth(viewMonth); return null; }
+  return Object.assign({key:viewMonth, live:false}, c);
+}
+function calc(D){
+  const P = D.plan, E = D.entries;
+  const sum = (arr)=>arr.reduce((a,x)=>a+x.amt,0);
+  const prov = P.provisions.reduce((a,p)=>a+p.plan,0);
+  const sips = P.sips.reduce((a,s)=>a+s.plan,0);
+  const babPlan = P.emergency.plan + sips + prov;
+  const babTick = (P.emergency.done?P.emergency.plan:0) + P.sips.reduce((a,s)=>a+(s.done?s.plan:0),0) + (P.provDone?prov:0);
+  const babActual = babTick + sum(E.filter(e=>e.cat==='bab'));
+  const fixPlan = P.fixed.reduce((a,f)=>a+(f.amt||0),0);
+  const fixActual = Object.values(D.paid).reduce((a,p)=>a+(p.amt||0),0) + sum(E.filter(e=>e.cat==='fix'));
+  const jars = P.jars.map(j=>({name:nm(j), plan:j.plan, actual:sum(E.filter(e=>e.cat==='var'&&e.catId===j.id))}));
+  // per fixed item actuals (for the review)
+  const fixItems = P.fixed.map(f=>({name:nm(f), plan:f.amt||0, actual:(D.paid[f.id]?D.paid[f.id].amt:0) + sum(E.filter(e=>e.cat==='fix'&&e.catId===f.id))}));
+  const otherFix = sum(E.filter(e=>e.cat==='fix'&&(e.catId==='fix'||!P.fixed.find(f=>f.id===e.catId))));
+  const totalPlan = babPlan + fixPlan + jars.reduce((a,j)=>a+j.plan,0);
+  const out = babActual + fixActual + jars.reduce((a,j)=>a+j.actual,0);
+  return {income:P.income, babPlan, babActual, fixPlan, fixActual, jars, fixItems, otherFix, totalPlan, out};
+}
+function renderMsw(id){
+  const el = document.getElementById(id);
+  const prevOk = viewMonth > FIRST_MONTH, nextOk = viewMonth < MKEY;
+  el.innerHTML = `<button aria-label="previous month" ${prevOk?'':'disabled'} data-mv="-1">‹</button><div class="m">${monthName(viewMonth)}<small>${viewMonth===MKEY?t('current'):t('closed')}</small></div><button aria-label="next month" ${nextOk?'':'disabled'} data-mv="1">›</button>`;
+  el.querySelectorAll('[data-mv]').forEach(b=>b.onclick=()=>{ viewMonth = shiftMonth(viewMonth, +b.dataset.mv); renderBook(); renderSnap(); });
+}
+function entryNameP(e, P){
+  if(e.cat==='var'){ const j = P.jars.find(j=>j.id===e.catId); return j?nm(j):e.catId; }
+  return e.note || t('fixedother');
+}
 
 /* ---------- day book ---------- */
 let bookF = 'all';
 function renderBook(){
-  document.getElementById('book-sub').textContent = MONTHS[lang][now.getMonth()] + ' · ' + entries.length + ' ' + t('entries');
-  document.getElementById('b-out').textContent = inr(outSoFar());
-  document.getElementById('b-left').textContent = inr(plan.income - outSoFar());
+  renderMsw('msw-book');
+  const D = ds();
+  if(!D){ document.getElementById('book').innerHTML = `<div class="card hint">${t('loading')}</div>`; return; }
+  const P = D.plan, C = calc(D);
+  document.getElementById('book-sub').textContent = D.entries.length + ' ' + t('entries');
+  document.getElementById('b-out').textContent = inr(C.out);
+  document.getElementById('b-left').textContent = inr(C.income - C.out);
   const fs = [['all',t('allf')],['bab',t('babylon').split(' ')[0]],['fix',t('fixed')],['var',t('variable')]];
   document.getElementById('book-filter').innerHTML = fs.map(([k,l])=>`<button class="chip ${bookF===k?'on':''}" data-bf="${k}">${l}</button>`).join('');
   document.querySelectorAll('[data-bf]').forEach(b=>b.onclick=()=>{ bookF=b.dataset.bf; renderBook(); });
-  // build rows: babylon ticks (day 1 assumed), paid fixed, entries
   let rows = [];
-  if(plan.emergency.done) rows.push({day:1,cat:'bab',name:t('emerg'),amt:plan.emergency.plan});
-  plan.sips.forEach(s=>{ if(s.done) rows.push({day:1,cat:'bab',name:'SIP · '+s.name,amt:s.plan}); });
-  if(plan.provDone) rows.push({day:1,cat:'bab',name:t('prov'),amt:provTotal()});
-  Object.entries(paid).forEach(([id,p])=>{ const f=plan.fixed.find(x=>x.id===id); if(f) rows.push({day:p.day,cat:'fix',name:nm(f),amt:p.amt,by:p.by,fixId:id}); });
-  entries.forEach(e=>rows.push({day:e.day,cat:e.cat,name:entryName(e),amt:e.amt,by:e.by,id:e.id,ts:e.ts}));
+  if(P.emergency.done) rows.push({day:1,cat:'bab',name:t('emerg'),amt:P.emergency.plan});
+  P.sips.forEach(s=>{ if(s.done) rows.push({day:1,cat:'bab',name:'SIP · '+s.name,amt:s.plan}); });
+  if(P.provDone) rows.push({day:1,cat:'bab',name:t('prov'),amt:P.provisions.reduce((a,p)=>a+p.plan,0)});
+  Object.entries(D.paid).forEach(([id,p])=>{ const f=P.fixed.find(x=>x.id===id); if(f) rows.push({day:p.day,cat:'fix',name:nm(f),amt:p.amt,by:p.by}); });
+  D.entries.forEach(e=>rows.push({day:e.day,cat:e.cat,name:entryNameP(e,P),amt:e.amt,by:e.by,id:e.id,ts:e.ts}));
   rows = rows.filter(r=>bookF==='all'||r.cat===bookF);
   const byDay = {}; rows.forEach(r=>{ (byDay[r.day]=byDay[r.day]||[]).push(r); });
   const days = Object.keys(byDay).map(Number).sort((a,b)=>b-a);
+  const [vy,vm] = D.key.split('-').map(Number);
   document.getElementById('book').innerHTML = days.length ? days.map(d=>{
-    const dt = new Date(now.getFullYear(), now.getMonth(), d);
+    const dt = new Date(vy, vm-1, d);
     const tot = byDay[d].reduce((a,r)=>a+r.amt,0);
-    return `<div class="sec" style="margin-bottom:14px"><div class="day-h"><div class="t">${t('day')} ${d} · ${DAYS[lang][dt.getDay()]}${d===TODAY?' · '+t('today2'):''}</div><div class="num" style="color:var(--muted)">${inr(tot)}</div></div><div class="card list">${byDay[d].sort((a,b)=>(b.ts||0)-(a.ts||0)).map(r=>`<button class="row44" ${r.id?`data-del="${r.id}"`:''}><span class="tag ${r.cat}">${r.cat==='bab'?t('babylon').split(' ')[0]:r.cat==='fix'?t('fixed'):t('variable')}</span><div class="nm">${r.name}</div><div class="amt num">${inr(r.amt)}</div><div class="dt">${r.by||''}</div></button>`).join('')}</div></div>`;
-  }).join('') : `<div class="card hint">${t('none')}</div>`;
-  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ if(confirm(t('confirmdel'))){ delEntry(b.dataset.del); toast(t('deleted')); } });
+    return `<div class="sec" style="margin-bottom:14px"><div class="day-h"><div class="t">${t('day')} ${d} · ${DAYS[lang][dt.getDay()]}${D.live&&d===TODAY?' · '+t('today2'):''}</div><div class="num" style="color:var(--muted)">${inr(tot)}</div></div><div class="card list">${byDay[d].sort((a,b)=>(b.ts||0)-(a.ts||0)).map(r=>`<button class="row44" ${r.id?`data-del="${r.id}"`:''}><span class="tag ${r.cat}">${r.cat==='bab'?t('babylon').split(' ')[0]:r.cat==='fix'?t('fixed'):t('variable')}</span><div class="nm">${r.name}</div><div class="amt num">${inr(r.amt)}</div><div class="dt">${r.by||''}</div></button>`).join('')}</div></div>`;
+  }).join('') : `<div class="card hint">${D.live?t('none'):t('noentries')}</div>`;
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async ()=>{ if(confirm(t('confirmdel'))){ await delEntry(b.dataset.del); if(!D.live){ delete viewCache[D.key]; loadMonth(D.key); } toast(t('deleted')); } });
 }
 
 /* ---------- snapshot ---------- */
 function renderSnap(){
-  document.getElementById('snap-sub').textContent = MONTHS[lang][now.getMonth()] + ' · ' + inr(plan.income);
-  const inc = plan.income, e = plan.emergency.plan, s = sipTotal(), p = provTotal(), f = fixedTotal();
+  renderMsw('msw-snap');
+  const D = ds();
+  const rv = document.getElementById('review');
+  if(!D){ rv.innerHTML = `<div class="hint">${t('loading')}</div>`; return; }
+  const P = D.plan, C = calc(D);
+  document.getElementById('snap-sub').textContent = inr(P.income) + (D.baseline ? ' · ' + t('baseline') : '');
+  const inc = P.income, e = P.emergency.plan, s = P.sips.reduce((a,x)=>a+x.plan,0), p = P.provisions.reduce((a,x)=>a+x.plan,0), f = C.fixPlan;
+  // review card
+  const left = inc - C.out;
+  const lines = [{n:t('babylon').split(' ')[0], pl:C.babPlan, ac:C.babActual, sav:true}, {n:t('fixed'), pl:C.fixPlan, ac:C.fixActual}]
+    .concat(C.jars.map(j=>({n:j.name, pl:j.plan, ac:j.actual})));
+  const spendLines = lines.filter(l=>!l.sav);
+  const overs = spendLines.filter(l=>l.ac>l.pl).sort((a,b)=>(b.ac-b.pl)-(a.ac-a.pl)).slice(0,3);
+  const unders = spendLines.filter(l=>l.ac<l.pl && l.ac>0).sort((a,b)=>(b.pl-b.ac)-(a.pl-a.ac)).slice(0,3);
+  const fixOver = C.fixItems.filter(x=>x.actual>x.plan && x.plan>0).sort((a,b)=>(b.actual-b.plan)-(a.actual-a.plan)).slice(0,3);
+  const sr = inc>0 ? Math.round((C.babActual + Math.max(0,left))/inc*100) : 0;
+  rv.innerHTML = `<div class="sec-h"><div class="t">${t('review')} · ${monthName(D.key)}</div></div>
+    <div class="big"><span>${t('spent')}</span><span class="v num">${inr(C.out)}</span></div>
+    <div class="big"><span>${t('saved2')}</span><span class="v num" style="color:${left<0?'var(--orange)':'var(--blue)'}">${left<0?'−':''}${inr(Math.abs(left))}</span></div>
+    <div class="li"><span>${t('savrate')} (${t('babylon').split(' ')[0]} + ${t('saved2').split(' / ')[1]||'left'})</span><span class="num">${sr}%</span></div>
+    <h3 style="color:var(--orange)">${t('over')}</h3>
+    ${overs.length ? overs.map(l=>`<div class="li"><span>${l.n}</span><span class="num" style="color:var(--orange)">+${(l.ac-l.pl).toLocaleString('en-IN')}</span></div>`).join('') : `<div class="li"><span class="hint">${t('nothingover')}</span></div>`}
+    ${fixOver.map(x=>`<div class="li"><span>· ${x.name}</span><span class="num" style="color:var(--orange)">+${(x.actual-x.plan).toLocaleString('en-IN')}</span></div>`).join('')}
+    ${C.otherFix ? `<div class="li"><span>· ${t('other')}</span><span class="num">${C.otherFix.toLocaleString('en-IN')}</span></div>` : ''}
+    <h3 style="color:var(--blue)">${t('under')}</h3>
+    ${unders.length ? unders.map(l=>`<div class="li"><span>${l.n}</span><span class="num" style="color:var(--blue)">−${(l.pl-l.ac).toLocaleString('en-IN')}</span></div>`).join('') : `<div class="li"><span class="hint">—</span></div>`}`;
+  // cascade
   const steps = [[t('inc'),0,inc],[t('emer'),e,inc-e],[t('sip'),s,inc-e-s],[t('prov'),p,inc-e-s-p],[t('fixed'),f,inc-e-s-p-f]];
   document.getElementById('cascade').innerHTML = steps.map(([n,m,l],i)=>`<div class="step"><div class="l"><span>${n}</span><span class="num" style="color:var(--muted)">${m?'−'+m.toLocaleString('en-IN'):''}</span></div><div class="bar"><div class="tr"><div class="fl ${i===4?'w':''}" style="width:${Math.max(0,l/inc*100)}%"></div></div><span class="v num">${l.toLocaleString('en-IN')}</span></div></div>`).join('')
     + `<div class="hint" style="text-align:left">${t('room')}: <b class="num">${inr(inc-e-s-p-f)}</b></div>`;
-  const room = inc-e-s-p-f, need = jarTotal(), g = room-need;
-  document.getElementById('gapbox').innerHTML = `<div><div style="font-weight:700">${t('gapt')}</div><div class="hint" style="text-align:left">${t('room')} ${inr(room)} · ${t('plan')} ${inr(need)}</div></div><div class="v num">${g<0?'−':'+'}${inr(Math.abs(g)).slice(1)}</div>`;
-  document.getElementById('gapbox').style.borderColor = g<0?'var(--orange)':'var(--blue)';
-  document.getElementById('gapbox').querySelector('.v').style.color = g<0?'var(--orange)':'var(--blue)';
-  const rows = [[t('babylon').split(' ')[0], e+s+p, babDone()], [t('fixed'), f, fixedPaidTotal()+fixOther()]].concat(plan.jars.map(j=>[nm(j), j.plan, jarSpent(j.id)]));
+  const room = inc-e-s-p-f, need = P.jars.reduce((a,j)=>a+j.plan,0), g = room-need;
+  const gb = document.getElementById('gapbox');
+  gb.innerHTML = `<div><div style="font-weight:700">${t('gapt')}</div><div class="hint" style="text-align:left">${t('room')} ${inr(room)} · ${t('plan')} ${inr(need)}</div></div><div class="v num">${g<0?'−':'+'}${inr(Math.abs(g)).slice(1)}</div>`;
+  gb.style.borderColor = g<0?'var(--orange)':'var(--blue)'; gb.querySelector('.v').style.color = g<0?'var(--orange)':'var(--blue)';
   const gapc = (pl,ac) => { const d = pl-ac; return `<span class="num" style="color:${d<0?'var(--orange)':'var(--muted)'}">${d<0?'−':'+'}${Math.abs(d).toLocaleString('en-IN')}</span>`; };
-  document.getElementById('pva').innerHTML = `<div class="r h"><span>${t('category')}</span><span>${t('plan')}</span><span>${t('actual')}</span><span>${t('gap')}</span></div>` + rows.map(([n,pl,ac])=>`<div class="r"><span>${n}</span><span class="num">${pl.toLocaleString('en-IN')}</span><span class="num">${ac.toLocaleString('en-IN')}</span>${gapc(pl,ac)}</div>`).join('')
-    + `<div class="r" style="font-weight:700"><span>${t('total')}</span><span class="num">${(e+s+p+f+jarTotal()).toLocaleString('en-IN')}</span><span class="num">${outSoFar().toLocaleString('en-IN')}</span>${gapc(e+s+p+f+jarTotal(), outSoFar())}</div>`;
+  document.getElementById('pva').innerHTML = `<div class="r h"><span>${t('category')}</span><span>${t('plan')}</span><span>${t('actual')}</span><span>${t('gap')}</span></div>` + lines.map(l=>`<div class="r"><span>${l.n}</span><span class="num">${l.pl.toLocaleString('en-IN')}</span><span class="num">${l.ac.toLocaleString('en-IN')}</span>${gapc(l.pl,l.ac)}</div>`).join('')
+    + `<div class="r" style="font-weight:700"><span>${t('sumtotal')}</span><span class="num">${C.totalPlan.toLocaleString('en-IN')}</span><span class="num">${C.out.toLocaleString('en-IN')}</span>${gapc(C.totalPlan, C.out)}</div>`;
 }
 
 /* ---------- settings ---------- */
