@@ -661,13 +661,22 @@ function octTicks(P){ P.emergency.done=true; P.sips.forEach(s=>s.done=false);
 /* corpus = base (before this month) + whatever is ticked this month; never adds/subtracts on toggle */
 const sipTicked = P => P.sips.reduce((a,s)=>a+(s.done?s.plan:0),0);
 /* deposits logged for earlier months (back-dated Emergency / SIP entries) count towards the corpus */
-let pastBab = {emer:0, sip:0};
+let pastBab = {emer:0, sip:0, pots:{}};
+const provKeyOf = (catId, P) => { const m = /^prov(\d+)$/.exec(String(catId||'')); if(!m) return null; const x = (P||plan).provisions[+m[1]]; return x ? x.key : null; };
 async function pullBab(){
   if(!sb) return;
-  const r = await sb.from('entries').select('month,cat_id,amt').eq('cat','bab');
+  const r = await sb.from('entries').select('month,cat,cat_id,amt');
   if(r.error) return;
-  const nb = {emer:0, sip:0};
-  (r.data||[]).forEach(e=>{ if(!(e.month < MKEY)) return; if(e.cat_id==='emergency') nb.emer += e.amt||0; else if(String(e.cat_id).startsWith('sip')) nb.sip += e.amt||0; });
+  // provisions logged for an earlier month join the pots until that month is closed (the close carries them forward itself)
+  let closedMonths = {};
+  try{ const m = await sb.from('months').select('id,data'); (m.data||[]).forEach(x=>{ if(x.data && x.data.closed) closedMonths[x.id] = true; }); }catch(e){}
+  const nb = {emer:0, sip:0, pots:{}};
+  (r.data||[]).forEach(e=>{ if(!(e.month < MKEY)) return;
+    if(e.cat==='prov'){ if(!closedMonths[e.month]) nb.pots[e.cat_id] = (nb.pots[e.cat_id]||0) - (e.amt||0); return; }
+    if(e.cat!=='bab') return;
+    if(e.cat_id==='emergency') nb.emer += e.amt||0;
+    else if(String(e.cat_id).startsWith('sip')) nb.sip += e.amt||0;
+    else { const k = provKeyOf(e.cat_id); if(k && !closedMonths[e.month]) nb.pots[k] = (nb.pots[k]||0) + (e.amt||0); } });
   pastBab = nb;
 }
 const corpusEmer = () => (corpus.emergencyBase||0) + pastBab.emer + (plan.emergency.done?plan.emergency.plan:0);
@@ -877,7 +886,7 @@ const itemSpent = id => (paid[id]?paid[id].amt:0) + entries.filter(e=>e.cat==='f
 const inflowTotal = () => inflows.reduce((a,x)=>a+(x.amt||0),0);
 const outSoFar = () => babDone() + fixedPaidTotal() + fixOther() + varSpent() + babEntries();
 const potUsed = (E, key) => E.filter(e=>e.cat==='prov' && e.catId===key).reduce((a,e)=>a+e.amt,0);
-const potBalance = (P, E, key) => { const x = P.provisions.find(q=>q.key===key); const carry = (P.provCarry||{})[key]||0; return carry + ((x && (x.done||P.provDone)) ? x.plan : 0) - potUsed(E, key); };
+const potBalance = (P, E, key) => { const x = P.provisions.find(q=>q.key===key); const carry = (P.provCarry||{})[key]||0; const logged = E.filter(e=>e.cat==='bab' && provKeyOf(e.catId, P)===key).reduce((a,e)=>a+e.amt,0); const past = P===plan ? ((pastBab.pots||{})[key]||0) : 0; return carry + past + logged + ((x && (x.done||P.provDone)) ? x.plan : 0) - potUsed(E, key); };
 
 /* ---------- motion helpers ---------- */
 const prevW = {};
@@ -972,7 +981,7 @@ async function renderClose(){
     plan.provCarry = carry; plan.pendingClose = null;
     const closed = {at:new Date().toISOString(), sweep, carry, out:C.out, left:C.income-C.out, received:C.received};
     try{ await sb.from('months').upsert({id:pk, data:Object.assign({}, c.raw||{plan:P, paid:c.paid, inflows:c.inflows, corpus}, {closed}), updated_at:new Date().toISOString()}); }catch(e){}
-    delete viewCache[pk]; await saveCfg(); buzz([10,40,18,40,10]); renderAll(); toast(`✓ ${monthName(pk)} ${t('closedok')} · +${inr(sweep)}`);
+    delete viewCache[pk]; await saveCfg(); await pullBab(); buzz([10,40,18,40,10]); renderAll(); toast(`✓ ${monthName(pk)} ${t('closedok')} · +${inr(sweep)}`);
   };
 }
 async function flipToSip(){
