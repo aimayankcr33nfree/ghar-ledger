@@ -492,7 +492,7 @@ const DAYS_LEFT = DIM - TODAY;
 const pad2 = n => String(n).padStart(2,'0');
 
 /* ---------- plan (from Mayank's October notebook) ---------- */
-const PLAN_VERSION = 4;
+const PLAN_VERSION = 5;
 function defaultPlan(){ return {
   income: 60393,
   members: ['Mayank','Charu','Mummy'],
@@ -512,7 +512,8 @@ function defaultPlan(){ return {
     {id:'walnut',name:'Walnut + Khajur',hi:'अखरोट + खजूर',amt:1800,due:1,kind:'once'},
     {id:'almond',name:'Almonds + Raisins',hi:'बादाम + किशमिश',amt:800,due:1,kind:'once'},
     {id:'dates',name:'Dates + Seeds',hi:'खजूर + बीज',amt:650,due:1,kind:'once'},
-    {id:'ghee',name:'Ghee (4 kg)',hi:'घी (4 किलो)',amt:2800,due:0,kind:'once'},
+    {id:'ghee1',name:'Ghee · 1st (2 kg)',hi:'घी · पहला (2 किलो)',amt:1400,due:0,kind:'once'},
+    {id:'ghee2',name:'Ghee · 2nd (2 kg)',hi:'घी · दूसरा (2 किलो)',amt:1400,due:0,kind:'once'},
     {id:'gas',name:'Gas',hi:'गैस',amt:1000,due:0,kind:'once'},
     {id:'atta',name:'Atta',hi:'आटा',amt:1300,due:0,kind:'once'},
     {id:'grocery',name:'Grocery + Cosmetic',hi:'किराना + कॉस्मेटिक',amt:4000,due:0,kind:'once'},
@@ -558,6 +559,18 @@ function migrate(){
     const oe = Number(corpus.emergency)||0, os = Number(corpus.sip)||0;
     corpus = { emergencyBase: Math.max(0, oe - (plan.emergency.done?plan.emergency.plan:0)), sipBase: Math.max(0, os - sipTicked(plan)) };
     if(MKEY==='2026-10'){ octTicks(plan); paid = Object.assign({}, paid||{}, OCT_PAID); }
+  }
+  if(v <= 4){
+    // ghee bought twice a month: split the 4 kg line into two 2 kg lines; a tick on the old line becomes the first
+    const i = plan.fixed.findIndex(f=>f.id==='ghee');
+    if(i >= 0){
+      const g = plan.fixed[i];
+      const each = Math.round((g.amt||2800)/2);
+      plan.fixed.splice(i, 1,
+        {id:'ghee1',name:'Ghee · 1st (2 kg)',hi:'घी · पहला (2 किलो)',amt:each,due:g.due||0,kind:'once'},
+        {id:'ghee2',name:'Ghee · 2nd (2 kg)',hi:'घी · दूसरा (2 किलो)',amt:each,due:0,kind:'once'});
+      if(paid && paid.ghee){ paid.ghee1 = paid.ghee; delete paid.ghee; }
+    }
   }
   plan.planVersion = PLAN_VERSION; return true;
 }
