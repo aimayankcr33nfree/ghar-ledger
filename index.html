@@ -52,6 +52,10 @@ input,select{font:inherit;color:inherit}
 .bab .lbl{font-size:14px;font-weight:700;color:var(--blue)}
 .bab .big{font-size:18px}
 .bab .row{display:flex;justify-content:space-between;font-size:13px;gap:4px}
+.bab .prow{display:flex;align-items:center;gap:4px;font-size:12px;min-height:30px;width:100%;text-align:left;border-radius:6px}
+.bab .prow .pb{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--line);flex:none;font-size:11px;color:#fff;display:flex;align-items:center;justify-content:center}
+.bab .prow.on .pb{background:var(--blue);border-color:var(--blue)}
+.bab .prow .pn{flex:1;line-height:1.15}
 .bab .tot{border-top:1px solid var(--line);padding-top:6px;font-size:12px;color:var(--muted);margin-top:auto}
 .tick{min-height:44px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--blue)}
 .tick.off{color:var(--muted);font-weight:400}
@@ -306,48 +310,68 @@ const DIM = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
 const TODAY = now.getDate();
 const DAYS_LEFT = DIM - TODAY;
 
+const PLAN_VERSION = 2;   // bump when Claude ships a new plan from the notebook
 function defaultPlan(){ return {
-  income: 60000,
+  income: 60393,
   members: ['Mayank','Charu','Mummy'],
   emergency: {plan:10000, done:false},
-  sips: [{name:'Shivvaay',plan:3000,done:false},{name:'Isha',plan:3000,done:false}],
-  provisions: [{key:'admission',plan:1000},{key:'festival',plan:2000},{key:'repair',plan:1000},{key:'cloth',plan:1000},{key:'medi',plan:1250}],
+  sips: [{name:'Shivvaay',plan:2000,done:false},{name:'Isha',plan:2000,done:false}],
+  provisions: [{key:'admission',plan:1000,done:false},{key:'festival',plan:2000,done:false},{key:'repair',plan:1000,done:false},{key:'cloth',plan:1000,done:false},{key:'medi',plan:1250,done:false}],
   provDone:false,
   fixed: [
     {id:'society',name:'Society',hi:'सोसाइटी',amt:2600,due:1,kind:'once'},
-    {id:'school',name:'School fee',hi:'स्कूल फ़ीस',amt:3255,due:7,kind:'once'},
-    {id:'amma',name:'Amma',hi:'अम्मा',amt:2000,due:7,kind:'once'},
-    {id:'torrent',name:'Torrent (electricity)',hi:'टॉरेंट (बिजली)',amt:3000,due:18,kind:'once'},
-    {id:'ghar',name:'Ghar recharge',hi:'घर रिचार्ज',amt:0,due:10,kind:'once'},
-    {id:'ghee',name:'Ghee',hi:'घी',amt:4200,due:0,kind:'once'},
-    {id:'atta',name:'Atta',hi:'आटा',amt:1300,due:0,kind:'once'},
+    {id:'school',name:'School fee',hi:'स्कूल फ़ीस',amt:3255,due:10,kind:'once'},
+    {id:'amma',name:'Amma',hi:'अम्मा',amt:2000,due:10,kind:'once'},
+    {id:'milk',name:'Milk',hi:'दूध',amt:2000,due:10,kind:'once'},
+    {id:'kuda',name:'Kuda',hi:'कूड़ा',amt:150,due:10,kind:'once'},
+    {id:'marech',name:'Ma recharge',hi:'माँ रिचार्ज',amt:350,due:17,kind:'once'},
+    {id:'torrent',name:'Torrent (electricity)',hi:'टॉरेंट (बिजली)',amt:3000,due:25,kind:'once'},
+    {id:'jio',name:'Jio',hi:'जियो',amt:588,due:27,kind:'once'},
+    {id:'walnut',name:'Walnut + Khajur',hi:'अखरोट + खजूर',amt:1800,due:1,kind:'once'},
+    {id:'almond',name:'Almonds + Raisins',hi:'बादाम + किशमिश',amt:800,due:1,kind:'once'},
+    {id:'dates',name:'Dates + Seeds',hi:'खजूर + बीज',amt:650,due:1,kind:'once'},
+    {id:'ghee',name:'Ghee (4 kg)',hi:'घी (4 किलो)',amt:2800,due:0,kind:'once'},
     {id:'gas',name:'Gas',hi:'गैस',amt:1000,due:0,kind:'once'},
-    {id:'grocery',name:'Grocery + cosmetic',hi:'किराना + कॉस्मेटिक',amt:4000,due:0,kind:'once'},
-    {id:'milk',name:'Milk',hi:'दूध',amt:2500,due:0,kind:'once'},
-    {id:'nuts',name:'Dates, seeds, nuts',hi:'खजूर, बीज, मेवा',amt:2600,due:0,kind:'once'},
-    {id:'ott',name:'Hotstar + Netflix',hi:'हॉटस्टार + नेटफ़्लिक्स',amt:0,due:0,kind:'once'},
-    {id:'mandir',name:'Mandir + chola',hi:'मंदिर + चोला',amt:1000,due:0,kind:'once'},
-    {id:'chalave',name:'Mandir chalave',hi:'मंदिर चलावे',amt:1050,due:0,kind:'rec'},
-    {id:'deepak',name:'Deepak',hi:'दीपक',amt:0,due:0,kind:'rec'},
-    {id:'petrol',name:'Petrol',hi:'पेट्रोल',amt:630,due:0,kind:'rec'},
-    {id:'jio',name:'Jio',hi:'जियो',amt:588,due:0,kind:'once'},
-    {id:'marech',name:'Ma recharge',hi:'माँ रिचार्ज',amt:350,due:0,kind:'once'},
-    {id:'oil',name:'Oil',hi:'तेल',amt:400,due:0,kind:'once'},
-    {id:'news',name:'Newspaper',hi:'अख़बार',amt:220,due:0,kind:'once'},
-    {id:'kuda',name:'Kuda',hi:'कूड़ा',amt:150,due:0,kind:'once'}
+    {id:'atta',name:'Atta',hi:'आटा',amt:1300,due:0,kind:'once'},
+    {id:'grocery',name:'Grocery + Cosmetic',hi:'किराना + कॉस्मेटिक',amt:4000,due:0,kind:'once'},
+    {id:'oil',name:'Oil (3 kg)',hi:'तेल (3 किलो)',amt:600,due:0,kind:'once'},
+    {id:'petrol',name:'Petrol',hi:'पेट्रोल',amt:600,due:0,kind:'rec'},
+    {id:'deepak',name:'Deepak',hi:'दीपक',amt:300,due:0,kind:'rec'},
+    {id:'chalave',name:'Mandir (Chadhava)',hi:'मंदिर (चढ़ावा)',amt:1050,due:0,kind:'rec'},
+    {id:'mandir',name:'Mandir + Chola',hi:'मंदिर + चोला',amt:1000,due:0,kind:'once'},
+    {id:'ott',name:'Hotstar + Netflix',hi:'हॉटस्टार + नेटफ़्लिक्स',amt:300,due:0,kind:'once'}
   ],
   jars: [
     {id:'fruit',name:'Fruit',hi:'फल',plan:2500},
-    {id:'veg',name:'Veg',hi:'सब्ज़ी',plan:2000},
-    {id:'paneer',name:'Paneer',hi:'पनीर',plan:1000},
-    {id:'fun',name:'Entertainment',hi:'मनोरंजन',plan:1500},
-    {id:'other',name:'Stationery · Medical · Other',hi:'स्टेशनरी · दवा · अन्य',plan:1000}
-  ]
+    {id:'veg',name:'Veg',hi:'सब्ज़ी',plan:2500},
+    {id:'paneer',name:'Paneer',hi:'पनीर',plan:1500},
+    {id:'fun',name:'Entertainment',hi:'मनोरंजन',plan:1000},
+    {id:'other',name:'Stationery · Medical · Other',hi:'स्टेशनरी · दवा · अन्य',plan:2000}
+  ],
+  planVersion: PLAN_VERSION
 };}
+// October 2026 as written in the notebook (actual column)
+const OCT_PAID = {society:{day:2,amt:2600,by:''}, school:{day:7,amt:3255,by:''}, amma:{day:7,amt:2000,by:''}, milk:{day:7,amt:2130,by:''}, kuda:{day:7,amt:150,by:''}};
+function octTicks(P){ P.emergency.done=true; P.sips.forEach(s=>s.done=false);
+  P.provisions.forEach(x=>x.done = ['admission','cloth','medi'].includes(x.key)); P.provDone=false; }
+// upgrade an older saved plan to the notebook plan, keeping everything the family already logged
+function migrate(){
+  if((plan.planVersion||1) >= PLAN_VERSION) return false;
+  const old = plan, np = defaultPlan();
+  np.members = old.members || np.members;
+  if(MKEY==='2026-10'){ octTicks(np);
+    const keep = {}; Object.entries(paid||{}).forEach(([id,v])=>{ if(np.fixed.find(f=>f.id===id)) keep[id]=v; });
+    paid = Object.assign(keep, OCT_PAID);
+  } else {
+    np.emergency.done = !!(old.emergency&&old.emergency.done);
+    Object.keys(paid||{}).forEach(id=>{ if(!np.fixed.find(f=>f.id===id)) delete paid[id]; });
+  }
+  plan = np; return true;
+}
 let plan = defaultPlan();
-if(MKEY==='2026-10'){ plan.emergency.done=true; plan.sips.forEach(s=>s.done=true); }
+if(MKEY==='2026-10'){ octTicks(plan); }
 let corpus = {emergency:0, sip:0};
-let paid = MKEY==='2026-10' ? {society:{day:1,amt:2600,by:''},school:{day:7,amt:3255,by:''},amma:{day:7,amt:2000,by:''}} : {};
+let paid = MKEY==='2026-10' ? Object.assign({}, OCT_PAID) : {};
 let entries = [];       // {id, ts, day, cat, catId, amt, by}
 let me = ''; try{ me = localStorage.getItem('gl-me') || ''; }catch(e){}
 
@@ -356,7 +380,7 @@ const SB_URL = 'https://hwycxdeqxrcudtobwgex.supabase.co';
 const SB_KEY = 'sb_publishable_O8kFpMgViIvgMFE2sTtrEw_Rv7FXa0R';
 let sb = null, shared = false;
 const LS = 'gl-' + MKEY;
-function localLoad(){ try{ const s = JSON.parse(localStorage.getItem(LS)||'null'); if(s){ plan=s.plan||plan; corpus=s.corpus||corpus; paid=s.paid||{}; entries=s.entries||[]; } }catch(e){} }
+function localLoad(){ try{ const s = JSON.parse(localStorage.getItem(LS)||'null'); if(s){ plan=s.plan||plan; corpus=s.corpus||corpus; paid=s.paid||{}; entries=s.entries||[]; migrate(); } }catch(e){} }
 function localSave(){ try{ localStorage.setItem(LS, JSON.stringify({plan,corpus,paid,entries})); }catch(e){} }
 const fromRow = r => ({id:r.id, ts:r.ts, day:r.day, cat:r.cat, catId:r.cat_id, amt:r.amt, by:r.who, note:r.note});
 
@@ -365,11 +389,13 @@ function prevMonthKey(){ const d = new Date(now.getFullYear(), now.getMonth()-1,
 async function pullMonth(){
   const {data, error} = await sb.from('months').select('data').eq('id', MKEY).maybeSingle();
   if(error) throw error;
-  if(data){ const d = data.data; plan = d.plan || plan; corpus = d.corpus || corpus; paid = d.paid || {}; return; }
+  if(data){ const d = data.data; plan = d.plan || plan; corpus = d.corpus || corpus; paid = d.paid || {};
+    if(migrate()) await sb.from('months').upsert({id:MKEY, data:{plan, corpus, paid}, updated_at:new Date().toISOString()});
+    return; }
   // new month: carry last month's plan + corpus forward, reset ticks
   const prev = await sb.from('months').select('data').eq('id', prevMonthKey()).maybeSingle();
   if(prev.data){ const d = prev.data.data; plan = d.plan || plan; corpus = d.corpus || corpus;
-    plan.emergency.done=false; plan.sips.forEach(s=>s.done=false); plan.provDone=false; }
+    plan.emergency.done=false; plan.sips.forEach(s=>s.done=false); plan.provDone=false; plan.provisions.forEach(x=>x.done=false); migrate(); }
   paid = {};
   await sb.from('months').upsert({id:MKEY, data:{plan, corpus, paid}});
 }
@@ -427,7 +453,8 @@ const nm = o => (lang==='hi' && o.hi) ? o.hi : o.name;
 const fixedPaidTotal = () => Object.values(paid).reduce((a,p)=>a+(p.amt||0),0);
 const varSpent = () => entries.filter(e=>e.cat==='var').reduce((a,e)=>a+e.amt,0);
 const fixOther = () => entries.filter(e=>e.cat==='fix').reduce((a,e)=>a+e.amt,0);
-const babDone = () => (plan.emergency.done?plan.emergency.plan:0) + plan.sips.reduce((a,s)=>a+(s.done?s.plan:0),0) + (plan.provDone?provTotal():0);
+const provPaid = P => P.provisions.reduce((a,x)=>a+((x.done||P.provDone)?x.plan:0),0);
+const babDone = () => (plan.emergency.done?plan.emergency.plan:0) + plan.sips.reduce((a,s)=>a+(s.done?s.plan:0),0) + provPaid(plan);
 const outSoFar = () => babDone() + fixedPaidTotal() + fixOther() + varSpent() + entries.filter(e=>e.cat==='bab').reduce((a,e)=>a+e.amt,0);
 
 /* ---------- render ---------- */
@@ -446,10 +473,10 @@ function renderHome(){
   document.getElementById('bab-grid').innerHTML = `
     <button class="card bab" id="b-emer"><div class="lbl">${t('emer')}</div><div class="big num">${inr(plan.emergency.plan)}</div>${tick(plan.emergency.done)}<div class="tot">${t('total')}<br><span class="num" style="font-size:14px;color:var(--ink)">${inr(corpus.emergency)}</span></div></button>
     <button class="card bab" id="b-sip"><div class="lbl">${t('sip')}</div>${plan.sips.map(s=>`<div class="row"><span>${s.name}</span><span class="num">${s.plan.toLocaleString('en-IN')}</span></div>`).join('')}${tick(plan.sips.every(s=>s.done))}<div class="tot">${t('total')}<br><span class="num" style="font-size:14px;color:var(--ink)">${inr(corpus.sip)}</span></div></button>
-    <button class="card bab" id="b-prov"><div class="lbl">${t('prov')}</div>${plan.provisions.map(p=>`<div class="row"><span>${t(p.key)}</span><span class="num">${p.plan.toLocaleString('en-IN')}</span></div>`).join('')}${tick(plan.provDone)}<div class="tot">${t('month')} <span class="num" style="color:var(--ink)">${inr(provTotal())}</span></div></button>`;
+    <div class="card bab"><div class="lbl">${t('prov')}</div>${plan.provisions.map((p,i)=>`<button class="prow ${p.done?'on':''}" data-prov="${i}"><span class="pb">${p.done?'✓':''}</span><span class="pn">${t(p.key)}</span><span class="num">${p.plan.toLocaleString('en-IN')}</span></button>`).join('')}<div class="tot">${t('done')} <span class="num" style="color:var(--ink)">${inr(provPaid(plan))}</span> / ${inr(provTotal())}</div></div>`;
   document.getElementById('b-emer').onclick = ()=>{ plan.emergency.done=!plan.emergency.done; corpus.emergency += plan.emergency.done?plan.emergency.plan:-plan.emergency.plan; saveCfg(); renderAll(); };
   document.getElementById('b-sip').onclick = ()=>{ const on=!plan.sips.every(s=>s.done); plan.sips.forEach(s=>s.done=on); corpus.sip += on?sipTotal():-sipTotal(); saveCfg(); renderAll(); };
-  document.getElementById('b-prov').onclick = ()=>{ plan.provDone=!plan.provDone; saveCfg(); renderAll(); };
+  document.querySelectorAll('[data-prov]').forEach(b=>b.onclick=()=>{ const x = plan.provisions[+b.dataset.prov]; if(plan.provDone){ plan.provisions.forEach(y=>y.done=true); plan.provDone=false; } x.done=!x.done; saveCfg(); renderAll(); });
   // fixed
   const all = showAllFixed;
   const rows = plan.fixed.filter(f=> all || paid[f.id] || f.due>0);
@@ -457,7 +484,7 @@ function renderHome(){
   document.getElementById('fix-list').innerHTML = rows.map(f=>{
     const p = paid[f.id]; const hot = !p && f.due===TODAY; const late = !p && f.due>0 && f.due<TODAY;
     const dt = p ? `${t('paid')} ${p.day}` : (f.due>0 ? `${t('due')} ${f.due}` : (f.kind==='rec'?t('rec'):''));
-    return `<button class="row44" data-fix="${f.id}"><div class="box ${p?'on':''} ${hot||late?'hot':''}">${p?'✓':''}</div><div class="nm">${nm(f)}</div><div class="amt num">${f.amt?f.amt.toLocaleString('en-IN'):'—'}</div><div class="dt ${hot||late?'hot':''}">${dt}</div></button>`;
+    return `<button class="row44" data-fix="${f.id}"><div class="box ${p?'on':''} ${hot||late?'hot':''}">${p?'✓':''}</div><div class="nm">${nm(f)}</div><div class="amt num">${p?p.amt.toLocaleString('en-IN'):(f.amt?f.amt.toLocaleString('en-IN'):'—')}</div><div class="dt ${hot||late?'hot':''}">${dt}</div></button>`;
   }).join('') || `<div class="hint" style="padding:14px 0">${t('none')}</div>`;
   document.querySelectorAll('[data-fix]').forEach(b=>b.onclick=()=>togglePaid(b.dataset.fix));
   // jars
@@ -558,7 +585,7 @@ function itemList(){
   const gb = t('babylon').split(' ')[0], gf = t('fixed');
   L.push({key:'emergency', cat:'bab', grp:gb, label:t('emer'), amt:plan.emergency.plan});
   plan.sips.forEach((s,i)=>L.push({key:'sip'+i, cat:'bab', grp:gb, label:'SIP · '+s.name, amt:s.plan}));
-  L.push({key:'prov', cat:'bab', grp:gb, label:t('prov'), amt:provTotal()});
+  plan.provisions.forEach((x,i)=>L.push({key:'prov'+i, cat:'bab', grp:gb, label:t(x.key), amt:x.plan}));
   plan.fixed.forEach(f=>L.push({key:f.id, cat:'fix', grp:gf, label:nm(f), amt:f.amt||0}));
   L.push({key:'other', cat:'fix', grp:gf, label:t('other'), amt:0});
   return L;
@@ -567,7 +594,7 @@ function itemList(){
 function applyTick(it, a, day){
   if(it.key==='emergency'){ if(plan.emergency.done) return false; plan.emergency.done=true; plan.emergency.plan=a; corpus.emergency+=a; }
   else if(it.key.startsWith('sip')){ const s = plan.sips[+it.key.slice(3)]; if(!s||s.done) return false; s.done=true; s.plan=a; corpus.sip+=a; }
-  else if(it.key==='prov'){ if(plan.provDone) return false; plan.provDone=true; }
+  else if(it.key.startsWith('prov')){ const x = plan.provisions[+it.key.slice(4)]; if(!x||x.done||plan.provDone) return false; x.done=true; x.plan=a; }
   else { if(paid[it.key]) return false; paid[it.key]={day, amt:a, by:me}; }
   saveCfg(); renderAll(); return true;
 }
@@ -586,7 +613,7 @@ async function loadMonth(key){
     const e = await sb.from('entries').select('*').eq('month', key).order('ts');
     const d = r.data ? r.data.data : null;
     viewCache[key] = { plan: d&&d.plan ? d.plan : JSON.parse(JSON.stringify(plan)), corpus: d&&d.corpus || corpus, paid: d&&d.paid || {}, entries: (e.data||[]).map(fromRow), baseline: !d };
-    if(!d){ const P = viewCache[key].plan; P.emergency.done=false; P.sips.forEach(s=>s.done=false); P.provDone=false; }
+    if(!d){ const P = viewCache[key].plan; P.emergency.done=false; P.sips.forEach(s=>s.done=false); P.provDone=false; P.provisions.forEach(x=>x.done=false); }
   }catch(err){ viewCache[key] = { plan: JSON.parse(JSON.stringify(plan)), corpus, paid:{}, entries:[], baseline:true }; }
   renderBook(); renderSnap();
 }
@@ -602,7 +629,7 @@ function calc(D){
   const prov = P.provisions.reduce((a,p)=>a+p.plan,0);
   const sips = P.sips.reduce((a,s)=>a+s.plan,0);
   const babPlan = P.emergency.plan + sips + prov;
-  const babTick = (P.emergency.done?P.emergency.plan:0) + P.sips.reduce((a,s)=>a+(s.done?s.plan:0),0) + (P.provDone?prov:0);
+  const babTick = (P.emergency.done?P.emergency.plan:0) + P.sips.reduce((a,s)=>a+(s.done?s.plan:0),0) + provPaid(P);
   const babActual = babTick + sum(E.filter(e=>e.cat==='bab'));
   const fixPlan = P.fixed.reduce((a,f)=>a+(f.amt||0),0);
   const fixActual = Object.values(D.paid).reduce((a,p)=>a+(p.amt||0),0) + sum(E.filter(e=>e.cat==='fix'));
@@ -641,7 +668,7 @@ function renderBook(){
   let rows = [];
   if(P.emergency.done) rows.push({day:1,cat:'bab',name:t('emerg'),amt:P.emergency.plan});
   P.sips.forEach(s=>{ if(s.done) rows.push({day:1,cat:'bab',name:'SIP · '+s.name,amt:s.plan}); });
-  if(P.provDone) rows.push({day:1,cat:'bab',name:t('prov'),amt:P.provisions.reduce((a,p)=>a+p.plan,0)});
+  P.provisions.forEach(x=>{ if(x.done||P.provDone) rows.push({day:1,cat:'bab',name:t('prov')+' · '+t(x.key),amt:x.plan}); });
   Object.entries(D.paid).forEach(([id,p])=>{ const f=P.fixed.find(x=>x.id===id); if(f) rows.push({day:p.day,cat:'fix',name:nm(f),amt:p.amt,by:p.by}); });
   D.entries.forEach(e=>rows.push({day:e.day,cat:e.cat,name:entryNameP(e,P),amt:e.amt,by:e.by,id:e.id,ts:e.ts}));
   rows = rows.filter(r=>bookF==='all'||r.cat===bookF);
