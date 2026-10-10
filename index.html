@@ -45,6 +45,9 @@ input,select{font:inherit;color:inherit}
 .sec-h{display:flex;align-items:center;gap:10px}
 .sec-h .n{width:26px;height:26px;border-radius:13px;background:var(--dark);color:var(--dark-ink);font-size:14px;display:flex;align-items:center;justify-content:center;flex:none}
 .sec-h .t{font-size:18px;font-weight:700;flex:1}
+.sec-h .tt{font-size:20px;font-weight:500;flex:none}
+.sub2{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);margin-top:-6px;padding-left:36px;min-height:20px}
+.sub2 .a{color:var(--blue);font-weight:600;font-size:14px;min-height:40px;display:flex;align-items:center}
 .sec-h .a{color:var(--blue);font-weight:600;font-size:15px;min-height:44px;display:flex;align-items:center;padding:0 6px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
 .grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
@@ -175,17 +178,20 @@ input,select{font:inherit;color:inherit}
   <div id="due-banner"></div>
 
   <div class="sec">
-    <div class="sec-h"><div class="n">1</div><div class="t" data-i="babylon"></div></div>
+    <div class="sec-h"><div class="n">1</div><div class="t" data-i="babylon"></div><div class="tt num" id="tt-bab"></div></div>
+    <div class="sub2" id="st-bab"></div>
     <div class="grid3" id="bab-grid"></div>
   </div>
 
   <div class="sec">
-    <div class="sec-h"><div class="n">2</div><div class="t" data-i="fixed"></div><button class="a" id="fix-toggle"></button></div>
+    <div class="sec-h"><div class="n">2</div><div class="t" data-i="fixed"></div><div class="tt num" id="tt-fix"></div></div>
+    <div class="sub2"><span id="st-fix"></span><button class="a" id="fix-toggle"></button></div>
     <div class="card list" id="fix-list"></div>
   </div>
 
   <div class="sec">
-    <div class="sec-h"><div class="n">3</div><div class="t" id="var-title"></div></div>
+    <div class="sec-h"><div class="n">3</div><div class="t" id="var-title"></div><div class="tt num" id="tt-var"></div></div>
+    <div class="sub2" id="st-var"></div>
     <div class="jars" id="jars"></div>
     <div class="hint" data-i="jarhint"></div>
   </div>
@@ -310,7 +316,7 @@ const DIM = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
 const TODAY = now.getDate();
 const DAYS_LEFT = DIM - TODAY;
 
-const PLAN_VERSION = 2;   // bump when Claude ships a new plan from the notebook
+const PLAN_VERSION = 3;   // bump when Claude ships a new plan from the notebook
 function defaultPlan(){ return {
   income: 60393,
   members: ['Mayank','Charu','Mummy'],
@@ -322,7 +328,7 @@ function defaultPlan(){ return {
     {id:'society',name:'Society',hi:'सोसाइटी',amt:2600,due:1,kind:'once'},
     {id:'school',name:'School fee',hi:'स्कूल फ़ीस',amt:3255,due:10,kind:'once'},
     {id:'amma',name:'Amma',hi:'अम्मा',amt:2000,due:10,kind:'once'},
-    {id:'milk',name:'Milk',hi:'दूध',amt:2000,due:10,kind:'once'},
+    {id:'milk',name:'Milk',hi:'दूध',amt:2500,due:10,kind:'once'},
     {id:'kuda',name:'Kuda',hi:'कूड़ा',amt:150,due:10,kind:'once'},
     {id:'marech',name:'Ma recharge',hi:'माँ रिचार्ज',amt:350,due:17,kind:'once'},
     {id:'torrent',name:'Torrent (electricity)',hi:'टॉरेंट (बिजली)',amt:3000,due:25,kind:'once'},
@@ -356,7 +362,9 @@ function octTicks(P){ P.emergency.done=true; P.sips.forEach(s=>s.done=false);
   P.provisions.forEach(x=>x.done = ['admission','cloth','medi'].includes(x.key)); P.provDone=false; }
 // upgrade an older saved plan to the notebook plan, keeping everything the family already logged
 function migrate(){
-  if((plan.planVersion||1) >= PLAN_VERSION) return false;
+  const v = plan.planVersion||1;
+  if(v >= PLAN_VERSION) return false;
+  if(v === 2){ const m = plan.fixed.find(f=>f.id==='milk'); if(m && m.amt===2000) m.amt = 2500; plan.planVersion = 3; return true; }
   const old = plan, np = defaultPlan();
   np.members = old.members || np.members;
   if(MKEY==='2026-10'){ octTicks(np);
@@ -488,7 +496,15 @@ function renderHome(){
   }).join('') || `<div class="hint" style="padding:14px 0">${t('none')}</div>`;
   document.querySelectorAll('[data-fix]').forEach(b=>b.onclick=()=>togglePaid(b.dataset.fix));
   // jars
-  document.getElementById('var-title').textContent = t('variable') + ' · ' + inr(jarTotal() - varSpent());
+  document.getElementById('var-title').textContent = t('variable');
+  const babPl = plan.emergency.plan + sipTotal() + provTotal(), babDn = babDone() + entries.filter(e=>e.cat==='bab').reduce((a,e)=>a+e.amt,0);
+  const fixPl = fixedTotal(), fixDn = fixedPaidTotal() + fixOther();
+  document.getElementById('tt-bab').textContent = inr(babPl);
+  document.getElementById('st-bab').textContent = `${t('done')} ${inr(babDn)} · ${t('notdone')} ${inr(Math.max(0,babPl-babDn))}`;
+  document.getElementById('tt-fix').textContent = inr(fixPl);
+  document.getElementById('st-fix').textContent = `${t('paid')} ${inr(fixDn)} · ${t('notdone')} ${inr(Math.max(0,fixPl-fixDn))}`;
+  document.getElementById('tt-var').textContent = inr(jarTotal());
+  document.getElementById('st-var').textContent = `${t('spent')} ${inr(varSpent())} · ${t('notdone')} ${inr(jarTotal()-varSpent())}`;
   document.getElementById('jars').innerHTML = plan.jars.map(j=>{
     const sp = jarSpent(j.id), left = j.plan - sp;
     const rate = TODAY>1 ? sp/(TODAY-1) : sp; // per day so far
