@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ghar Ledger</title>
+<meta name="theme-color" content="#1B1F1D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ghar">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.79.0/dist/umd/supabase.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F2F3EF; --card:#FFFFFF; --ink:#1B1F1D; --muted:#55605B; --line:#DCDFDA; --soft:#ECEEEA;
+  --blue:#1F5FA8; --blue-soft:#EAF1FA; --orange:#C86A1A; --orange-soft:#FBEBDC; --dark:#1B1F1D; --dark-ink:#F2F3EF; --dark-muted:#C9CFCB;
+  --good:#1F5FA8; --warn:#C86A1A;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#141817; --card:#1E2422; --ink:#EEF1EE; --muted:#A9B4AF; --line:#2E3634; --soft:#262D2A;
+  --blue:#7FB0EA; --blue-soft:#1C2A3A; --orange:#E39A4F; --orange-soft:#3A2A1B; --dark:#0E1211; --dark-ink:#EEF1EE; --dark-muted:#A9B4AF;
+  --good:#7FB0EA; --warn:#E39A4F;
+}}
+:root[data-theme="dark"]{
+  --bg:#141817; --card:#1E2422; --ink:#EEF1EE; --muted:#A9B4AF; --line:#2E3634; --soft:#262D2A;
+  --blue:#7FB0EA; --blue-soft:#1C2A3A; --orange:#E39A4F; --orange-soft:#3A2A1B; --dark:#0E1211; --dark-ink:#EEF1EE; --dark-muted:#A9B4AF;
+  --good:#7FB0EA; --warn:#E39A4F;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Noto Sans Devanagari','DM Sans',system-ui,sans-serif;font-size:17px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.num{font-family:'DM Mono',monospace;font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+input,select{font:inherit;color:inherit}
+.app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.screen{display:none;flex:1;padding:18px 16px 110px;flex-direction:column;gap:18px}
+.screen.on{display:flex}
+.hdr{display:flex;flex-direction:column;align-items:center;gap:2px;text-align:center}
+.hdr h1{margin:0;font-size:26px;font-weight:700}
+.hdr .sub{color:var(--muted);font-size:15px}
+.sec{display:flex;flex-direction:column;gap:10px}
+.sec-h{display:flex;align-items:center;gap:10px}
+.sec-h .n{width:26px;height:26px;border-radius:13px;background:var(--dark);color:var(--dark-ink);font-size:14px;display:flex;align-items:center;justify-content:center;flex:none}
+.sec-h .t{font-size:18px;font-weight:700;flex:1}
+.sec-h .a{color:var(--blue);font-weight:600;font-size:15px;min-height:44px;display:flex;align-items:center;padding:0 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.bab{padding:12px 10px;display:flex;flex-direction:column;gap:6px;min-height:150px}
+.bab .lbl{font-size:14px;font-weight:700;color:var(--blue)}
+.bab .big{font-size:18px}
+.bab .row{display:flex;justify-content:space-between;font-size:13px;gap:4px}
+.bab .tot{border-top:1px solid var(--line);padding-top:6px;font-size:12px;color:var(--muted);margin-top:auto}
+.tick{min-height:44px;display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;color:var(--blue)}
+.tick.off{color:var(--muted);font-weight:400}
+.box{width:24px;height:24px;border-radius:7px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;flex:none;font-size:14px;color:#fff}
+.box.on{background:var(--blue);border-color:var(--blue)}
+.box.hot{border-color:var(--orange)}
+.list{padding:0 14px}
+.row44{display:flex;align-items:center;gap:10px;min-height:54px;border-bottom:1px solid var(--soft);width:100%;text-align:left}
+.row44:last-child{border-bottom:none}
+.row44 .nm{flex:1;font-size:16px}
+.row44 .amt{font-size:16px}
+.row44 .dt{font-size:13px;color:var(--muted);width:84px;text-align:right}
+.row44 .dt.hot{color:var(--warn);font-weight:700}
+.jars{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.jar{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.jar .glass{width:100%;height:96px;border-radius:10px 10px 14px 14px;border:2px solid var(--ink);position:relative;overflow:hidden;background:var(--card)}
+.jar .fill{position:absolute;left:0;right:0;bottom:0;background:var(--blue)}
+.jar .fill.warn{background:var(--orange)}
+.jar .nm{font-size:13px;font-weight:700;line-height:1.2;min-height:32px}
+.jar .lf{font-size:14px}
+.jar .dy{font-size:12px;color:var(--muted)}
+.jar .dy.warn{color:var(--warn);font-weight:700}
+.hint{font-size:13px;color:var(--muted);text-align:center}
+.banner{background:var(--dark);color:var(--dark-ink);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:center}
+.banner .t{font-size:16px;font-weight:700}
+.banner .s{font-size:14px;color:var(--dark-muted)}
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:6px 8px calc(8px + env(safe-area-inset-bottom))}
+.tabs .in{max-width:520px;margin:0 auto;display:flex;align-items:flex-end;gap:4px}
+.tab{flex:1;min-height:56px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;color:var(--muted)}
+.tab svg{width:24px;height:24px}
+.tab.on{color:var(--blue);font-weight:700;background:var(--blue-soft)}
+.tab.plus{flex:1.2}
+.tab.plus .pb{width:60px;height:60px;border-radius:30px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;margin-top:-28px;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.tab.plus .pb svg{width:30px;height:30px}
+.chip{min-height:40px;padding:0 14px;border-radius:20px;border:1px solid var(--line);font-size:14px;display:inline-flex;align-items:center}
+.chip.on{background:var(--dark);color:var(--dark-ink);border-color:var(--dark)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.btn{min-height:52px;border-radius:14px;background:var(--blue);color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 18px}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.btn.warn{background:var(--orange)}
+.btn:disabled{opacity:.4}
+.cats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.cat{min-height:76px;border-radius:14px;border:2px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;text-align:center}
+.cat .nm{font-size:15px;font-weight:700;line-height:1.2}
+.cat .lf{font-size:12px;color:var(--muted)}
+.cat.on{border-color:var(--blue);background:var(--blue-soft)}
+.amtbox{text-align:center;font-size:44px;min-height:60px}
+.amtbox .cur{color:var(--muted);font-size:28px;margin-right:4px}
+.pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pad button{min-height:58px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:24px}
+.pad button.op{background:var(--soft);font-size:18px}
+.who{display:flex;gap:8px}
+.who button{flex:1;min-height:48px;border-radius:12px;border:2px solid var(--line);background:var(--card);font-size:15px;font-weight:600}
+.who button.on{border-color:var(--blue);background:var(--blue-soft);color:var(--blue)}
+.day-h{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px}
+.day-h .t{font-weight:700;font-size:16px}
+.tag{font-size:11px;padding:2px 8px;border-radius:8px;width:64px;text-align:center;flex:none}
+.tag.bab{background:var(--blue-soft);color:var(--blue)}
+.tag.fix{background:var(--soft);color:var(--ink)}
+.tag.var{background:var(--orange-soft);color:var(--orange)}
+.step{display:flex;flex-direction:column;gap:4px}
+.step .l{display:flex;justify-content:space-between;font-size:14px}
+.step .bar{display:flex;align-items:center;gap:8px}
+.step .tr{flex:1;height:14px;border-radius:5px;background:var(--soft);overflow:hidden}
+.step .fl{height:14px;background:var(--blue)}
+.step .fl.w{background:var(--orange)}
+.step .v{width:74px;text-align:right;font-size:15px}
+.gap{border:2px solid var(--orange);background:var(--orange-soft);border-radius:14px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.gap .v{font-size:22px;color:var(--orange)}
+.tbl .r{display:flex;min-height:44px;align-items:center;border-bottom:1px solid var(--soft);font-size:14px}
+.tbl .r:last-child{border-bottom:none}
+.tbl .r>span{width:72px;text-align:right}
+.tbl .r>span:first-child{flex:1;text-align:left}
+.tbl .r.h{color:var(--muted);font-size:12px;min-height:32px}
+.field{display:flex;align-items:center;gap:10px;min-height:52px;border-bottom:1px solid var(--soft)}
+.field:last-child{border-bottom:none}
+.field label{flex:1;font-size:15px}
+.field input{width:110px;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:var(--bg);text-align:right;font-family:'DM Mono',monospace;font-size:16px}
+.field input.txt{width:150px;text-align:left;font-family:inherit}
+.field input.sm{width:72px}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:var(--dark);color:var(--dark-ink);padding:12px 18px;border-radius:14px;font-size:15px;max-width:90%;opacity:0;transition:opacity .2s;pointer-events:none;z-index:9}
+.toast.on{opacity:1}
+.sync{font-size:12px;color:var(--muted);text-align:center}
+.lang{display:flex;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.lang button{flex:1;min-height:48px;font-size:16px}
+.lang button.on{background:var(--dark);color:var(--dark-ink)}
+.sr{position:absolute;left:-9999px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<section class="screen on" id="s-home">
+  <div class="hdr"><h1 id="h-month"></h1><div class="sub" id="h-day"></div></div>
+  <div id="due-banner"></div>
+
+  <div class="sec">
+    <div class="sec-h"><div class="n">1</div><div class="t" data-i="babylon"></div></div>
+    <div class="grid3" id="bab-grid"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><div class="n">2</div><div class="t" data-i="fixed"></div><button class="a" id="fix-toggle"></button></div>
+    <div class="card list" id="fix-list"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><div class="n">3</div><div class="t" id="var-title"></div></div>
+    <div class="jars" id="jars"></div>
+    <div class="hint" data-i="jarhint"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h"><div class="t" data-i="today"></div></div>
+    <div class="card list" id="today-list"></div>
+  </div>
+  <div class="sync" id="sync"></div>
+</section>
+
+<!-- LOG -->
+<section class="screen" id="s-log">
+  <div class="hdr"><h1 data-i="logtitle"></h1><div class="sub" data-i="logsub"></div></div>
+  <div class="cats" id="cats"></div>
+  <div class="amtbox"><span class="cur">₹</span><span class="num" id="amt">0</span></div>
+  <div class="pad" id="pad"></div>
+  <div class="sec">
+    <div class="hint" data-i="who"></div>
+    <div class="who" id="who"></div>
+  </div>
+  <button class="btn" id="save" disabled data-i="save"></button>
+</section>
+
+<!-- DAY BOOK -->
+<section class="screen" id="s-book">
+  <div class="hdr"><h1 data-i="book"></h1><div class="sub" id="book-sub"></div></div>
+  <div class="grid3" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+    <div class="card"><div class="hint" style="text-align:left" data-i="outsofar"></div><div class="num" style="font-size:22px" id="b-out"></div></div>
+    <div class="card"><div class="hint" style="text-align:left" data-i="leftof"></div><div class="num" style="font-size:22px" id="b-left"></div></div>
+  </div>
+  <div class="chips" id="book-filter"></div>
+  <div id="book"></div>
+  <div class="hint" data-i="tapundo"></div>
+</section>
+
+<!-- SNAPSHOT -->
+<section class="screen" id="s-snap">
+  <div class="hdr"><h1 data-i="snap"></h1><div class="sub" id="snap-sub"></div></div>
+  <div class="card" id="cascade" style="display:flex;flex-direction:column;gap:12px"></div>
+  <div class="gap" id="gapbox"></div>
+  <div class="sec">
+    <div class="sec-h"><div class="t" data-i="planactual"></div></div>
+    <div class="card tbl" id="pva"></div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="screen" id="s-set">
+  <div class="hdr"><h1 data-i="settings"></h1></div>
+  <div class="sec"><div class="sec-h"><div class="t" data-i="language"></div></div>
+    <div class="lang"><button id="l-hi">हिन्दी</button><button id="l-en">English</button></div></div>
+  <div class="sec"><div class="sec-h"><div class="t" data-i="iam"></div></div><div class="who" id="who2"></div></div>
+  <div class="sec"><div class="sec-h"><div class="t" data-i="income"></div></div><div class="card" id="f-income"></div></div>
+  <div class="sec"><div class="sec-h"><div class="t" data-i="babylon"></div></div><div class="card" id="f-bab"></div></div>
+  <div class="sec"><div class="sec-h"><div class="t" data-i="corpus"></div></div><div class="card" id="f-corpus"></div></div>
+  <div class="sec"><div class="sec-h"><div class="t" data-i="fixed"></div></div><div class="card" id="f-fixed"></div><button class="btn ghost" id="add-fixed" data-i="addfixed"></button></div>
+  <div class="sec"><div class="sec-h"><div class="t" data-i="jarsplan"></div></div><div class="card" id="f-jars"></div></div>
+  <button class="btn" id="save-set" data-i="saveset"></button>
+</section>
+
+</div>
+
+<nav class="tabs"><div class="in">
+  <button class="tab on" data-s="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span data-i="t-home"></span></button>
+  <button class="tab" data-s="book"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h12a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3z"/><path d="M4 17a3 3 0 0 1 3-3h12"/></svg><span data-i="t-book"></span></button>
+  <button class="tab plus" data-s="log" aria-label="Add"><div class="pb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></div><span data-i="t-log"></span></button>
+  <button class="tab" data-s="snap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><span data-i="t-snap"></span></button>
+  <button class="tab" data-s="set"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span data-i="t-set"></span></button>
+</div></nav>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- i18n ---------- */
+const I = {
+  hi:{babylon:'बेबीलोन · सबसे पहले',fixed:'तय खर्च',today:'आज की एंट्री',jarhint:'दिन = इस रफ़्तार से घड़ा कितने दिन चलेगा। नारंगी = 31 से पहले खाली।',
+    logtitle:'खर्च लिखें',logsub:'घड़ा चुनें, रक़म दबाएँ, सेव करें',who:'किसने खर्च किया?',save:'सेव करें',book:'बही',outsofar:'अब तक गया',leftof:'बचा है',tapundo:'किसी एंट्री को दबाकर हटाएँ',
+    snap:'₹ का हिसाब',planactual:'योजना बनाम असल',settings:'सेटिंग',language:'भाषा',iam:'मैं हूँ',income:'महीने की आमदनी',corpus:'अब तक जमा (कुल)',addfixed:'+ तय खर्च जोड़ें',jarsplan:'घड़ों की योजना',saveset:'सेटिंग सेव करें',
+    't-home':'घर','t-book':'बही','t-log':'लिखें','t-snap':'हिसाब','t-set':'सेटिंग',
+    day:'दिन',of:'में से',left:'दिन बाकी',done:'हो गया',notdone:'बाकी',total:'कुल जमा',month:'इस महीने',showall:'सब देखें',showless:'कम दिखाएँ',paid:'दिया',due:'देना है',today2:'आज',
+    duetoday:'आज देना है',dueline:'कृपया दें और टिक करें',variable:'रोज़ का',lasts:'दिन',none:'अभी कुछ नहीं',allf:'सब',undo:'हटाएँ',deleted:'हटा दिया',saved:'लिख लिया',
+    inc:'आमदनी',emer:'इमरजेंसी',sip:'SIP',prov:'प्रावधान',room:'रोज़ के लिए बचा',plan:'योजना',actual:'असल',gap:'फ़र्क',short:'कम पड़ रहा',spare:'बच रहा',
+    gapt:'रोज़ के खर्च की योजना बनाम जगह',category:'मद',sync:'तीनों फ़ोन पर साझा',local:'सिर्फ़ इस फ़ोन पर (साझा नहीं)',offline:'इंटरनेट नहीं — बाद में जुड़ेगा',name:'नाम',amount:'रक़म',duedate:'तारीख़',
+    remove:'हटाएँ',confirmdel:'यह एंट्री हटाएँ?',sipn:'SIP नाम',emerg:'इमरजेंसी फ़ंड',amma:'अम्मा',ghar:'घर',once:'एक बार',rec:'बार-बार',entries:'एंट्री',settingssaved:'सेटिंग सेव हो गई',
+    fixedother:'तय/अन्य',admission:'एडमिशन',festival:'त्योहार/उपहार',repair:'मरम्मत',cloth:'कपड़े',medi:'मेडिक्लेम'},
+  en:{babylon:'Babylon · paid first',fixed:'Fixed',today:"Today's entries",jarhint:'Days = how long the jar lasts at this pace. Orange = empty before the 31st.',
+    logtitle:'Log a spend',logsub:'Pick a jar, type the amount, save',who:'Who spent?',save:'Save',book:'Day Book',outsofar:'Out so far',leftof:'Left',tapundo:'Tap an entry to remove it',
+    snap:'₹ Snapshot',planactual:'Plan vs actual',settings:'Settings',language:'Language',iam:'I am',income:'Monthly income',corpus:'Corpus so far (total)',addfixed:'+ Add fixed item',jarsplan:'Jar plan',saveset:'Save settings',
+    't-home':'Home','t-book':'Book','t-log':'Log','t-snap':'Snapshot','t-set':'Settings',
+    day:'Day',of:'of',left:'days left',done:'Done',notdone:'Pending',total:'Total so far',month:'This month',showall:'Show all',showless:'Show less',paid:'paid',due:'due',today2:'today',
+    duetoday:'is due today',dueline:'Please pay and tick it',variable:'Variable',lasts:'days',none:'Nothing yet',allf:'All',undo:'Remove',deleted:'Removed',saved:'Saved',
+    inc:'Income',emer:'Emergency',sip:'SIP',prov:'Provisions',room:'Room for variables',plan:'Plan',actual:'Actual',gap:'Gap',short:'Short by',spare:'Spare',
+    gapt:'Variable plan vs room',category:'Category',sync:'Shared on all 3 phones',local:'This phone only (not shared)',offline:'Offline — will sync later',name:'Name',amount:'Amount',duedate:'Due',
+    remove:'Remove',confirmdel:'Remove this entry?',sipn:'SIP name',emerg:'Emergency fund',amma:'Amma',ghar:'Ghar',once:'once',rec:'recurring',entries:'entries',settingssaved:'Settings saved',
+    fixedother:'Fixed/other',admission:'Admission',festival:'Festival/gifts',repair:'Repair',cloth:'Clothing',medi:'Mediclaim'}
+};
+let lang = 'hi';
+try{ lang = localStorage.getItem('gl-lang') || 'hi'; }catch(e){}
+const t = k => (I[lang][k] ?? I.en[k] ?? k);
+const MONTHS = {hi:['जनवरी','फ़रवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितम्बर','अक्टूबर','नवम्बर','दिसम्बर'],en:['January','February','March','April','May','June','July','August','September','October','November','December']};
+const DAYS = {hi:['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि'],en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat']};
+const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
+
+/* ---------- defaults (from Mayank's October sketch) ---------- */
+const now = new Date();
+const MKEY = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+const DIM = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+const TODAY = now.getDate();
+const DAYS_LEFT = DIM - TODAY;
+
+function defaultPlan(){ return {
+  income: 60000,
+  members: ['Mayank','Charu','Mummy'],
+  emergency: {plan:10000, done:false},
+  sips: [{name:'Shivvaay',plan:3000,done:false},{name:'Isha',plan:3000,done:false}],
+  provisions: [{key:'admission',plan:1000},{key:'festival',plan:2000},{key:'repair',plan:1000},{key:'cloth',plan:1000},{key:'medi',plan:1250}],
+  provDone:false,
+  fixed: [
+    {id:'society',name:'Society',hi:'सोसाइटी',amt:2600,due:1,kind:'once'},
+    {id:'school',name:'School fee',hi:'स्कूल फ़ीस',amt:3255,due:7,kind:'once'},
+    {id:'amma',name:'Amma',hi:'अम्मा',amt:2000,due:7,kind:'once'},
+    {id:'torrent',name:'Torrent (electricity)',hi:'टॉरेंट (बिजली)',amt:3000,due:18,kind:'once'},
+    {id:'ghar',name:'Ghar recharge',hi:'घर रिचार्ज',amt:0,due:10,kind:'once'},
+    {id:'ghee',name:'Ghee',hi:'घी',amt:4200,due:0,kind:'once'},
+    {id:'atta',name:'Atta',hi:'आटा',amt:1300,due:0,kind:'once'},
+    {id:'gas',name:'Gas',hi:'गैस',amt:1000,due:0,kind:'once'},
+    {id:'grocery',name:'Grocery + cosmetic',hi:'किराना + कॉस्मेटिक',amt:4000,due:0,kind:'once'},
+    {id:'milk',name:'Milk',hi:'दूध',amt:2500,due:0,kind:'once'},
+    {id:'nuts',name:'Dates, seeds, nuts',hi:'खजूर, बीज, मेवा',amt:2600,due:0,kind:'once'},
+    {id:'ott',name:'Hotstar + Netflix',hi:'हॉटस्टार + नेटफ़्लिक्स',amt:0,due:0,kind:'once'},
+    {id:'mandir',name:'Mandir + chola',hi:'मंदिर + चोला',amt:1000,due:0,kind:'once'},
+    {id:'chalave',name:'Mandir chalave',hi:'मंदिर चलावे',amt:1050,due:0,kind:'rec'},
+    {id:'deepak',name:'Deepak',hi:'दीपक',amt:0,due:0,kind:'rec'},
+    {id:'petrol',name:'Petrol',hi:'पेट्रोल',amt:630,due:0,kind:'rec'},
+    {id:'jio',name:'Jio',hi:'जियो',amt:588,due:0,kind:'once'},
+    {id:'marech',name:'Ma recharge',hi:'माँ रिचार्ज',amt:350,due:0,kind:'once'},
+    {id:'oil',name:'Oil',hi:'तेल',amt:400,due:0,kind:'once'},
+    {id:'news',name:'Newspaper',hi:'अख़बार',amt:220,due:0,kind:'once'},
+    {id:'kuda',name:'Kuda',hi:'कूड़ा',amt:150,due:0,kind:'once'}
+  ],
+  jars: [
+    {id:'fruit',name:'Fruit',hi:'फल',plan:2500},
+    {id:'veg',name:'Veg',hi:'सब्ज़ी',plan:2000},
+    {id:'paneer',name:'Paneer',hi:'पनीर',plan:1000},
+    {id:'fun',name:'Entertainment',hi:'मनोरंजन',plan:1500},
+    {id:'other',name:'Stationery · Medical · Other',hi:'स्टेशनरी · दवा · अन्य',plan:1000}
+  ]
+};}
+let plan = defaultPlan();
+if(MKEY==='2026-10'){ plan.emergency.done=true; plan.sips.forEach(s=>s.done=true); }
+let corpus = {emergency:0, sip:0};
+let paid = MKEY==='2026-10' ? {society:{day:1,amt:2600,by:''},school:{day:7,amt:3255,by:''},amma:{day:7,amt:2000,by:''}} : {};
+let entries = [];       // {id, ts, day, cat, catId, amt, by}
+let me = ''; try{ me = localStorage.getItem('gl-me') || ''; }catch(e){}
+
+/* ---------- storage: Supabase (shared), phone cache as backup ---------- */
+const SB_URL = 'https://hwycxdeqxrcudtobwgex.supabase.co';
+const SB_KEY = 'sb_publishable_O8kFpMgViIvgMFE2sTtrEw_Rv7FXa0R';
+let sb = null, shared = false;
+const LS = 'gl-' + MKEY;
+function localLoad(){ try{ const s = JSON.parse(localStorage.getItem(LS)||'null'); if(s){ plan=s.plan||plan; corpus=s.corpus||corpus; paid=s.paid||{}; entries=s.entries||[]; } }catch(e){} }
+function localSave(){ try{ localStorage.setItem(LS, JSON.stringify({plan,corpus,paid,entries})); }catch(e){} }
+const fromRow = r => ({id:r.id, ts:r.ts, day:r.day, cat:r.cat, catId:r.cat_id, amt:r.amt, by:r.who, note:r.note});
+
+function prevMonthKey(){ const d = new Date(now.getFullYear(), now.getMonth()-1, 1); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+
+async function pullMonth(){
+  const {data, error} = await sb.from('months').select('data').eq('id', MKEY).maybeSingle();
+  if(error) throw error;
+  if(data){ const d = data.data; plan = d.plan || plan; corpus = d.corpus || corpus; paid = d.paid || {}; return; }
+  // new month: carry last month's plan + corpus forward, reset ticks
+  const prev = await sb.from('months').select('data').eq('id', prevMonthKey()).maybeSingle();
+  if(prev.data){ const d = prev.data.data; plan = d.plan || plan; corpus = d.corpus || corpus;
+    plan.emergency.done=false; plan.sips.forEach(s=>s.done=false); plan.provDone=false; }
+  paid = {};
+  await sb.from('months').upsert({id:MKEY, data:{plan, corpus, paid}});
+}
+async function pullEntries(){
+  const {data, error} = await sb.from('entries').select('*').eq('month', MKEY).order('ts');
+  if(error) throw error;
+  entries = data.map(fromRow);
+}
+async function pullAll(){
+  try{ await pullMonth(); await pullEntries(); localSave(); setSync(true); }
+  catch(e){ setSync(false); }
+  renderAll();
+}
+async function initStore(){
+  localLoad(); renderAll();
+  try{ sb = window.supabase.createClient(SB_URL, SB_KEY); }catch(e){ sb = null; }
+  if(!sb){ setSync(false); return; }
+  await pullAll();
+  try{
+    sb.channel('ghar').on('postgres_changes',{event:'*',schema:'public',table:'entries'},()=>pullAll())
+      .on('postgres_changes',{event:'*',schema:'public',table:'months'},()=>pullAll()).subscribe();
+  }catch(e){}
+  setInterval(pullAll, 30000);
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) pullAll(); });
+}
+function setSync(on){ shared = on; const el = document.getElementById('sync'); if(el) el.textContent = on ? '● ' + t('sync') : '○ ' + t('offline'); }
+async function saveCfg(){
+  localSave();
+  if(sb){ const {error} = await sb.from('months').upsert({id:MKEY, data:{plan, corpus, paid}, updated_at:new Date().toISOString()}); if(error){ toast('⚠ ' + error.message); setSync(false); } }
+}
+async function addEntry(e){
+  if(sb){
+    const {error} = await sb.from('entries').insert({month:MKEY, ts:e.ts, day:e.day, cat:e.cat, cat_id:e.catId, amt:e.amt, who:e.by, note:e.note||''});
+    if(!error){ await pullEntries(); localSave(); renderAll(); return; }
+    toast('⚠ ' + error.message);
+  }
+  entries.push(Object.assign({id:'l'+Date.now()}, e)); localSave(); renderAll();
+}
+async function delEntry(id){
+  if(sb && !String(id).startsWith('l')){
+    const {error} = await sb.from('entries').delete().eq('id', id);
+    if(error){ toast('⚠ ' + error.message); return; }
+  }
+  entries = entries.filter(x=>x.id!==id); localSave(); renderAll();
+}
+
+/* ---------- derived ---------- */
+const jarSpent = id => entries.filter(e=>e.cat==='var' && e.catId===id).reduce((a,e)=>a+e.amt,0);
+const fixedTotal = () => plan.fixed.reduce((a,f)=>a+(f.amt||0),0);
+const provTotal = () => plan.provisions.reduce((a,p)=>a+p.plan,0);
+const sipTotal = () => plan.sips.reduce((a,s)=>a+s.plan,0);
+const jarTotal = () => plan.jars.reduce((a,j)=>a+j.plan,0);
+const nm = o => (lang==='hi' && o.hi) ? o.hi : o.name;
+const fixedPaidTotal = () => Object.values(paid).reduce((a,p)=>a+(p.amt||0),0);
+const varSpent = () => entries.filter(e=>e.cat==='var').reduce((a,e)=>a+e.amt,0);
+const fixOther = () => entries.filter(e=>e.cat==='fix').reduce((a,e)=>a+e.amt,0);
+const babDone = () => (plan.emergency.done?plan.emergency.plan:0) + plan.sips.reduce((a,s)=>a+(s.done?s.plan:0),0) + (plan.provDone?provTotal():0);
+const outSoFar = () => babDone() + fixedPaidTotal() + fixOther() + varSpent();
+
+/* ---------- render ---------- */
+function renderAll(){ document.querySelectorAll('[data-i]').forEach(el=>el.textContent=t(el.dataset.i)); document.documentElement.lang = lang;
+  renderHome(); renderLog(); renderBook(); renderSnap(); renderSettings(); }
+
+function renderHome(){
+  document.getElementById('h-month').textContent = MONTHS[lang][now.getMonth()] + ' ' + now.getFullYear();
+  document.getElementById('h-day').textContent = `${t('day')} ${TODAY} ${t('of')} ${DIM} · ${DAYS_LEFT} ${t('left')}`;
+  // due banner
+  const dueNow = plan.fixed.filter(f=>f.due===TODAY && !paid[f.id]);
+  const b = document.getElementById('due-banner');
+  b.innerHTML = dueNow.length ? `<div class="banner"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#F2B66D" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M5 3L2 6M22 6l-3-3"/></svg><div><div class="t">${dueNow.map(nm).join(', ')} ${t('duetoday')}</div><div class="s">${t('dueline')}</div></div></div>` : '';
+  // babylon
+  const tick = (on, label) => `<div class="tick ${on?'':'off'}"><div class="box ${on?'on':''}">${on?'✓':''}</div>${on?t('done'):t('notdone')}</div>`;
+  document.getElementById('bab-grid').innerHTML = `
+    <button class="card bab" id="b-emer"><div class="lbl">${t('emer')}</div><div class="big num">${inr(plan.emergency.plan)}</div>${tick(plan.emergency.done)}<div class="tot">${t('total')}<br><span class="num" style="font-size:14px;color:var(--ink)">${inr(corpus.emergency)}</span></div></button>
+    <button class="card bab" id="b-sip"><div class="lbl">${t('sip')}</div>${plan.sips.map(s=>`<div class="row"><span>${s.name}</span><span class="num">${s.plan.toLocaleString('en-IN')}</span></div>`).join('')}${tick(plan.sips.every(s=>s.done))}<div class="tot">${t('total')}<br><span class="num" style="font-size:14px;color:var(--ink)">${inr(corpus.sip)}</span></div></button>
+    <button class="card bab" id="b-prov"><div class="lbl">${t('prov')}</div>${plan.provisions.map(p=>`<div class="row"><span>${t(p.key)}</span><span class="num">${p.plan.toLocaleString('en-IN')}</span></div>`).join('')}${tick(plan.provDone)}<div class="tot">${t('month')} <span class="num" style="color:var(--ink)">${inr(provTotal())}</span></div></button>`;
+  document.getElementById('b-emer').onclick = ()=>{ plan.emergency.done=!plan.emergency.done; corpus.emergency += plan.emergency.done?plan.emergency.plan:-plan.emergency.plan; saveCfg(); renderAll(); };
+  document.getElementById('b-sip').onclick = ()=>{ const on=!plan.sips.every(s=>s.done); plan.sips.forEach(s=>s.done=on); corpus.sip += on?sipTotal():-sipTotal(); saveCfg(); renderAll(); };
+  document.getElementById('b-prov').onclick = ()=>{ plan.provDone=!plan.provDone; saveCfg(); renderAll(); };
+  // fixed
+  const all = showAllFixed;
+  const rows = plan.fixed.filter(f=> all || paid[f.id] || f.due>0);
+  document.getElementById('fix-toggle').textContent = all ? t('showless') : t('showall') + ' (' + plan.fixed.length + ')';
+  document.getElementById('fix-list').innerHTML = rows.map(f=>{
+    const p = paid[f.id]; const hot = !p && f.due===TODAY; const late = !p && f.due>0 && f.due<TODAY;
+    const dt = p ? `${t('paid')} ${p.day}` : (f.due>0 ? `${t('due')} ${f.due}` : (f.kind==='rec'?t('rec'):''));
+    return `<button class="row44" data-fix="${f.id}"><div class="box ${p?'on':''} ${hot||late?'hot':''}">${p?'✓':''}</div><div class="nm">${nm(f)}</div><div class="amt num">${f.amt?f.amt.toLocaleString('en-IN'):'—'}</div><div class="dt ${hot||late?'hot':''}">${dt}</div></button>`;
+  }).join('') || `<div class="hint" style="padding:14px 0">${t('none')}</div>`;
+  document.querySelectorAll('[data-fix]').forEach(b=>b.onclick=()=>togglePaid(b.dataset.fix));
+  // jars
+  document.getElementById('var-title').textContent = t('variable') + ' · ' + inr(jarTotal() - varSpent());
+  document.getElementById('jars').innerHTML = plan.jars.map(j=>{
+    const sp = jarSpent(j.id), left = j.plan - sp;
+    const rate = TODAY>1 ? sp/(TODAY-1) : sp; // per day so far
+    const lasts = rate>0 ? Math.floor(left/rate) : DAYS_LEFT;
+    const warn = left<=0 || lasts < DAYS_LEFT;
+    const pct = Math.max(0, Math.min(100, left/j.plan*100));
+    return `<div class="jar"><div class="glass"><div class="fill ${warn?'warn':''}" style="height:${pct}%"></div></div><div class="nm">${nm(j)}</div><div class="lf num">${inr(left)}</div><div class="dy ${warn?'warn':''}">${left<=0?'0':Math.min(lasts,99)} ${t('lasts')}</div></div>`;
+  }).join('');
+  // today
+  const todays = entries.filter(e=>e.day===TODAY).sort((a,b)=>b.ts-a.ts);
+  document.getElementById('today-list').innerHTML = todays.length ? todays.map(e=>`<div class="row44"><div class="nm">${entryName(e)}</div><div class="amt num">${inr(e.amt)}</div><div class="dt">${e.by||''}</div></div>`).join('') : `<div class="hint" style="padding:14px 0">${t('none')}</div>`;
+}
+let showAllFixed = false;
+document.getElementById('fix-toggle').onclick = ()=>{ showAllFixed=!showAllFixed; renderHome(); };
+function togglePaid(id){
+  const f = plan.fixed.find(x=>x.id===id);
+  if(paid[id]){ delete paid[id]; }
+  else {
+    let amt = f.amt;
+    if(!amt){ const v = prompt((lang==='hi'?'रक़म (₹) — ':'Amount (₹) — ') + nm(f)); if(v===null) return; amt = parseInt(v,10)||0; f.amt = amt; }
+    paid[id] = {day:TODAY, amt, by:me};
+  }
+  saveCfg(); renderAll();
+}
+function entryName(e){
+  if(e.cat==='var'){ const j = plan.jars.find(j=>j.id===e.catId); return j?nm(j):e.catId; }
+  return e.note || t('fixedother');
+}
+
+/* ---------- log ---------- */
+let sel = null, amt = '';
+function renderLog(){
+  const cats = plan.jars.map(j=>({id:j.id, cat:'var', label:nm(j), left:inr(j.plan-jarSpent(j.id))})).concat([{id:'fix', cat:'fix', label:t('fixedother'), left:''}]);
+  document.getElementById('cats').innerHTML = cats.map(c=>`<button class="cat ${sel===c.id?'on':''}" data-cat="${c.id}"><div class="nm">${c.label}</div><div class="lf num">${c.left}</div></button>`).join('');
+  document.querySelectorAll('[data-cat]').forEach(b=>b.onclick=()=>{ sel=b.dataset.cat; renderLog(); });
+  document.getElementById('amt').textContent = amt ? parseInt(amt,10).toLocaleString('en-IN') : '0';
+  const keys = ['1','2','3','4','5','6','7','8','9','⌫','0','C'];
+  document.getElementById('pad').innerHTML = keys.map(k=>`<button class="${isNaN(k)?'op':''}" data-k="${k}">${k}</button>`).join('');
+  document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{ const k=b.dataset.k; if(k==='⌫') amt=amt.slice(0,-1); else if(k==='C') amt=''; else if(amt.length<6) amt+=k; renderLog(); });
+  renderWho('who');
+  document.getElementById('save').disabled = !(sel && parseInt(amt,10)>0 && me);
+}
+function renderWho(id){
+  document.getElementById(id).innerHTML = plan.members.map(m=>`<button class="${me===m?'on':''}" data-who="${m}">${m}</button>`).join('');
+  document.querySelectorAll('#'+id+' [data-who]').forEach(b=>b.onclick=()=>{ me=b.dataset.who; try{localStorage.setItem('gl-me',me);}catch(e){} renderLog(); renderSettings(); });
+}
+document.getElementById('save').onclick = async ()=>{
+  const a = parseInt(amt,10); let note = '';
+  if(sel==='fix'){ note = prompt(lang==='hi'?'किस चीज़ का? (जैसे: घी, पेट्रोल)':'What for? (e.g. ghee, petrol)') || ''; }
+  await addEntry({ts:Date.now(), day:TODAY, cat: sel==='fix'?'fix':'var', catId: sel, amt:a, by:me, note});
+  toast('✓ ' + t('saved') + ' · ' + inr(a)); amt=''; sel=null; go('home');
+};
+
+/* ---------- day book ---------- */
+let bookF = 'all';
+function renderBook(){
+  document.getElementById('book-sub').textContent = MONTHS[lang][now.getMonth()] + ' · ' + entries.length + ' ' + t('entries');
+  document.getElementById('b-out').textContent = inr(outSoFar());
+  document.getElementById('b-left').textContent = inr(plan.income - outSoFar());
+  const fs = [['all',t('allf')],['bab',t('babylon').split(' ')[0]],['fix',t('fixed')],['var',t('variable')]];
+  document.getElementById('book-filter').innerHTML = fs.map(([k,l])=>`<button class="chip ${bookF===k?'on':''}" data-bf="${k}">${l}</button>`).join('');
+  document.querySelectorAll('[data-bf]').forEach(b=>b.onclick=()=>{ bookF=b.dataset.bf; renderBook(); });
+  // build rows: babylon ticks (day 1 assumed), paid fixed, entries
+  let rows = [];
+  if(plan.emergency.done) rows.push({day:1,cat:'bab',name:t('emerg'),amt:plan.emergency.plan});
+  plan.sips.forEach(s=>{ if(s.done) rows.push({day:1,cat:'bab',name:'SIP · '+s.name,amt:s.plan}); });
+  if(plan.provDone) rows.push({day:1,cat:'bab',name:t('prov'),amt:provTotal()});
+  Object.entries(paid).forEach(([id,p])=>{ const f=plan.fixed.find(x=>x.id===id); if(f) rows.push({day:p.day,cat:'fix',name:nm(f),amt:p.amt,by:p.by,fixId:id}); });
+  entries.forEach(e=>rows.push({day:e.day,cat:e.cat,name:entryName(e),amt:e.amt,by:e.by,id:e.id,ts:e.ts}));
+  rows = rows.filter(r=>bookF==='all'||r.cat===bookF);
+  const byDay = {}; rows.forEach(r=>{ (byDay[r.day]=byDay[r.day]||[]).push(r); });
+  const days = Object.keys(byDay).map(Number).sort((a,b)=>b-a);
+  document.getElementById('book').innerHTML = days.length ? days.map(d=>{
+    const dt = new Date(now.getFullYear(), now.getMonth(), d);
+    const tot = byDay[d].reduce((a,r)=>a+r.amt,0);
+    return `<div class="sec" style="margin-bottom:14px"><div class="day-h"><div class="t">${t('day')} ${d} · ${DAYS[lang][dt.getDay()]}${d===TODAY?' · '+t('today2'):''}</div><div class="num" style="color:var(--muted)">${inr(tot)}</div></div><div class="card list">${byDay[d].sort((a,b)=>(b.ts||0)-(a.ts||0)).map(r=>`<button class="row44" ${r.id?`data-del="${r.id}"`:''}><span class="tag ${r.cat}">${r.cat==='bab'?t('babylon').split(' ')[0]:r.cat==='fix'?t('fixed'):t('variable')}</span><div class="nm">${r.name}</div><div class="amt num">${inr(r.amt)}</div><div class="dt">${r.by||''}</div></button>`).join('')}</div></div>`;
+  }).join('') : `<div class="card hint">${t('none')}</div>`;
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ if(confirm(t('confirmdel'))){ delEntry(b.dataset.del); toast(t('deleted')); } });
+}
+
+/* ---------- snapshot ---------- */
+function renderSnap(){
+  document.getElementById('snap-sub').textContent = MONTHS[lang][now.getMonth()] + ' · ' + inr(plan.income);
+  const inc = plan.income, e = plan.emergency.plan, s = sipTotal(), p = provTotal(), f = fixedTotal();
+  const steps = [[t('inc'),0,inc],[t('emer'),e,inc-e],[t('sip'),s,inc-e-s],[t('prov'),p,inc-e-s-p],[t('fixed'),f,inc-e-s-p-f]];
+  document.getElementById('cascade').innerHTML = steps.map(([n,m,l],i)=>`<div class="step"><div class="l"><span>${n}</span><span class="num" style="color:var(--muted)">${m?'−'+m.toLocaleString('en-IN'):''}</span></div><div class="bar"><div class="tr"><div class="fl ${i===4?'w':''}" style="width:${Math.max(0,l/inc*100)}%"></div></div><span class="v num">${l.toLocaleString('en-IN')}</span></div></div>`).join('')
+    + `<div class="hint" style="text-align:left">${t('room')}: <b class="num">${inr(inc-e-s-p-f)}</b></div>`;
+  const room = inc-e-s-p-f, need = jarTotal(), g = room-need;
+  document.getElementById('gapbox').innerHTML = `<div><div style="font-weight:700">${t('gapt')}</div><div class="hint" style="text-align:left">${t('room')} ${inr(room)} · ${t('plan')} ${inr(need)}</div></div><div class="v num">${g<0?'−':'+'}${inr(Math.abs(g)).slice(1)}</div>`;
+  document.getElementById('gapbox').style.borderColor = g<0?'var(--orange)':'var(--blue)';
+  document.getElementById('gapbox').querySelector('.v').style.color = g<0?'var(--orange)':'var(--blue)';
+  const rows = [[t('babylon').split(' ')[0], e+s+p, babDone()], [t('fixed'), f, fixedPaidTotal()+fixOther()]].concat(plan.jars.map(j=>[nm(j), j.plan, jarSpent(j.id)]));
+  const gapc = (pl,ac) => { const d = pl-ac; return `<span class="num" style="color:${d<0?'var(--orange)':'var(--muted)'}">${d<0?'−':'+'}${Math.abs(d).toLocaleString('en-IN')}</span>`; };
+  document.getElementById('pva').innerHTML = `<div class="r h"><span>${t('category')}</span><span>${t('plan')}</span><span>${t('actual')}</span><span>${t('gap')}</span></div>` + rows.map(([n,pl,ac])=>`<div class="r"><span>${n}</span><span class="num">${pl.toLocaleString('en-IN')}</span><span class="num">${ac.toLocaleString('en-IN')}</span>${gapc(pl,ac)}</div>`).join('')
+    + `<div class="r" style="font-weight:700"><span>${t('total')}</span><span class="num">${(e+s+p+f+jarTotal()).toLocaleString('en-IN')}</span><span class="num">${outSoFar().toLocaleString('en-IN')}</span>${gapc(e+s+p+f+jarTotal(), outSoFar())}</div>`;
+}
+
+/* ---------- settings ---------- */
+function renderSettings(){
+  document.getElementById('l-hi').className = lang==='hi'?'on':''; document.getElementById('l-en').className = lang==='en'?'on':'';
+  renderWho('who2');
+  const fld = (label, id, val, cls='') => `<div class="field"><label for="${id}">${label}</label><input id="${id}" class="${cls}" inputmode="${cls.includes('txt')?'text':'numeric'}" value="${val}"></div>`;
+  document.getElementById('f-income').innerHTML = fld(t('income'),'in-income',plan.income);
+  document.getElementById('f-bab').innerHTML = fld(t('emer'),'in-emer',plan.emergency.plan) + plan.sips.map((s,i)=>`<div class="field"><input class="txt" id="in-sipn${i}" value="${s.name}" aria-label="${t('sipn')}"><input id="in-sip${i}" inputmode="numeric" value="${s.plan}"></div>`).join('') + plan.provisions.map((p,i)=>fld(t(p.key),'in-prov'+i,p.plan)).join('');
+  document.getElementById('f-corpus').innerHTML = fld(t('emerg'),'in-c-emer',corpus.emergency) + fld(t('sip'),'in-c-sip',corpus.sip);
+  document.getElementById('f-fixed').innerHTML = plan.fixed.map((f,i)=>`<div class="field"><input class="txt" id="in-fn${i}" value="${nm(f)}" aria-label="${t('name')}"><input class="sm" id="in-fd${i}" inputmode="numeric" value="${f.due||''}" placeholder="${t('duedate')}" aria-label="${t('duedate')}"><input id="in-fa${i}" inputmode="numeric" value="${f.amt||''}" aria-label="${t('amount')}"></div>`).join('');
+  document.getElementById('f-jars').innerHTML = plan.jars.map((j,i)=>fld(nm(j),'in-jar'+i,j.plan)).join('');
+}
+document.getElementById('l-hi').onclick = ()=>setLang('hi'); document.getElementById('l-en').onclick = ()=>setLang('en');
+function setLang(l){ lang=l; try{localStorage.setItem('gl-lang',l);}catch(e){} renderAll(); }
+document.getElementById('add-fixed').onclick = ()=>{ const n = prompt(lang==='hi'?'नया तय खर्च का नाम':'Name of new fixed item'); if(!n) return; plan.fixed.push({id:'f'+Date.now(), name:n, hi:n, amt:0, due:0, kind:'once'}); renderSettings(); };
+document.getElementById('save-set').onclick = ()=>{
+  const v = id => parseInt(document.getElementById(id).value,10)||0;
+  plan.income = v('in-income'); plan.emergency.plan = v('in-emer');
+  plan.sips.forEach((s,i)=>{ s.name = document.getElementById('in-sipn'+i).value || s.name; s.plan = v('in-sip'+i); });
+  plan.provisions.forEach((p,i)=>p.plan=v('in-prov'+i));
+  corpus.emergency = v('in-c-emer'); corpus.sip = v('in-c-sip');
+  plan.fixed.forEach((f,i)=>{ const n = document.getElementById('in-fn'+i).value; if(lang==='hi') f.hi=n; else f.name=n; f.due=v('in-fd'+i); f.amt=v('in-fa'+i); });
+  plan.jars.forEach((j,i)=>j.plan=v('in-jar'+i));
+  saveCfg(); renderAll(); toast('✓ ' + t('settingssaved')); go('home');
+};
+
+/* ---------- nav + toast ---------- */
+function go(s){ document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('on', x.id==='s-'+s)); document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on', x.dataset.s===s)); window.scrollTo(0,0); if(s==='log') renderLog(); }
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>go(b.dataset.s));
+let toastT; function toast(m){ const el=document.getElementById('toast'); el.textContent=m; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),2200); }
+
+renderAll(); initStore();
+</script>
+</body>
+</html>
