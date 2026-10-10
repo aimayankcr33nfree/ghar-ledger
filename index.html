@@ -152,16 +152,16 @@ input,select{font:inherit;color:inherit}
 .row44 .dt.ok{color:var(--blue)}
 
 /* jars */
-.jars{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.jars{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
 .jar{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
 .jar .glass{width:100%;height:104px;border-radius:12px 12px 16px 16px;position:relative;overflow:hidden;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line),var(--shadow)}
 .jar .glass::before{content:"";position:absolute;left:6px;top:8px;width:4px;height:36%;border-radius:2px;background:rgba(255,255,255,.55);z-index:2}
 .jar .fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,#5B93D6,var(--blue));transition:height .8s var(--ease)}
 .jar .fill::after{content:"";position:absolute;left:-10%;right:-10%;top:-5px;height:10px;border-radius:50%;background:rgba(255,255,255,.28)}
 .jar .fill.warn{background:linear-gradient(180deg,#E9955A,var(--orange))}
-.jar .nm{font-size:12px;font-weight:700;line-height:1.15;min-height:28px;display:flex;align-items:flex-start;justify-content:center}
-.jar .lf{font-size:14px;font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
-.jar .dy{font-size:11px;padding:2px 7px;border-radius:8px;background:var(--soft);color:var(--muted);font-weight:600;white-space:nowrap}
+.jar .nm{font-size:11.5px;font-weight:700;line-height:1.15;min-height:28px;display:flex;align-items:flex-start;justify-content:center;word-break:break-word}
+.jar .lf{font-size:13px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.jar .dy{font-size:10.5px;padding:2px 5px;border-radius:8px;background:var(--soft);color:var(--muted);font-weight:600;white-space:nowrap}
 .jar .dy.warn{background:var(--orange-soft);color:var(--orange)}
 .hint{font-size:13px;color:var(--muted);text-align:center;line-height:1.4}
 
@@ -203,7 +203,7 @@ input,select{font:inherit;color:inherit}
 .cat .mb b{display:block;height:100%;background:var(--blue)}
 .cat .mb b.w{background:var(--orange)}
 .cat.on{border-color:var(--blue);background:var(--blue-soft)}
-.cat.fixc{background:var(--soft);box-shadow:none}
+.cat.fixc{background:var(--soft);box-shadow:none;grid-column:1/-1;min-height:56px;flex-direction:row;gap:10px}
 .cat.fixc.on{background:var(--blue-soft)}
 .picked{display:flex;align-items:center;gap:10px;background:var(--blue-soft);border:1.5px solid var(--blue-tint);border-radius:14px;padding:10px 14px;min-height:50px;width:100%;text-align:left}
 .picked .nm{flex:1;font-weight:700;color:var(--blue-ink)}
@@ -492,7 +492,7 @@ const DAYS_LEFT = DIM - TODAY;
 const pad2 = n => String(n).padStart(2,'0');
 
 /* ---------- plan (from Mayank's October notebook) ---------- */
-const PLAN_VERSION = 5;
+const PLAN_VERSION = 6;
 function defaultPlan(){ return {
   income: 60393,
   members: ['Mayank','Charu','Mummy'],
@@ -528,8 +528,9 @@ function defaultPlan(){ return {
     {id:'fruit',name:'Fruit',hi:'फल',plan:2500},
     {id:'veg',name:'Veg',hi:'सब्ज़ी',plan:2500},
     {id:'paneer',name:'Paneer',hi:'पनीर',plan:1500},
-    {id:'fun',name:'Entertainment',hi:'मनोरंजन',plan:1000},
-    {id:'other',name:'Stationery · Medical · Other',hi:'स्टेशनरी · दवा · अन्य',plan:2000}
+    {id:'fun',name:'ENTMT',hi:'मनोरंजन',plan:1000},
+    {id:'med',name:'Medical',hi:'दवा',plan:500},
+    {id:'stat',name:'STAT & Others',hi:'स्टेशनरी व अन्य',plan:1500}
   ],
   planVersion: PLAN_VERSION
 };}
@@ -570,6 +571,15 @@ function migrate(){
         {id:'ghee1',name:'Ghee · 1st (2 kg)',hi:'घी · पहला (2 किलो)',amt:each,due:g.due||0,kind:'once'},
         {id:'ghee2',name:'Ghee · 2nd (2 kg)',hi:'घी · दूसरा (2 किलो)',amt:each,due:0,kind:'once'});
       if(paid && paid.ghee){ paid.ghee1 = paid.ghee; delete paid.ghee; }
+    }
+  }
+  if(v <= 5){
+    // six jars: Medical gets its own; Stationery & Others keeps the rest. Old 'other' entries count under STAT.
+    const f = plan.jars.find(j=>j.id==='fun'); if(f){ f.name='ENTMT'; f.hi='मनोरंजन'; }
+    const i = plan.jars.findIndex(j=>j.id==='other');
+    if(i >= 0 && !plan.jars.find(j=>j.id==='med')){
+      const o = plan.jars[i]; const med = 500, stat = Math.max(0, (o.plan||2000) - med);
+      plan.jars.splice(i, 1, {id:'med',name:'Medical',hi:'दवा',plan:med}, {id:'stat',name:'STAT & Others',hi:'स्टेशनरी व अन्य',plan:stat});
     }
   }
   plan.planVersion = PLAN_VERSION; return true;
@@ -650,7 +660,8 @@ async function delEntry(id){
 }
 
 /* ---------- derived ---------- */
-const jarSpent = id => entries.filter(e=>e.cat==='var' && e.catId===id).reduce((a,e)=>a+e.amt,0);
+const jarMatch = (e, id) => e.cat==='var' && (e.catId===id || (id==='stat' && e.catId==='other'));
+const jarSpent = id => entries.filter(e=>jarMatch(e,id)).reduce((a,e)=>a+e.amt,0);
 const fixedTotal = () => plan.fixed.reduce((a,f)=>a+(f.amt||0),0);
 const provTotal = () => plan.provisions.reduce((a,p)=>a+p.plan,0);
 const sipTotal = () => plan.sips.reduce((a,s)=>a+s.plan,0);
@@ -991,7 +1002,7 @@ function calc(D){
   const babActual = babTick + sum(E.filter(e=>e.cat==='bab'));
   const fixPlan = P.fixed.reduce((a,f)=>a+(f.amt||0),0);
   const fixActual = Object.values(D.paid).reduce((a,p)=>a+(p.amt||0),0) + sum(E.filter(e=>e.cat==='fix'));
-  const jars = P.jars.map(j=>({name:nm(j), plan:j.plan, actual:sum(E.filter(e=>e.cat==='var'&&e.catId===j.id))}));
+  const jars = P.jars.map(j=>({name:nm(j), plan:j.plan, actual:sum(E.filter(e=>jarMatch(e,j.id)))}));
   const fixItems = P.fixed.map(f=>({name:nm(f), plan:f.amt||0, actual:(D.paid[f.id]?D.paid[f.id].amt:0) + sum(E.filter(e=>e.cat==='fix'&&e.catId===f.id))}));
   const otherFix = sum(E.filter(e=>e.cat==='fix'&&(e.catId==='fix'||!P.fixed.find(f=>f.id===e.catId))));
   const totalPlan = babPlan + fixPlan + jars.reduce((a,j)=>a+j.plan,0);
@@ -1006,7 +1017,7 @@ function renderMsw(id){
   el.querySelectorAll('[data-mv]').forEach(b=>b.onclick=()=>{ viewMonth = shiftMonth(viewMonth, +b.dataset.mv); buzz(5); renderBook(); renderSnap(); });
 }
 function entryNameP(e, P){
-  if(e.cat==='var'){ const j = P.jars.find(j=>j.id===e.catId); return j?nm(j):e.catId; }
+  if(e.cat==='var'){ const j = P.jars.find(j=>j.id===e.catId) || (e.catId==='other' ? P.jars.find(j=>j.id==='stat') : null); return j?nm(j):e.catId; }
   return e.note || t('fixedother');
 }
 
