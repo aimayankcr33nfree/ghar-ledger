@@ -326,6 +326,7 @@ input,select{font:inherit;color:inherit}
 .sheet input.txt{font-size:17px}
 .sheet input:focus{outline:none;border-color:var(--blue)}
 .sheet .bts{display:flex;gap:8px;margin-top:4px;flex:none}
+.sheet .bts .ghost{box-shadow:none;background:var(--soft);color:var(--ink)}
 .sheet .bts .btn{flex:1}
 #sh-body{display:flex;flex-direction:column;min-height:0;flex:1 1 auto}
 .sheet .lst{overflow:auto;-webkit-overflow-scrolling:touch;margin:0 -6px;padding:0 6px 4px;display:flex;flex-direction:column;gap:6px;min-height:0;flex:1 1 auto}
@@ -462,7 +463,7 @@ input,select{font:inherit;color:inherit}
 /* ---------- i18n ---------- */
 const I = {
   hi:{babylon:'बेबीलोन · सबसे पहले',fixed:'तय खर्च',variable:'रोज़ का',today:'आज की एंट्री',jarhint:'घड़े में जितना रंग, उतना बचा है। नारंगी = इस रफ़्तार से 31 से पहले खाली।',
-    logtitle:'खर्च लिखें',logsub:'दिन → घड़ा → रक़म → सेव',whichitem:'किस चीज़ का?',sumtotal:'कुल',other:'अन्य',review:'महीने की समीक्षा',spent:'कुल खर्च',saved2:'बचत / बचा',over:'ज़्यादा खर्च हुआ',under:'कम खर्च हुआ',nothingover:'कोई मद योजना से ऊपर नहीं',loading:'लोड हो रहा है…',baseline:'इस महीने की अलग योजना नहीं थी — अभी की योजना से तुलना',current:'चालू महीना',closed:'बंद महीना',noentries:'इस महीने की कोई एंट्री नहीं — + लिखें में तारीख़ चुनकर डालें',savrate:'बचत दर',when:'कब का खर्च?',today2c:'आज',yesterday:'कल',pickdate:'तारीख़',daysago:'दिन पहले',who:'किसने खर्च किया?',save:'सेव करें',book:'बही',outsofar:'अब तक गया',leftof:'बचा है',tapundo:'किसी एंट्री को दबाकर हटाएँ',
+    logtitle:'खर्च लिखें',logsub:'दिन → घड़ा → रक़म → सेव',whichitem:'किस चीज़ का?',sumtotal:'कुल',other:'अन्य',review:'महीने की समीक्षा',spent:'कुल खर्च',saved2:'बचत / बचा',over:'ज़्यादा खर्च हुआ',under:'कम खर्च हुआ',nothingover:'कोई मद योजना से ऊपर नहीं',loading:'लोड हो रहा है…',baseline:'इस महीने की अलग योजना नहीं थी — अभी की योजना से तुलना',current:'चालू महीना',closed:'बंद महीना',noentries:'इस महीने की कोई एंट्री नहीं — + लिखें में तारीख़ चुनकर डालें',savrate:'बचत दर',when:'कब का खर्च?',today2c:'आज',yesterday:'कल',pickdate:'तारीख़',daysago:'दिन पहले',who:'किसने खर्च किया?',save:'सेव करें',book:'बही',outsofar:'अब तक गया',leftof:'बचा है',tapundo:'एंट्री दबाएँ — तारीख़/रक़म बदलें या हटाएँ',
     snap:'₹ का हिसाब',planactual:'योजना बनाम असल',settings:'सेटिंग',language:'भाषा',iam:'मैं हूँ',income:'महीने की आमदनी',corpus:'अब तक कुल जमा',corpusnote:'इस महीने की जमा सहित — ऊपर कार्ड पर यही दिखेगा',addfixed:'+ तय खर्च जोड़ें',jarsplan:'घड़ों की योजना',saveset:'सेटिंग सेव करें',
     't-home':'घर','t-book':'बही','t-log':'लिखें','t-snap':'हिसाब','t-set':'सेटिंग',
     day:'दिन',of:'में से',left:'दिन बाकी',done:'हो गया',notdone:'बाकी',total:'कुल जमा',month:'इस महीने',showall:'सब देखें',showless:'कम दिखाएँ',paid:'दिया',due:'देना है',today2:'आज',
@@ -473,9 +474,9 @@ const I = {
     fixedother:'तय/अन्य',admission:'एडमिशन',festival:'त्योहार/उपहार',repair:'मरम्मत',cloth:'कपड़े',medi:'मेडिक्लेम',
     leftmonth:'इस महीने बचा है',outof:'गया',planned:'योजना',dailyleft:'रोज़ के लिए',perday:'/दिन',cancel:'रहने दें',ok:'ठीक है',markpaid:'दिया — टिक करें',
     untickq:'टिक हटाएँ?',unticksub:'यह फिर "बाकी" में आ जाएगा',unticked:'टिक हट गया',enteramt:'कितना दिया? (₹)',whatfor:'किस चीज़ का?',pickitem:'चीज़ चुनें',change:'बदलें',newfixed:'नया तय खर्च',namehint:'नाम लिखें',
-    notehint:'नोट (वैकल्पिक) — जैसे: अल्ट्रासाउंड, कॉपी',closeb:'बंद करें',moneyin:'पैसे आए',received:'मिला',tocome:'आना बाकी',inhand:'हाथ में',addinflow:'पैसे मिले — लिखें',when2:'कब मिले',fromwho:'कहाँ से (वैकल्पिक)',fromhint:'जैसे: युक्ति, दुकान',removeinflow:'यह रसीद हटाएँ?',emerdone:'जमा हो गया',emerpending:'जमा करना है',sipdone:'दोनों हो गए',sippending:'करना है',markdone:'हो गया — टिक करें',lastmonth:'पिछला महीना',nextmonth:'अगला महीना',overby:'ज़्यादा'},
+    chgamt:'रक़म बदलें',chgdate:'तारीख़ बदलें',chgnote:'नोट बदलें',notehint:'नोट (वैकल्पिक) — जैसे: अल्ट्रासाउंड, कॉपी',closeb:'बंद करें',moneyin:'पैसे आए',received:'मिला',tocome:'आना बाकी',inhand:'हाथ में',addinflow:'पैसे मिले — लिखें',when2:'कब मिले',fromwho:'कहाँ से (वैकल्पिक)',fromhint:'जैसे: युक्ति, दुकान',removeinflow:'यह रसीद हटाएँ?',emerdone:'जमा हो गया',emerpending:'जमा करना है',sipdone:'दोनों हो गए',sippending:'करना है',markdone:'हो गया — टिक करें',lastmonth:'पिछला महीना',nextmonth:'अगला महीना',overby:'ज़्यादा'},
   en:{babylon:'Babylon · paid first',fixed:'Fixed',variable:'Variable',today:"Today's entries",jarhint:'The colour is what is left. Orange = empty before the 31st at this pace.',
-    logtitle:'Log a spend',logsub:'Day → jar → amount → save',whichitem:'What was it for?',sumtotal:'Total',other:'Other',review:'Month review',spent:'Total out',saved2:'Saved / left',over:'Overspent',under:'Underspent',nothingover:'No category went over plan',loading:'Loading…',baseline:'No separate plan saved for this month — compared with the current plan',current:'Current month',closed:'Closed month',noentries:'No entries for this month yet — use + Log and pick a date',savrate:'Savings rate',when:'When was it spent?',today2c:'Today',yesterday:'Yesterday',pickdate:'Date',daysago:'days ago',who:'Who spent?',save:'Save',book:'Day Book',outsofar:'Out so far',leftof:'Left',tapundo:'Tap an entry to remove it',
+    logtitle:'Log a spend',logsub:'Day → jar → amount → save',whichitem:'What was it for?',sumtotal:'Total',other:'Other',review:'Month review',spent:'Total out',saved2:'Saved / left',over:'Overspent',under:'Underspent',nothingover:'No category went over plan',loading:'Loading…',baseline:'No separate plan saved for this month — compared with the current plan',current:'Current month',closed:'Closed month',noentries:'No entries for this month yet — use + Log and pick a date',savrate:'Savings rate',when:'When was it spent?',today2c:'Today',yesterday:'Yesterday',pickdate:'Date',daysago:'days ago',who:'Who spent?',save:'Save',book:'Day Book',outsofar:'Out so far',leftof:'Left',tapundo:'Tap an entry to change its date or amount, or remove it',
     snap:'₹ Snapshot',planactual:'Plan vs actual',settings:'Settings',language:'Language',iam:'I am',income:'Monthly income',corpus:'Total saved so far',corpusnote:"Including this month's deposit — this is what the cards show",addfixed:'+ Add fixed item',jarsplan:'Jar plan',saveset:'Save settings',
     't-home':'Home','t-book':'Book','t-log':'Log','t-snap':'Snapshot','t-set':'Settings',
     day:'Day',of:'of',left:'days left',done:'Done',notdone:'Pending',total:'Total so far',month:'This month',showall:'Show all',showless:'Show less',paid:'paid',due:'due',today2:'today',
@@ -486,7 +487,7 @@ const I = {
     fixedother:'Fixed/other',admission:'Admission',festival:'Festival/gifts',repair:'Repair',cloth:'Clothing',medi:'Mediclaim',
     leftmonth:'Left this month',outof:'out',planned:'plan',dailyleft:'For daily spends',perday:'/day',cancel:'Cancel',ok:'OK',markpaid:'Paid — tick it',
     untickq:'Remove the tick?',unticksub:'It will show as pending again',unticked:'Tick removed',enteramt:'How much was paid? (₹)',whatfor:'What for?',pickitem:'Pick an item',change:'Change',newfixed:'New fixed item',namehint:'Type a name',
-    notehint:'Note (optional) — e.g. ultrasound, notebook',closeb:'Close',moneyin:'Money in',received:'Received',tocome:'To come',inhand:'In hand',addinflow:'Money received — add',when2:'When',fromwho:'From (optional)',fromhint:'e.g. Yukti, shop',removeinflow:'Remove this receipt?',emerdone:'Deposited',emerpending:'To deposit',sipdone:'Both done',sippending:'Pending',markdone:'Done — tick it',lastmonth:'Previous month',nextmonth:'Next month',overby:'over'}
+    chgamt:'Change amount',chgdate:'Change date',chgnote:'Change note',notehint:'Note (optional) — e.g. ultrasound, notebook',closeb:'Close',moneyin:'Money in',received:'Received',tocome:'To come',inhand:'In hand',addinflow:'Money received — add',when2:'When',fromwho:'From (optional)',fromhint:'e.g. Yukti, shop',removeinflow:'Remove this receipt?',emerdone:'Deposited',emerpending:'To deposit',sipdone:'Both done',sippending:'Pending',markdone:'Done — tick it',lastmonth:'Previous month',nextmonth:'Next month',overby:'over'}
 };
 let lang = 'hi';
 try{ lang = localStorage.getItem('gl-lang') || 'hi'; }catch(e){}
@@ -681,6 +682,42 @@ async function addEntry(e){
   }
   if((e.month||MKEY)===MKEY){ entries.push(Object.assign({id:'l'+Date.now()}, e)); localSave(); renderAll(); }
 }
+async function updateEntry(id, patch){
+  // patch: {amt?, day?, month?, note?}
+  if(sb && !String(id).startsWith('l')){
+    const row = {}; if(patch.amt!=null) row.amt = patch.amt; if(patch.day!=null) row.day = patch.day; if(patch.month) row.month = patch.month; if(patch.note!=null) row.note = patch.note;
+    const {error} = await sb.from('entries').update(row).eq('id', id);
+    if(error){ toast('⚠ ' + error.message); return false; }
+    await pullEntries(); localSave(); renderAll(); return true;
+  }
+  const e = entries.find(x=>x.id===id); if(e){ Object.assign(e, patch); localSave(); renderAll(); } return true;
+}
+// tap on an entry: change date, change amount, or remove
+async function entryActions(e, afterFn){
+  const name = entryNameP(e, plan);
+  const v = await ask({title:name, sub:`${shortDate(e.day, e.month?+e.month.split('-')[1]-1:undefined)} · ${inr(e.amt)}${e.by?' · '+e.by:''}`, buttons:[
+    {text:t('chgamt'), value:'amt'}, {text:t('chgdate'), value:'date'}, {text:t('chgnote'), value:'note'}, {text:t('remove'), value:'del', cls:'danger'} ]});
+  if(!v) return;
+  if(v==='amt'){ const a = await ask({title:t('chgamt'), sub:name, input:{value:e.amt, placeholder:'0'}, okText:t('save')}); if(a && a!==e.amt){ await updateEntry(e.id, {amt:a}); toast('✓ ' + inr(a)); } }
+  else if(v==='date'){
+    const cur = e.month ? `${e.month}-${pad2(e.day)}` : `${MKEY}-${pad2(e.day)}`;
+    const r = await ask({title:t('chgdate'), sub:name, fields:[{key:'date', type:'date', label:t('when2'), value:cur}], okText:t('save')});
+    if(r && r.date){ const [y,m,d] = r.date.split('-').map(Number); const mk = `${y}-${pad2(m)}`; await updateEntry(e.id, {day:d, month:mk}); if(mk!==MKEY){ delete viewCache[mk]; } toast('✓ ' + shortDate(d, m-1)); }
+  }
+  else if(v==='note'){ const n = await ask({title:t('chgnote'), sub:name, input:{type:'text', value:e.note||'', placeholder:t('notehint'), req:false}, okText:t('save')}); if(n!==null){ await updateEntry(e.id, {note:n}); } }
+  else if(v==='del'){ const ok = await ask({title:t('confirmdel'), sub:t('confirmdelsub'), okText:t('remove'), danger:true}); if(!ok) return; await delEntry(e.id); toast(t('deleted')); }
+  if(afterFn) afterFn();
+}
+// tap on a paid bill row in the book: change date or amount of the tick
+async function paidActions(id, D){
+  const f = plan.fixed.find(x=>x.id===id), p = paid[id]; if(!f || !p || !D.live) return;
+  const v = await ask({title:nm(f), sub:`${t('paid')} ${shortDate(p.day)} · ${inr(p.amt)}`, buttons:[
+    {text:t('chgamt'), value:'amt'}, {text:t('chgdate'), value:'date'}, {text:t('untickq'), value:'del', cls:'danger'} ]});
+  if(!v) return;
+  if(v==='amt'){ const a = await ask({title:t('chgamt'), sub:nm(f), input:{value:p.amt, placeholder:'0'}, okText:t('save')}); if(a){ p.amt = a; saveCfg(); renderAll(); toast('✓ ' + inr(a)); } }
+  else if(v==='date'){ const r = await ask({title:t('chgdate'), sub:nm(f), fields:[{key:'date', type:'date', label:t('when2'), value:`${MKEY}-${pad2(p.day)}`}], okText:t('save')}); if(r && r.date){ const d = +r.date.split('-')[2]; p.day = d; saveCfg(); renderAll(); toast('✓ ' + shortDate(d)); } }
+  else if(v==='del'){ await togglePaid(id); }
+}
 async function delEntry(id){
   if(sb && !String(id).startsWith('l')){
     const {error} = await sb.from('entries').delete().eq('id', id);
@@ -737,7 +774,7 @@ function ask(o){
     const bg = document.getElementById('sheet'), body = document.getElementById('sh-body'), bts = document.getElementById('sh-b');
     document.getElementById('sh-t').textContent = o.title||'';
     document.getElementById('sh-s').textContent = o.sub||''; document.getElementById('sh-s').style.display = o.sub?'':'none';
-    body.innerHTML = ''; bts.innerHTML = '';
+    body.innerHTML = ''; bts.innerHTML = ''; bts.style.flexDirection = '';
     let inp = null;
     let fieldEls = null;
     if(o.fields){ fieldEls = {}; const W = document.createElement('div'); W.className='flds';
@@ -753,11 +790,12 @@ function ask(o){
       body.appendChild(L); }
     const close = v => { bg.classList.remove('on'); res(v); };
     const mk = (txt, cls, fn) => { const b=document.createElement('button'); b.className='btn '+cls; b.textContent=txt; b.onclick=fn; bts.appendChild(b); };
+    if(o.buttons){ bts.style.flexDirection='column'; o.buttons.forEach(b=>mk(b.text, b.cls||'ghost', ()=>close(b.value))); mk(o.cancelText||t('cancel'), 'quiet', ()=>close(null)); bg.onclick = e => { if(e.target===bg) close(null); }; bg.classList.add('on'); return; }
     mk(o.cancelText||t('cancel'), 'quiet', ()=>close(null));
     if(o.onOpen) o.onOpen(body);
     if(!o.list && !o.html) mk(o.okText||t('ok'), o.danger?'danger':'', ()=>{
       if(fieldEls){ const out={}; for(const k in fieldEls){ const {el,f}=fieldEls[k]; let v = f.type==='num'? parseInt(el.value,10) : el.value.trim(); if(f.req && (f.type==='num' ? !(v>0) : !v)){ el.focus(); return; } out[k]=v; } close(out); return; }
-      if(inp){ const v = o.input.type==='text'? inp.value.trim() : parseInt(inp.value,10); if(o.input.type!=='text' && !(v>0)) { inp.focus(); return; } if(o.input.type==='text' && !v){ inp.focus(); return; } close(v); } else close(true); });
+      if(inp){ const v = o.input.type==='text'? inp.value.trim() : parseInt(inp.value,10); if(o.input.type!=='text' && !(v>0)) { inp.focus(); return; } if(o.input.type==='text' && !v && o.input.req!==false){ inp.focus(); return; } close(v); } else close(true); });
     bg.onclick = e => { if(e.target===bg) close(null); };
     bg.classList.add('on');
     if(inp){ setTimeout(()=>{ inp.focus(); inp.select&&inp.select(); }, 80); inp.onkeydown = e => { if(e.key==='Enter') bts.lastChild.click(); }; }
@@ -906,7 +944,7 @@ async function jarLedger(id){
     + (rows.length ? rows.map(e=>`<button class="r" data-jdel="${e.id}"><span class="dt">${shortDate(e.day)}</span><span class="nm">${e.note||t('spent')}<small>${e.by||''}</small></span><span class="amt">${inr(e.amt)}</span></button>`).join('') : `<div class="hint" style="padding:16px 0">${t('none')}</div>`)
     + `</div>`;
   await ask({title:nm(j), sub:`${MONTHS[lang][now.getMonth()]} · ${rows.length} ${t('entries')} · ${t('tapundo')}`, html, cancelText:t('closeb'), onOpen: body => {
-    body.querySelectorAll('[data-jdel]').forEach(b=>b.onclick=async ()=>{ const e = entries.find(x=>x.id===b.dataset.jdel); const ok = await ask({title:t('confirmdel'), sub:`${e?inr(e.amt):''}${e&&e.note?' · '+e.note:''}`, okText:t('remove'), danger:true}); if(!ok){ jarLedger(id); return; } await delEntry(b.dataset.jdel); toast(t('deleted')); jarLedger(id); });
+    body.querySelectorAll('[data-jdel]').forEach(b=>b.onclick=()=>{ const e = entries.find(x=>x.id===b.dataset.jdel); if(!e) return; entryActions(e, ()=>jarLedger(id)); });
   }});
 }
 async function addInflow(){
@@ -1095,7 +1133,7 @@ function renderBook(){
   if(P.emergency.done) rows.push({day:1,cat:'bab',name:t('emerg'),amt:P.emergency.plan});
   P.sips.forEach(s=>{ if(s.done) rows.push({day:1,cat:'bab',name:'SIP · '+s.name,amt:s.plan}); });
   P.provisions.forEach(x=>{ if(x.done||P.provDone) rows.push({day:1,cat:'bab',name:t('prov')+' · '+t(x.key),amt:x.plan}); });
-  Object.entries(D.paid).forEach(([id,p])=>{ const f=P.fixed.find(x=>x.id===id); if(f) rows.push({day:p.day,cat:'fix',name:nm(f)+(p.note?' · '+p.note:''),amt:p.amt,by:p.by}); });
+  Object.entries(D.paid).forEach(([id,p])=>{ const f=P.fixed.find(x=>x.id===id); if(f) rows.push({day:p.day,cat:'fix',name:nm(f)+(p.note?' · '+p.note:''),amt:p.amt,by:p.by,paidId:id}); });
   D.entries.forEach(e=>rows.push({day:e.day,cat:e.cat,name:entryNameP(e,P),amt:e.amt,by:e.by,id:e.id,ts:e.ts}));
   (D.inflows||[]).forEach(x=>rows.push({day:x.day,cat:'in',name:x.note||t('moneyin'),amt:x.amt,by:x.by,ts:x.ts,inId:x.id}));
   rows = rows.filter(r=>bookF==='all'||r.cat===bookF);
@@ -1106,10 +1144,11 @@ function renderBook(){
     const dt = new Date(vy, vm-1, d);
     const tot = byDay[d].filter(r=>r.cat!=='in').reduce((a,r)=>a+r.amt,0), inc = byDay[d].filter(r=>r.cat==='in').reduce((a,r)=>a+r.amt,0);
     const totTxt = (tot===0 && inc>0) ? `<span style="color:var(--green)">+${inr(inc)}</span>` : inr(tot);
-    return `<div class="sec" style="margin-bottom:16px"><div class="day-h"><div class="t">${t('day')} ${d} · ${DAYS[lang][dt.getDay()]}${D.live&&d===TODAY?' · '+t('today2'):''}</div><div class="num" style="color:var(--muted)">${totTxt}</div></div><div class="card list">${byDay[d].sort((a,b)=>(b.ts||0)-(a.ts||0)).map(r=>`<button class="row44" ${r.id?`data-del="${r.id}"`:''} ${r.inId&&D.live?`data-delin="${r.inId}"`:''}><span class="tag ${r.cat}">${r.cat==='in'?t('moneyin'):r.cat==='bab'?t('babylon').split(' ')[0]:r.cat==='fix'?t('fixed'):t('variable')}</span><div class="nm">${r.name}</div><div class="amt" ${r.cat==='in'?'style="color:var(--green)"':''}>${r.cat==='in'?'+':''}${inr(r.amt)}</div><div class="dt">${r.by||''}</div></button>`).join('')}</div></div>`;
+    return `<div class="sec" style="margin-bottom:16px"><div class="day-h"><div class="t">${t('day')} ${d} · ${DAYS[lang][dt.getDay()]}${D.live&&d===TODAY?' · '+t('today2'):''}</div><div class="num" style="color:var(--muted)">${totTxt}</div></div><div class="card list">${byDay[d].sort((a,b)=>(b.ts||0)-(a.ts||0)).map(r=>`<button class="row44" ${r.id?`data-del="${r.id}"`:''} ${r.inId&&D.live?`data-delin="${r.inId}"`:''} ${r.paidId&&D.live?`data-paid="${r.paidId}"`:''}><span class="tag ${r.cat}">${r.cat==='in'?t('moneyin'):r.cat==='bab'?t('babylon').split(' ')[0]:r.cat==='fix'?t('fixed'):t('variable')}</span><div class="nm">${r.name}</div><div class="amt" ${r.cat==='in'?'style="color:var(--green)"':''}>${r.cat==='in'?'+':''}${inr(r.amt)}</div><div class="dt">${r.by||''}</div></button>`).join('')}</div></div>`;
   }).join('') : `<div class="card hint" style="padding:18px">${D.live?t('none'):t('noentries')}</div>`;
   document.querySelectorAll('[data-delin]').forEach(b=>b.onclick=()=>removeInflow(b.dataset.delin));
-  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async ()=>{ const ok = await ask({title:t('confirmdel'), sub:t('confirmdelsub'), okText:t('remove'), danger:true}); if(!ok) return; await delEntry(b.dataset.del); if(!D.live){ delete viewCache[D.key]; loadMonth(D.key); } toast(t('deleted')); });
+  document.querySelectorAll('[data-paid]').forEach(b=>b.onclick=()=>paidActions(b.dataset.paid, D));
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ const e = D.entries.find(x=>x.id===b.dataset.del); if(!e) return; entryActions(Object.assign({month:D.key}, e), ()=>{ if(!D.live){ delete viewCache[D.key]; loadMonth(D.key); } }); });
 }
 
 /* ---------- snapshot ---------- */
