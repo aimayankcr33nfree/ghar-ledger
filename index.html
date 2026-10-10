@@ -660,8 +660,18 @@ function octTicks(P){ P.emergency.done=true; P.sips.forEach(s=>s.done=false);
 
 /* corpus = base (before this month) + whatever is ticked this month; never adds/subtracts on toggle */
 const sipTicked = P => P.sips.reduce((a,s)=>a+(s.done?s.plan:0),0);
-const corpusEmer = () => (corpus.emergencyBase||0) + (plan.emergency.done?plan.emergency.plan:0);
-const corpusSip = () => (corpus.sipBase||0) + sipTicked(plan);
+/* deposits logged for earlier months (back-dated Emergency / SIP entries) count towards the corpus */
+let pastBab = {emer:0, sip:0};
+async function pullBab(){
+  if(!sb) return;
+  const r = await sb.from('entries').select('month,cat_id,amt').eq('cat','bab');
+  if(r.error) return;
+  const nb = {emer:0, sip:0};
+  (r.data||[]).forEach(e=>{ if(!(e.month < MKEY)) return; if(e.cat_id==='emergency') nb.emer += e.amt||0; else if(String(e.cat_id).startsWith('sip')) nb.sip += e.amt||0; });
+  pastBab = nb;
+}
+const corpusEmer = () => (corpus.emergencyBase||0) + pastBab.emer + (plan.emergency.done?plan.emergency.plan:0);
+const corpusSip = () => (corpus.sipBase||0) + pastBab.sip + sipTicked(plan);
 
 function migrate(){
   const v = plan.planVersion||1;
@@ -762,7 +772,7 @@ async function pullEntries(){
 }
 async function pullAll(){
   if(viewMonth!==MKEY && viewCache[viewMonth] && !viewCache[viewMonth].loading){ delete viewCache[viewMonth]; }
-  try{ await pullMonth(); await pullEntries(); localSave(); setSync(true); }
+  try{ await pullMonth(); await pullEntries(); await pullBab(); localSave(); setSync(true); }
   catch(e){ setSync(false); }
   renderAll();
 }
@@ -797,7 +807,7 @@ async function addEntry(e){
     if(e.photo) row.photo = e.photo;
     let r = await sb.from('entries').insert(row).select();
     if(r.error && e.photo){ delete row.photo; r = await sb.from('entries').insert(row).select(); }   // photo column not added yet
-    if(!r.error){ await pullEntries(); localSave(); renderAll(); return (r.data && r.data[0] && r.data[0].id) || null; }
+    if(!r.error){ await pullEntries(); if(e.cat==='bab') await pullBab(); localSave(); renderAll(); return (r.data && r.data[0] && r.data[0].id) || null; }
     toast('⚠ ' + r.error.message);
   }
   if((e.month||MKEY)===MKEY){ const id = 'l'+Date.now(); entries.push(Object.assign({id}, e)); localSave(); renderAll(); return id; }
@@ -809,7 +819,7 @@ async function updateEntry(id, patch){
     const row = {}; if(patch.amt!=null) row.amt = patch.amt; if(patch.day!=null) row.day = patch.day; if(patch.month) row.month = patch.month; if(patch.note!=null) row.note = patch.note;
     const {error} = await sb.from('entries').update(row).eq('id', id);
     if(error){ toast('⚠ ' + error.message); return false; }
-    await pullEntries(); localSave(); renderAll(); return true;
+    await pullEntries(); await pullBab(); localSave(); renderAll(); return true;
   }
   const e = entries.find(x=>x.id===id); if(e){ Object.assign(e, patch); localSave(); renderAll(); } return true;
 }
@@ -844,6 +854,7 @@ async function delEntry(id){
   if(sb && !String(id).startsWith('l')){
     const {error} = await sb.from('entries').delete().eq('id', id);
     if(error){ toast('⚠ ' + error.message); return; }
+    await pullBab();
   }
   entries = entries.filter(x=>x.id!==id); localSave(); renderAll();
 }
@@ -1615,7 +1626,7 @@ document.getElementById('save-set').onclick = ()=>{
   plan.provisions.forEach((p,i)=>p.plan=v('in-prov'+i));
   plan.emerTarget = v('in-target'); plan.provCarry = plan.provCarry || {}; plan.provisions.forEach((p,i)=>{ plan.provCarry[p.key] = v('in-carry'+i); });
   // the user types the total so far (including this month); store the part that was there before this month
-  corpus = { emergencyBase: Math.max(0, v('in-c-emer') - (plan.emergency.done?plan.emergency.plan:0)), sipBase: Math.max(0, v('in-c-sip') - sipTicked(plan)) };
+  corpus = { emergencyBase: Math.max(0, v('in-c-emer') - pastBab.emer - (plan.emergency.done?plan.emergency.plan:0)), sipBase: Math.max(0, v('in-c-sip') - pastBab.sip - sipTicked(plan)) };
   plan.fixed.forEach((f,i)=>{ const n = document.getElementById('in-fn'+i).value; if(lang==='hi') f.hi=n; else f.name=n; f.due=v('in-fd'+i); f.amt=v('in-fa'+i); });
   plan.jars.forEach((j,i)=>j.plan=v('in-jar'+i));
   const pv = (document.getElementById('in-pin').value||'').replace(/\D/g,'');
