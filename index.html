@@ -152,16 +152,16 @@ input,select{font:inherit;color:inherit}
 .row44 .dt.ok{color:var(--blue)}
 
 /* jars */
-.jars{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.jars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 12px}
 .jar{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
-.jar .glass{width:100%;height:104px;border-radius:12px 12px 16px 16px;position:relative;overflow:hidden;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line),var(--shadow)}
+.jar .glass{width:100%;height:84px;border-radius:12px 12px 16px 16px;position:relative;overflow:hidden;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line),var(--shadow)}
 .jar .glass::before{content:"";position:absolute;left:6px;top:8px;width:4px;height:36%;border-radius:2px;background:rgba(255,255,255,.55);z-index:2}
 .jar .fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,#5B93D6,var(--blue));transition:height .8s var(--ease)}
 .jar .fill::after{content:"";position:absolute;left:-10%;right:-10%;top:-5px;height:10px;border-radius:50%;background:rgba(255,255,255,.28)}
 .jar .fill.warn{background:linear-gradient(180deg,#E9955A,var(--orange))}
-.jar .nm{font-size:11.5px;font-weight:700;line-height:1.15;min-height:28px;display:flex;align-items:flex-start;justify-content:center;word-break:break-word}
-.jar .lf{font-size:13px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.jar .dy{font-size:10.5px;padding:2px 5px;border-radius:8px;background:var(--soft);color:var(--muted);font-weight:600;white-space:nowrap}
+.jar .nm{font-size:13px;font-weight:700;line-height:1.15;min-height:18px;display:flex;align-items:flex-start;justify-content:center;word-break:break-word}
+.jar .lf{font-size:15px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.jar .dy{font-size:11px;padding:2px 8px;border-radius:8px;background:var(--soft);color:var(--muted);font-weight:600;white-space:nowrap}
 .jar .dy.warn{background:var(--orange-soft);color:var(--orange)}
 .hint{font-size:13px;color:var(--muted);text-align:center;line-height:1.4}
 
@@ -203,7 +203,9 @@ input,select{font:inherit;color:inherit}
 .cat .mb b{display:block;height:100%;background:var(--blue)}
 .cat .mb b.w{background:var(--orange)}
 .cat.on{border-color:var(--blue);background:var(--blue-soft)}
-.cat.fixc{background:var(--soft);box-shadow:none;grid-column:1/-1;min-height:56px;flex-direction:row;gap:10px}
+.cat.fixc{background:var(--soft);box-shadow:none}
+.cat.quick{background:linear-gradient(180deg,var(--card),var(--orange-soft))}
+.cat.quick.on{background:var(--blue-soft)}
 .cat.fixc.on{background:var(--blue-soft)}
 .picked{display:flex;align-items:center;gap:10px;background:var(--blue-soft);border:1.5px solid var(--blue-tint);border-radius:14px;padding:10px 14px;min-height:50px;width:100%;text-align:left}
 .picked .nm{flex:1;font-weight:700;color:var(--blue-ink)}
@@ -492,7 +494,7 @@ const DAYS_LEFT = DIM - TODAY;
 const pad2 = n => String(n).padStart(2,'0');
 
 /* ---------- plan (from Mayank's October notebook) ---------- */
-const PLAN_VERSION = 6;
+const PLAN_VERSION = 7;
 function defaultPlan(){ return {
   income: 60393,
   members: ['Mayank','Charu','Mummy'],
@@ -519,8 +521,6 @@ function defaultPlan(){ return {
     {id:'grocery',name:'Grocery + Cosmetic',hi:'किराना + कॉस्मेटिक',amt:4000,due:0,kind:'once'},
     {id:'oil',name:'Oil (3 kg)',hi:'तेल (3 किलो)',amt:600,due:0,kind:'once'},
     {id:'petrol',name:'Petrol',hi:'पेट्रोल',amt:600,due:0,kind:'rec'},
-    {id:'deepak',name:'Deepak',hi:'दीपक',amt:300,due:0,kind:'rec'},
-    {id:'chalave',name:'Mandir (Chadhava)',hi:'मंदिर (चढ़ावा)',amt:1050,due:0,kind:'rec'},
     {id:'mandir',name:'Mandir + Chola',hi:'मंदिर + चोला',amt:1000,due:0,kind:'once'},
     {id:'ott',name:'Hotstar + Netflix',hi:'हॉटस्टार + नेटफ़्लिक्स',amt:300,due:0,kind:'once'}
   ],
@@ -530,7 +530,10 @@ function defaultPlan(){ return {
     {id:'paneer',name:'Paneer',hi:'पनीर',plan:1500},
     {id:'fun',name:'ENTMT',hi:'मनोरंजन',plan:1000},
     {id:'med',name:'Medical',hi:'दवा',plan:500},
-    {id:'stat',name:'STAT & Others',hi:'स्टेशनरी व अन्य',plan:1500}
+    {id:'stat',name:'STAT & Others',hi:'स्टेशनरी व अन्य',plan:1500},
+    {id:'deepak',name:'Deepak',hi:'दीपक',plan:300},
+    {id:'phool',name:'Phool',hi:'फूल',plan:500},
+    {id:'mandir',name:'Mandir',hi:'मंदिर',plan:1050}
   ],
   planVersion: PLAN_VERSION
 };}
@@ -581,6 +584,15 @@ function migrate(){
       const o = plan.jars[i]; const med = 500, stat = Math.max(0, (o.plan||2000) - med);
       plan.jars.splice(i, 1, {id:'med',name:'Medical',hi:'दवा',plan:med}, {id:'stat',name:'STAT & Others',hi:'स्टेशनरी व अन्य',plan:stat});
     }
+  }
+  if(v <= 6){
+    // Deepak, Phool, Mandir become daily jars (logged with the big +), not fixed lines
+    const take = id => { const i = plan.fixed.findIndex(f=>f.id===id); if(i<0) return null; const f = plan.fixed.splice(i,1)[0]; if(paid){ delete paid[id]; } return f; };
+    const dk = take('deepak'), ch = take('chalave'); take('phool');
+    const add = (id,name,hi,amt) => { if(!plan.jars.find(j=>j.id===id)) plan.jars.push({id,name,hi,plan:amt}); };
+    add('deepak','Deepak','दीपक', dk ? (dk.amt||300) : 300);
+    add('phool','Phool','फूल', 500);
+    add('mandir','Mandir','मंदिर', ch ? (ch.amt||1050) : 1050);
   }
   plan.planVersion = PLAN_VERSION; return true;
 }
@@ -660,7 +672,7 @@ async function delEntry(id){
 }
 
 /* ---------- derived ---------- */
-const jarMatch = (e, id) => e.cat==='var' && (e.catId===id || (id==='stat' && e.catId==='other'));
+const jarMatch = (e, id) => (e.cat==='var' && (e.catId===id || (id==='stat' && e.catId==='other'))) || (e.cat==='fix' && ((id==='deepak' && e.catId==='deepak') || (id==='mandir' && e.catId==='chalave') || (id==='phool' && e.catId==='phool')));
 const jarSpent = id => entries.filter(e=>jarMatch(e,id)).reduce((a,e)=>a+e.amt,0);
 const fixedTotal = () => plan.fixed.reduce((a,f)=>a+(f.amt||0),0);
 const provTotal = () => plan.provisions.reduce((a,p)=>a+p.plan,0);
@@ -673,6 +685,8 @@ const fixOther = () => entries.filter(e=>e.cat==='fix').reduce((a,e)=>a+e.amt,0)
 const babEntries = () => entries.filter(e=>e.cat==='bab').reduce((a,e)=>a+e.amt,0);
 const provPaid = P => P.provisions.reduce((a,x)=>a+((x.done||P.provDone)?x.plan:0),0);
 const babDone = () => (plan.emergency.done?plan.emergency.plan:0) + sipTicked(plan) + provPaid(plan);
+const itemSpent = id => (paid[id]?paid[id].amt:0) + entries.filter(e=>e.cat==='fix'&&e.catId===id).reduce((a,e)=>a+e.amt,0);
+const QUICK = ['deepak','phool'];
 const inflowTotal = () => inflows.reduce((a,x)=>a+(x.amt||0),0);
 const outSoFar = () => babDone() + fixedPaidTotal() + fixOther() + varSpent() + babEntries();
 
@@ -792,14 +806,17 @@ function renderHome(){
   document.querySelectorAll('[data-prov]').forEach(el=>el.onclick=()=>toggleProv(+el.dataset.prov));
 
   // fixed
-  const rows = plan.fixed.filter(f=> showAllFixed || paid[f.id] || f.due>0);
+  const rows = plan.fixed.filter(f=> showAllFixed || paid[f.id] || f.due>0 || (f.kind==='rec' && itemSpent(f.id)>0));
   document.getElementById('fix-toggle').textContent = showAllFixed ? t('showless') : t('showall') + ' (' + plan.fixed.length + ')';
   document.getElementById('fix-list').innerHTML = rows.map(f=>{
+    if(f.kind==='rec'){ const sp = itemSpent(f.id), full = f.amt>0 && sp>=f.amt, over = f.amt>0 && sp>f.amt;
+      return `<button class="row44" data-rec="${f.id}"><div class="box ${full?'on':''}">${CHECK}</div><div class="nm">${nm(f)}</div><div class="amt" ${over?'style="color:var(--orange)"':''}>${fmt(sp)}<span style="color:var(--muted);font-weight:500"> / ${f.amt?fmt(f.amt):'—'}</span></div><div class="dt">${t('rec')}</div></button>`; }
     const p = paid[f.id]; const hot = !p && f.due>0 && f.due<=TODAY;
     const dt = p ? `${t('paid')}<br>${shortDate(p.day)}` : (f.due>0 ? `${t('due')}<br>${shortDate(f.due)}` : (f.kind==='rec'?t('rec'):''));
     return `<button class="row44 ${p?'on':''}" data-fix="${f.id}"><div class="box ${p?'on':''} ${hot?'hot':''} ${lastPop===f.id?'pop':''}">${CHECK}</div><div class="nm">${nm(f)}</div><div class="amt">${p?fmt(p.amt):(f.amt?fmt(f.amt):'—')}</div><div class="dt ${hot?'hot':p?'ok':''}">${dt}</div></button>`;
   }).join('') || `<div class="hint" style="padding:14px 0">${t('none')}</div>`;
   document.querySelectorAll('[data-fix]').forEach(el=>el.onclick=()=>togglePaid(el.dataset.fix));
+  document.querySelectorAll('[data-rec]').forEach(el=>el.onclick=()=>{ quickPick(el.dataset.rec); go('log'); });
 
   // section totals + progress
   const babPl = plan.emergency.plan + sipTotal() + provTotal(), babDn = babDone() + babEntries();
@@ -815,7 +832,7 @@ function renderHome(){
     const rate = TODAY>1 ? sp/(TODAY-1) : sp;
     const lasts = rate>0 ? Math.floor(left/rate) : DAYS_LEFT;
     const warn = left<=0 || lasts < DAYS_LEFT;
-    const pct = Math.max(0, Math.min(100, left/j.plan*100));
+    const pct = j.plan>0 ? Math.max(0, Math.min(100, left/j.plan*100)) : 0;
     return `<div class="jar"><div class="glass"><div class="fill ${warn?'warn':''}" data-k="jar-${j.id}" data-w="${pct}" data-dim="h"></div></div><div class="nm">${nm(j)}</div><div class="lf">${inr(left)}</div><div class="dy ${warn?'warn':''}">${left<=0?'0':Math.min(lasts,99)} ${t('lasts')}</div></div>`;
   }).join('');
 
@@ -899,15 +916,18 @@ function renderDates(){
 }
 function renderLog(){
   renderDates();
-  const cats = plan.jars.map(j=>{ const sp = jarSpent(j.id), left = j.plan-sp; return {id:j.id, label:nm(j), left:inr(left), pct:Math.max(0,Math.min(100,left/j.plan*100)), warn:left<=0}; });
+  const cats = plan.jars.map(j=>{ const sp = jarSpent(j.id), left = j.plan-sp; return {id:j.id, label:nm(j), left:inr(left), pct:j.plan>0?Math.max(0,Math.min(100,left/j.plan*100)):0, warn:left<=0}; });
   document.getElementById('cats').innerHTML = cats.map(c=>`<button class="cat ${sel===c.id?'on':''}" data-cat="${c.id}"><div class="nm">${c.label}</div><div class="lf">${c.left}</div><div class="mb"><b class="${c.warn?'w':''}" style="width:${c.pct}%"></b></div></button>`).join('')
-    + `<button class="cat fixc ${sel==='fix'?'on':''}" data-cat="fix"><div class="nm">${t('fixedother')}</div><div class="lf">${t('pickitem')}</div></button>`;
+    + QUICK.map(id=>{ const f = plan.fixed.find(x=>x.id===id); if(!f) return ''; const sp = itemSpent(id); const on = sel==='fix' && item && item.key===id;
+        return `<button class="cat quick ${on?'on':''}" data-quick="${id}"><div class="nm">${nm(f)}</div><div class="lf">${f.amt?inr(f.amt-sp):inr(sp)}</div></button>`; }).join('')
+    + `<button class="cat fixc ${sel==='fix' && !(item && QUICK.includes(item.key))?'on':''}" data-cat="fix"><div class="nm">${t('fixedother')}</div><div class="lf">${t('pickitem')}</div></button>`;
+  document.querySelectorAll('[data-quick]').forEach(b=>b.onclick=()=>{ quickPick(b.dataset.quick); buzz(6); renderLog(); });
   document.querySelectorAll('[data-cat]').forEach(b=>b.onclick=async ()=>{
     if(b.dataset.cat==='fix'){ const it = await pickItem(); if(!it) return; sel='fix'; item=it; if(!amt && it.amt) amt=String(it.amt); }
     else { sel=b.dataset.cat; item=null; }
     buzz(6); renderLog(); });
   const pw = document.getElementById('picked-wrap');
-  if(sel==='fix' && item){ pw.style.display=''; pw.innerHTML = `<button class="picked" id="repick"><div class="box on">${CHECK}</div><span class="nm">${item.label}</span><span class="ch">${t('change')}</span></button>`; document.getElementById('repick').onclick = async ()=>{ const it = await pickItem(); if(it){ item=it; if(it.amt) amt=String(it.amt); renderLog(); } }; }
+  if(sel==='fix' && item && !QUICK.includes(item.key)){ pw.style.display=''; pw.innerHTML = `<button class="picked" id="repick"><div class="box on">${CHECK}</div><span class="nm">${item.label}</span><span class="ch">${t('change')}</span></button>`; document.getElementById('repick').onclick = async ()=>{ const it = await pickItem(); if(it){ item=it; if(it.amt) amt=String(it.amt); renderLog(); } }; }
   else { pw.style.display='none'; }
   const av = document.getElementById('amt'); av.textContent = amt ? parseInt(amt,10).toLocaleString('en-IN') : '0'; av.classList.toggle('zero', !amt);
   const keys = ['1','2','3','4','5','6','7','8','9','⌫','0','C'];
@@ -918,6 +938,7 @@ function renderLog(){
   const sv = document.getElementById('save'); sv.disabled = !ready;
   sv.textContent = ready ? `${t('save')} · ${inr(parseInt(amt,10))}` : t('save');
 }
+function quickPick(id){ const it = itemList().find(x=>x.key===id); if(!it) return; sel='fix'; item=it; }
 function renderWho(id){
   document.getElementById(id).innerHTML = plan.members.map(m=>`<button class="${me===m?'on':''}" data-who="${m}">${m}</button>`).join('');
   document.querySelectorAll('#'+id+' [data-who]').forEach(b=>b.onclick=()=>{ me=b.dataset.who; try{localStorage.setItem('gl-me',me);}catch(e){} buzz(5); renderLog(); renderSettings(); });
@@ -931,6 +952,7 @@ function isTicked(it){
   if(it.key.startsWith('sip')) return !!(plan.sips[+it.key.slice(3)]||{}).done;
   if(it.key.startsWith('prov')) return plan.provDone || !!(plan.provisions[+it.key.slice(4)]||{}).done;
   if(it.key==='other') return false;
+  const fx = plan.fixed.find(f=>f.id===it.key); if(fx && fx.kind==='rec') return false;
   return !!paid[it.key];
 }
 document.getElementById('save').onclick = async ()=>{
@@ -964,7 +986,7 @@ function applyTick(it, a, day){
   if(it.key==='emergency'){ if(plan.emergency.done) return false; plan.emergency.done=true; plan.emergency.plan=a; lastPop='emer'; }
   else if(it.key.startsWith('sip')){ const s = plan.sips[+it.key.slice(3)]; if(!s||s.done) return false; s.done=true; s.plan=a; lastPop='sip'; }
   else if(it.key.startsWith('prov')){ const x = plan.provisions[+it.key.slice(4)]; if(!x||x.done||plan.provDone) return false; x.done=true; x.plan=a; lastPop='prov'+(+it.key.slice(4)); }
-  else { if(paid[it.key]) return false; paid[it.key]={day, amt:a, by:me}; lastPop=it.key; }
+  else { const fx = plan.fixed.find(f=>f.id===it.key); if(fx && fx.kind==='rec') return false; if(paid[it.key]) return false; paid[it.key]={day, amt:a, by:me}; lastPop=it.key; }
   saveCfg(); renderAll(); return true;
 }
 
