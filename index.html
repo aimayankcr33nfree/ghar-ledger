@@ -153,7 +153,17 @@ input,select{font:inherit;color:inherit}
 
 /* jars */
 .jars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 12px}
-.jar{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.jar{display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center;width:100%}
+.jl{display:flex;flex-direction:column;overflow:auto;min-height:0;flex:1 1 auto;margin:0 -4px;padding:0 4px}
+.jl .sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:8px}
+.jl .sum div{background:var(--soft);border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.jl .sum small{font-size:11px;color:var(--muted);font-weight:600}
+.jl .sum b{font-size:16px;font-variant-numeric:tabular-nums}
+.jl .r{display:flex;align-items:center;gap:10px;min-height:48px;border-top:1px solid var(--soft);width:100%;text-align:left}
+.jl .r .dt{width:56px;flex:none;color:var(--muted);font-size:13px}
+.jl .r .nm{flex:1;font-size:14px}
+.jl .r .nm small{display:block;color:var(--muted);font-size:12px}
+.jl .r .amt{font-weight:700;font-variant-numeric:tabular-nums}
 .jar .glass{width:100%;height:84px;border-radius:12px 12px 16px 16px;position:relative;overflow:hidden;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line),var(--shadow)}
 .jar .glass::before{content:"";position:absolute;left:6px;top:8px;width:4px;height:36%;border-radius:2px;background:rgba(255,255,255,.55);z-index:2}
 .jar .fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,#5B93D6,var(--blue));transition:height .8s var(--ease)}
@@ -221,6 +231,9 @@ input,select{font:inherit;color:inherit}
 .who button{flex:1;min-height:46px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);font-size:15px;font-weight:600;border:2px solid transparent;color:var(--ink2)}
 .who button.on{border-color:var(--blue);background:var(--blue-soft);color:var(--blue-ink)}
 .lbl-s{font-size:13px;color:var(--muted);font-weight:600;padding:0 2px}
+.notein{min-height:50px;border:1.5px solid var(--line);border-radius:14px;padding:0 14px;background:var(--card);font-size:16px;width:100%}
+.notein:focus{outline:none;border-color:var(--blue)}
+.notein::placeholder{color:var(--muted)}
 
 /* month switch */
 .msw{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--card);box-shadow:var(--shadow);border-radius:14px;padding:4px}
@@ -387,6 +400,7 @@ input,select{font:inherit;color:inherit}
     <div class="lbl-s" data-i="who"></div>
     <div class="who" id="who"></div>
   </div>
+  <input class="notein" id="note" inputmode="text" autocomplete="off" maxlength="60">
   <button class="btn" id="save" disabled></button>
 </section>
 
@@ -459,7 +473,7 @@ const I = {
     fixedother:'तय/अन्य',admission:'एडमिशन',festival:'त्योहार/उपहार',repair:'मरम्मत',cloth:'कपड़े',medi:'मेडिक्लेम',
     leftmonth:'इस महीने बचा है',outof:'गया',planned:'योजना',dailyleft:'रोज़ के लिए',perday:'/दिन',cancel:'रहने दें',ok:'ठीक है',markpaid:'दिया — टिक करें',
     untickq:'टिक हटाएँ?',unticksub:'यह फिर "बाकी" में आ जाएगा',unticked:'टिक हट गया',enteramt:'कितना दिया? (₹)',whatfor:'किस चीज़ का?',pickitem:'चीज़ चुनें',change:'बदलें',newfixed:'नया तय खर्च',namehint:'नाम लिखें',
-    moneyin:'पैसे आए',received:'मिला',tocome:'आना बाकी',inhand:'हाथ में',addinflow:'पैसे मिले — लिखें',when2:'कब मिले',fromwho:'कहाँ से (वैकल्पिक)',fromhint:'जैसे: युक्ति, दुकान',removeinflow:'यह रसीद हटाएँ?',emerdone:'जमा हो गया',emerpending:'जमा करना है',sipdone:'दोनों हो गए',sippending:'करना है',markdone:'हो गया — टिक करें',lastmonth:'पिछला महीना',nextmonth:'अगला महीना',overby:'ज़्यादा'},
+    notehint:'नोट (वैकल्पिक) — जैसे: अल्ट्रासाउंड, कॉपी',closeb:'बंद करें',moneyin:'पैसे आए',received:'मिला',tocome:'आना बाकी',inhand:'हाथ में',addinflow:'पैसे मिले — लिखें',when2:'कब मिले',fromwho:'कहाँ से (वैकल्पिक)',fromhint:'जैसे: युक्ति, दुकान',removeinflow:'यह रसीद हटाएँ?',emerdone:'जमा हो गया',emerpending:'जमा करना है',sipdone:'दोनों हो गए',sippending:'करना है',markdone:'हो गया — टिक करें',lastmonth:'पिछला महीना',nextmonth:'अगला महीना',overby:'ज़्यादा'},
   en:{babylon:'Babylon · paid first',fixed:'Fixed',variable:'Variable',today:"Today's entries",jarhint:'The colour is what is left. Orange = empty before the 31st at this pace.',
     logtitle:'Log a spend',logsub:'Day → jar → amount → save',whichitem:'What was it for?',sumtotal:'Total',other:'Other',review:'Month review',spent:'Total out',saved2:'Saved / left',over:'Overspent',under:'Underspent',nothingover:'No category went over plan',loading:'Loading…',baseline:'No separate plan saved for this month — compared with the current plan',current:'Current month',closed:'Closed month',noentries:'No entries for this month yet — use + Log and pick a date',savrate:'Savings rate',when:'When was it spent?',today2c:'Today',yesterday:'Yesterday',pickdate:'Date',daysago:'days ago',who:'Who spent?',save:'Save',book:'Day Book',outsofar:'Out so far',leftof:'Left',tapundo:'Tap an entry to remove it',
     snap:'₹ Snapshot',planactual:'Plan vs actual',settings:'Settings',language:'Language',iam:'I am',income:'Monthly income',corpus:'Total saved so far',corpusnote:"Including this month's deposit — this is what the cards show",addfixed:'+ Add fixed item',jarsplan:'Jar plan',saveset:'Save settings',
@@ -472,7 +486,7 @@ const I = {
     fixedother:'Fixed/other',admission:'Admission',festival:'Festival/gifts',repair:'Repair',cloth:'Clothing',medi:'Mediclaim',
     leftmonth:'Left this month',outof:'out',planned:'plan',dailyleft:'For daily spends',perday:'/day',cancel:'Cancel',ok:'OK',markpaid:'Paid — tick it',
     untickq:'Remove the tick?',unticksub:'It will show as pending again',unticked:'Tick removed',enteramt:'How much was paid? (₹)',whatfor:'What for?',pickitem:'Pick an item',change:'Change',newfixed:'New fixed item',namehint:'Type a name',
-    moneyin:'Money in',received:'Received',tocome:'To come',inhand:'In hand',addinflow:'Money received — add',when2:'When',fromwho:'From (optional)',fromhint:'e.g. Yukti, shop',removeinflow:'Remove this receipt?',emerdone:'Deposited',emerpending:'To deposit',sipdone:'Both done',sippending:'Pending',markdone:'Done — tick it',lastmonth:'Previous month',nextmonth:'Next month',overby:'over'}
+    notehint:'Note (optional) — e.g. ultrasound, notebook',closeb:'Close',moneyin:'Money in',received:'Received',tocome:'To come',inhand:'In hand',addinflow:'Money received — add',when2:'When',fromwho:'From (optional)',fromhint:'e.g. Yukti, shop',removeinflow:'Remove this receipt?',emerdone:'Deposited',emerpending:'To deposit',sipdone:'Both done',sippending:'Pending',markdone:'Done — tick it',lastmonth:'Previous month',nextmonth:'Next month',overby:'over'}
 };
 let lang = 'hi';
 try{ lang = localStorage.getItem('gl-lang') || 'hi'; }catch(e){}
@@ -494,7 +508,7 @@ const DAYS_LEFT = DIM - TODAY;
 const pad2 = n => String(n).padStart(2,'0');
 
 /* ---------- plan (from Mayank's October notebook) ---------- */
-const PLAN_VERSION = 7;
+const PLAN_VERSION = 8;
 function defaultPlan(){ return {
   income: 60393,
   members: ['Mayank','Charu','Mummy'],
@@ -593,6 +607,10 @@ function migrate(){
     add('deepak','Deepak','दीपक', dk ? (dk.amt||300) : 300);
     add('phool','Phool','फूल', 500);
     add('mandir','Mandir','मंदिर', ch ? (ch.amt||1050) : 1050);
+  }
+  if(v <= 7){
+    // the first ghee tick carried the old 4 kg amount; each purchase is 1,400
+    ['ghee1','ghee2'].forEach(id=>{ const f = plan.fixed.find(x=>x.id===id); if(f && f.amt>1400) f.amt = 1400; if(paid && paid[id] && paid[id].amt > 1400) paid[id].amt = 1400; });
   }
   plan.planVersion = PLAN_VERSION; return true;
 }
@@ -728,6 +746,7 @@ function ask(o){
         w.appendChild(l); w.appendChild(i); W.appendChild(w); fieldEls[f.key]={el:i,f}; });
       body.appendChild(W); inp = fieldEls[o.fields[0].key].el; }
     else if(o.input){ inp = document.createElement('input'); inp.className = o.input.type==='text'?'txt':''; inp.inputMode = o.input.type==='text'?'text':'numeric'; inp.value = o.input.value??''; inp.placeholder = o.input.placeholder||''; body.appendChild(inp); }
+    if(o.html){ body.innerHTML = o.html; }
     if(o.list){ const L = document.createElement('div'); L.className='lst'; let g='';
       o.list.forEach(it=>{ if(it.grp!==g){ g=it.grp; const h=document.createElement('div'); h.className='grp'; h.textContent=g; L.appendChild(h); }
         const b=document.createElement('button'); b.className = it.done?'done':''; b.innerHTML = `<span class="nm">${it.label}</span><span class="amt">${it.amt?inr(it.amt):''}${it.done?' ✓':''}</span>`; b.onclick=()=>close(it); L.appendChild(b); });
@@ -735,7 +754,8 @@ function ask(o){
     const close = v => { bg.classList.remove('on'); res(v); };
     const mk = (txt, cls, fn) => { const b=document.createElement('button'); b.className='btn '+cls; b.textContent=txt; b.onclick=fn; bts.appendChild(b); };
     mk(o.cancelText||t('cancel'), 'quiet', ()=>close(null));
-    if(!o.list) mk(o.okText||t('ok'), o.danger?'danger':'', ()=>{
+    if(o.onOpen) o.onOpen(body);
+    if(!o.list && !o.html) mk(o.okText||t('ok'), o.danger?'danger':'', ()=>{
       if(fieldEls){ const out={}; for(const k in fieldEls){ const {el,f}=fieldEls[k]; let v = f.type==='num'? parseInt(el.value,10) : el.value.trim(); if(f.req && (f.type==='num' ? !(v>0) : !v)){ el.focus(); return; } out[k]=v; } close(out); return; }
       if(inp){ const v = o.input.type==='text'? inp.value.trim() : parseInt(inp.value,10); if(o.input.type!=='text' && !(v>0)) { inp.focus(); return; } if(o.input.type==='text' && !v){ inp.focus(); return; } close(v); } else close(true); });
     bg.onclick = e => { if(e.target===bg) close(null); };
@@ -833,8 +853,9 @@ function renderHome(){
     const lasts = rate>0 ? Math.floor(left/rate) : DAYS_LEFT;
     const warn = left<=0 || lasts < DAYS_LEFT;
     const pct = j.plan>0 ? Math.max(0, Math.min(100, left/j.plan*100)) : 0;
-    return `<div class="jar"><div class="glass"><div class="fill ${warn?'warn':''}" data-k="jar-${j.id}" data-w="${pct}" data-dim="h"></div></div><div class="nm">${nm(j)}</div><div class="lf">${inr(left)}</div><div class="dy ${warn?'warn':''}">${left<=0?'0':Math.min(lasts,99)} ${t('lasts')}</div></div>`;
+    return `<button class="jar" data-jar="${j.id}"><div class="glass"><div class="fill ${warn?'warn':''}" data-k="jar-${j.id}" data-w="${pct}" data-dim="h"></div></div><div class="nm">${nm(j)}</div><div class="lf">${inr(left)}</div><div class="dy ${warn?'warn':''}">${left<=0?'0':Math.min(lasts,99)} ${t('lasts')}</div></button>`;
   }).join('');
+  document.querySelectorAll('[data-jar]').forEach(el=>el.onclick=()=>jarLedger(el.dataset.jar));
 
   // today
   const todays = entries.filter(e=>e.day===TODAY).sort((a,b)=>b.ts-a.ts);
@@ -877,6 +898,17 @@ async function toggleProv(i){
   lastPop='prov'+i; saveCfg(); renderAll();
 }
 function entryName(e){ return entryNameP(e, plan); }
+async function jarLedger(id){
+  const j = plan.jars.find(x=>x.id===id); if(!j) return;
+  const rows = entries.filter(e=>jarMatch(e,id)).sort((a,b)=>b.day-a.day||b.ts-a.ts);
+  const sp = rows.reduce((a,e)=>a+e.amt,0), left = j.plan - sp;
+  const html = `<div class="jl"><div class="sum"><div><small>${t('plan')}</small><b>${inr(j.plan)}</b></div><div><small>${t('spent')}</small><b>${inr(sp)}</b></div><div><small>${t('notdone')}</small><b style="color:${left<0?'var(--orange)':'var(--blue)'}">${inr(left)}</b></div></div>`
+    + (rows.length ? rows.map(e=>`<button class="r" data-jdel="${e.id}"><span class="dt">${shortDate(e.day)}</span><span class="nm">${e.note||t('spent')}<small>${e.by||''}</small></span><span class="amt">${inr(e.amt)}</span></button>`).join('') : `<div class="hint" style="padding:16px 0">${t('none')}</div>`)
+    + `</div>`;
+  await ask({title:nm(j), sub:`${MONTHS[lang][now.getMonth()]} · ${rows.length} ${t('entries')} · ${t('tapundo')}`, html, cancelText:t('closeb'), onOpen: body => {
+    body.querySelectorAll('[data-jdel]').forEach(b=>b.onclick=async ()=>{ const e = entries.find(x=>x.id===b.dataset.jdel); const ok = await ask({title:t('confirmdel'), sub:`${e?inr(e.amt):''}${e&&e.note?' · '+e.note:''}`, okText:t('remove'), danger:true}); if(!ok){ jarLedger(id); return; } await delEntry(b.dataset.jdel); toast(t('deleted')); jarLedger(id); });
+  }});
+}
 async function addInflow(){
   const r = await ask({title:t('addinflow'), fields:[
     {key:'amt', type:'num', label:t('amount')+' (₹)', value:'', placeholder:'0', req:true},
@@ -934,6 +966,7 @@ function renderLog(){
   document.getElementById('pad').innerHTML = keys.map(k=>`<button class="${isNaN(k)?'op':''}" data-k="${k}">${k}</button>`).join('');
   document.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{ const k=b.dataset.k; if(k==='⌫') amt=amt.slice(0,-1); else if(k==='C') amt=''; else if(amt.length<6 && !(amt===''&&k==='0')) amt+=k; buzz(5); renderLog(); });
   renderWho('who');
+  document.getElementById('note').placeholder = t('notehint');
   const ready = sel && parseInt(amt,10)>0 && me && (sel!=='fix' || item);
   const sv = document.getElementById('save'); sv.disabled = !ready;
   sv.textContent = ready ? `${t('save')} · ${inr(parseInt(amt,10))}` : t('save');
@@ -962,13 +995,15 @@ document.getElementById('save').onclick = async ()=>{
   let label = sel==='fix' ? item.label : nm(plan.jars.find(j=>j.id===sel)||{name:sel});
   if(sel==='fix'){
     if(item.key==='other'){ const n = await ask({title:t('whatfor'), input:{type:'text', value:'', placeholder:'…'}}); if(!n) return; note = n; label = n; cat='fix'; catId='fix'; }
-    else if(mk===MKEY && applyTick(item, a, selDate.getDate())){ await celebrate(a, label); amt=''; sel=null; item=null; selDate=new Date(TODAY_D); go('home'); return; }
+    else if(mk===MKEY && applyTick(item, a, selDate.getDate())){ const ex=(document.getElementById('note').value||'').trim(); if(ex && paid[item.key]){ paid[item.key].note = ex; saveCfg(); } document.getElementById('note').value=''; await celebrate(a, label + (ex?' · '+ex:'')); amt=''; sel=null; item=null; selDate=new Date(TODAY_D); go('home'); return; }
     else { cat = item.cat; catId = item.key; note = item.label; }
   }
+  const extra = (document.getElementById('note').value||'').trim();
+  if(extra){ note = note ? note + ' · ' + extra : extra; label = label + ' · ' + extra; }
   await addEntry({ts:Date.now(), month:mk, day:selDate.getDate(), cat, catId, amt:a, by:me, note});
   if(mk!==MKEY){ viewMonth = mk; delete viewCache[mk]; }
   await celebrate(a, label + (ago>0 ? ' · ' + shortDate(selDate.getDate(), selDate.getMonth()) : ''));
-  amt=''; sel=null; item=null; selDate = new Date(TODAY_D); go(ago>0 ? 'book' : 'home');
+  amt=''; sel=null; item=null; selDate = new Date(TODAY_D); document.getElementById('note').value=''; go(ago>0 ? 'book' : 'home');
 };
 
 /* ---------- items (fixed + babylon) ---------- */
@@ -1039,7 +1074,7 @@ function renderMsw(id){
   el.querySelectorAll('[data-mv]').forEach(b=>b.onclick=()=>{ viewMonth = shiftMonth(viewMonth, +b.dataset.mv); buzz(5); renderBook(); renderSnap(); });
 }
 function entryNameP(e, P){
-  if(e.cat==='var'){ const j = P.jars.find(j=>j.id===e.catId) || (e.catId==='other' ? P.jars.find(j=>j.id==='stat') : null); return j?nm(j):e.catId; }
+  if(e.cat==='var'){ const j = P.jars.find(j=>j.id===e.catId) || (e.catId==='other' ? P.jars.find(j=>j.id==='stat') : null); const base = j?nm(j):e.catId; return e.note ? base + ' · ' + e.note : base; }
   return e.note || t('fixedother');
 }
 
@@ -1060,7 +1095,7 @@ function renderBook(){
   if(P.emergency.done) rows.push({day:1,cat:'bab',name:t('emerg'),amt:P.emergency.plan});
   P.sips.forEach(s=>{ if(s.done) rows.push({day:1,cat:'bab',name:'SIP · '+s.name,amt:s.plan}); });
   P.provisions.forEach(x=>{ if(x.done||P.provDone) rows.push({day:1,cat:'bab',name:t('prov')+' · '+t(x.key),amt:x.plan}); });
-  Object.entries(D.paid).forEach(([id,p])=>{ const f=P.fixed.find(x=>x.id===id); if(f) rows.push({day:p.day,cat:'fix',name:nm(f),amt:p.amt,by:p.by}); });
+  Object.entries(D.paid).forEach(([id,p])=>{ const f=P.fixed.find(x=>x.id===id); if(f) rows.push({day:p.day,cat:'fix',name:nm(f)+(p.note?' · '+p.note:''),amt:p.amt,by:p.by}); });
   D.entries.forEach(e=>rows.push({day:e.day,cat:e.cat,name:entryNameP(e,P),amt:e.amt,by:e.by,id:e.id,ts:e.ts}));
   (D.inflows||[]).forEach(x=>rows.push({day:x.day,cat:'in',name:x.note||t('moneyin'),amt:x.amt,by:x.by,ts:x.ts,inId:x.id}));
   rows = rows.filter(r=>bookF==='all'||r.cat===bookF);
