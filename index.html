@@ -97,11 +97,13 @@ input,select{font:inherit;color:inherit}
 .hero .bar3 .s2,.hero .lane i.s2{background:#CFE0F4}
 .hero .bar3 .s3,.hero .lane i.s3{background:#E9955A}
 .hero .lanes{display:flex;flex-direction:column;gap:3px}
-.hero .lane{display:grid;grid-template-columns:8px 1fr auto auto;align-items:center;gap:8px;font-size:12.5px;color:var(--dark-muted);text-align:left;padding:3px 0;width:100%}
+.hero .lane{display:grid;grid-template-columns:8px 1fr 72px 72px 72px;align-items:center;gap:6px;font-size:12.5px;color:var(--dark-muted);text-align:left;padding:3px 0;width:100%}
+.hero .lane.hd{font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;padding:0 0 1px;opacity:.75}
+.hero .lane .a{text-align:right}
 .hero .lane i{width:8px;height:8px;border-radius:4px;display:block}
 .hero .lane .n{color:var(--dark-ink);font-weight:600}
 .hero .lane .a,.hero .lane .b{white-space:nowrap;font-variant-numeric:tabular-nums}
-.hero .lane .b{min-width:118px;text-align:right}
+.hero .lane .b{text-align:right}
 .hero .lane b{color:var(--dark-ink);font-weight:600}
 .hero .lane .b b{color:#F4C9A3}
 .hero .lane:active{opacity:.7}
@@ -112,7 +114,7 @@ input,select{font:inherit;color:inherit}
 .hero .bar b.w{background:linear-gradient(90deg,#E8A25A,#F4C9A3)}
 .hero .row{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--dark-muted)}
 .hero .row b{color:var(--dark-ink);font-weight:600}
-.hero .row.tap{cursor:pointer;margin:0 -8px;padding:6px 8px;border-radius:10px;flex-wrap:wrap;row-gap:2px}
+.hero .row.tap{cursor:pointer;margin:2px -8px 0;padding:8px 8px 4px;border-top:1px solid rgba(255,255,255,.1);border-radius:0;flex-wrap:wrap;row-gap:2px}
 .hero .row.tap>span{white-space:nowrap}
 .hero .row.tap:active{background:rgba(255,255,255,.08)}
 .hero .chev{color:var(--dark-muted);font-size:16px;margin-left:2px}
@@ -1265,7 +1267,7 @@ function renderHome(){
   const perDay = DAYS_LEFT>0 ? Math.max(0, jl)/DAYS_LEFT : Math.max(0,jl);
   const todayVar = entries.filter(e=>e.day===TODAY && e.cat==='var').reduce((a,e)=>a+e.amt,0);
   const hero = document.getElementById('hero');
-  if(!hero.dataset.built){ hero.innerHTML = `<div class="top2"><div><div class="l" id="he-l"></div><div class="v" id="he-v"></div></div><div class="side"><div class="l" id="he-l2"></div><div class="v2" id="he-v2"></div></div></div><div class="bar3" id="he-bar"><b class="s1"></b><b class="s2"></b><b class="s3"></b></div><div class="lanes" id="he-lanes"></div><div class="row" id="he-in"></div><div class="daily"><span id="he-dl"></span><span class="d"><span id="he-pd"></span><small id="he-pd-l"></small></span></div>`; hero.dataset.built='1'; }
+  if(!hero.dataset.built){ hero.innerHTML = `<div class="top2"><div><div class="l" id="he-l"></div><div class="v" id="he-v"></div></div><div class="side"><div class="l" id="he-l2"></div><div class="v2" id="he-v2"></div></div></div><div class="bar3" id="he-bar"><b class="s1"></b><b class="s2"></b><b class="s3"></b></div><div class="lanes" id="he-lanes"></div><div class="row" id="he-in"></div>`; hero.dataset.built='1'; }
   const babPl0 = plan.emergency.plan + sipTotal() + provTotal(), babDn0 = babDone() + babEntries();
   const fixPl0 = fixedTotal(), fixDn0 = fixedPaidTotal() + fixOther();
   const babTodo = Math.max(0, babPl0 - babDn0), fixTodo = Math.max(0, fixPl0 - fixDn0);
@@ -1276,17 +1278,19 @@ function renderHome(){
   const inc0 = plan.income || 1; const hbar = document.getElementById('he-bar');
   hbar.querySelector('.s1').style.width = Math.min(100, babDn0/inc0*100) + '%'; hbar.querySelector('.s2').style.width = Math.min(100, fixDn0/inc0*100) + '%'; hbar.querySelector('.s3').style.width = Math.min(100, varSpent()/inc0*100) + '%';
   hbar.title = `${t('babylon').split(' ')[0]} · ${t('fixed')} · ${t('variable')}`;
-  document.getElementById('he-lanes').innerHTML = [
-    ['bab', t('babylon').split(' ')[0], babDn0, t('done'), babTodo, t('notdone'), 's1'],
-    ['fix', t('fixed'), fixDn0, t('paid'), fixTodo, t('topay'), 's2'],
-    ['var', t('variable'), varSpent(), t('used'), Math.max(0, jarTotal()-varSpent()), t('leftof').toLowerCase(), 's3']
-  ].map(([k, n, dn, dl, td, tl, cls])=>`<button class="lane" data-lane="${k}"><i class="${cls}"></i><span class="n">${n}</span><span class="a"><b>${inr(dn)}</b> ${dl}</span><span class="b">${td ? `<b>${inr(td)}</b> ${tl}` : '✓'}</span></button>`).join('');
+  const lanes = [
+    ['bab', t('babylon').split(' ')[0], babPl0, babDn0, t('done'), babTodo, t('notdone'), 's1'],
+    ['fix', t('fixed'), fixPl0, fixDn0, t('paid'), fixTodo, t('topay'), 's2'],
+    ['var', t('variable'), jarTotal(), varSpent(), t('used'), Math.max(0, jarTotal()-varSpent()), t('leftof').toLowerCase(), 's3']
+  ];
+  document.getElementById('he-lanes').innerHTML = `<div class="lane hd"><i></i><span class="n"></span><span class="a">${t('plan')}</span><span class="a">${t('done')}</span><span class="b">${t('notdone')}</span></div>`
+    + lanes.map(([k, n, pl, dn, dl, td, tl, cls])=>`<button class="lane" data-lane="${k}"><i class="${cls}"></i><span class="n">${n}</span><span class="a">${inr(pl)}</span><span class="a"><b>${inr(dn)}</b></span><span class="b">${td ? `<b>${inr(td)}</b>` : '<b style="color:#A8E0BE">✓</b>'}</span></button>`).join('');
   document.querySelectorAll('[data-lane]').forEach(b=>b.onclick=()=>{ const tgt = {bab:'#bab-grid', fix:'#fix-list', var:'#jars'}[b.dataset.lane]; const el = document.querySelector(tgt); if(el){ buzz(4); el.closest('.sec').scrollIntoView({behavior:'smooth', block:'start'}); } });
   const recv = inflowTotal(), hand = recv - out;
   const toCome0 = Math.max(0, plan.income - recv);
   document.getElementById('he-in').innerHTML = `<span>${t('received')} <b>${inr(recv)}</b>${toCome0 ? ` · ${t('tocome')} <b style="color:#F4C9A3">${inr(toCome0)}</b>` : ''}</span><span>${t('inhand')} <b style="color:${hand<0?'#F4B183':'#A8E0BE'}">${inr(hand)}</b> <span class="chev">›</span></span>`;
   const hin = document.getElementById('he-in'); hin.classList.add('tap'); hin.onclick = inflowSheet;
-  document.getElementById('he-dl').innerHTML = `${t('todayline')} <b style="color:${todayVar>perDay?'#F4B183':'#A8E0BE'}">${inr(todayVar)}</b> / ${inr(Math.round(perDay))}`;
+
   // money-in card
   const ic = document.getElementById('in-card');
   const toCome = Math.max(0, plan.income - recv);
@@ -1297,7 +1301,7 @@ function renderHome(){
     <button class="inadd" id="add-in"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>${t('addinflow')}</button>`;
   document.getElementById('add-in').onclick = addInflow;
   ic.querySelectorAll('[data-inflow]').forEach(el=>el.onclick=()=>removeInflow(el.dataset.inflow));
-  document.getElementById('he-pd').textContent = inr(Math.round(perDay)); document.getElementById('he-pd-l').textContent = t('perday') + ' · ' + DAYS_LEFT + ' ' + t('lasts');
+
 
   // due banner
   const dueNow = plan.fixed.filter(f=>!paid[f.id] && f.due>0 && f.due<=TODAY);
