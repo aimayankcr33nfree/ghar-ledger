@@ -1,14 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1F5FA8"/><stop offset="1" stop-color="#143F74"/></linearGradient>
-  <linearGradient id="pot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF7EA"/><stop offset="1" stop-color="#F2E6D0"/></linearGradient>
-  <linearGradient id="coin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD98A"/><stop offset="1" stop-color="#E5A93A"/></linearGradient></defs>
+  <defs><linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B7A4B"/><stop offset="1" stop-color="#1C5A36"/></linearGradient></defs>
   <rect width="512" height="512" rx="116" fill="url(#bg)"/>
-  <!-- pot -->
-  <path d="M196 196 H316 V226 C372 246 404 292 404 350 C404 412 352 452 256 452 S108 412 108 350 C108 292 140 246 196 226 Z" fill="url(#pot)"/>
-  <rect x="180" y="178" width="152" height="34" rx="17" fill="#FFF7EA"/>
-  <!-- saved level -->
-  <path d="M124 352 C150 338 190 338 220 352 S290 366 320 352 S370 338 390 352 L392 356 C392 412 344 448 256 448 S120 412 120 356 Z" fill="#3D7CC4" opacity=".92"/>
-  <!-- coin dropping -->
-  <circle cx="256" cy="118" r="40" fill="url(#coin)"/>
-  <text x="256" y="134" text-anchor="middle" font-family="DM Sans, Arial, sans-serif" font-size="44" font-weight="700" fill="#8A5A0C">₹</text>
+  <path d="M196 184 H316 V214 C372 234 404 280 404 338 C404 400 352 440 256 440 S108 400 108 338 C108 280 140 234 196 214 Z" fill="#F6F1E7"/>
+  <rect x="180" y="166" width="152" height="34" rx="17" fill="#F6F1E7"/>
+  <path d="M124 340 C150 326 190 326 220 340 S290 354 320 340 S370 326 390 340 L392 344 C392 400 344 436 256 436 S120 400 120 344 Z" fill="#E5A93A"/>
+  <circle cx="256" cy="112" r="32" fill="#F2C14E"/><text x="256" y="125" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="700" fill="#8A5A0C">₹</text>
 </svg>
