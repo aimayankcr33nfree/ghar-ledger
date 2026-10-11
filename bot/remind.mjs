@@ -1,4 +1,4 @@
-// Ghar Ledger reminders → Telegram family group. Runs on GitHub Actions (see .github/workflows/reminders.yml).
+// Ghar Kharch reminders → Telegram family group. Runs on GitHub Actions (see .github/workflows/reminders.yml).
 // Needs: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, SUPABASE_URL, SUPABASE_KEY. MODE = morning | evening | weekly | test
 const { TELEGRAM_BOT_TOKEN: TOKEN, TELEGRAM_CHAT_ID: CHAT, SUPABASE_URL: URL_, SUPABASE_KEY: KEY } = process.env;
 const MODE = process.argv[2] || process.env.MODE || 'morning';
