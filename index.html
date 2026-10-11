@@ -227,11 +227,29 @@ input,select{font:inherit;color:inherit}
 .jl .r .amt{font-weight:700;font-variant-numeric:tabular-nums}
 .who-split{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);padding:0 2px 10px}
 .who-split b{color:var(--ink);font-variant-numeric:tabular-nums}
-.jar .glass{width:100%;height:84px;border-radius:12px 12px 16px 16px;position:relative;overflow:hidden;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line),var(--shadow)}
-.jar .glass::before{content:"";position:absolute;left:6px;top:8px;width:4px;height:36%;border-radius:2px;background:rgba(255,255,255,.55);z-index:2}
-.jar .fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,#5B93D6,var(--blue));transition:height .8s var(--ease)}
-.jar .fill::after{content:"";position:absolute;left:-10%;right:-10%;top:-5px;height:10px;border-radius:50%;background:rgba(255,255,255,.28)}
+.jar .pot{width:100px;height:96px;position:relative;filter:drop-shadow(0 6px 10px rgba(20,30,25,.14))}
+.jar .glass{position:absolute;inset:0;clip-path:path('M34 4 H66 V14 C84 20 96 36 96 56 C96 80 80 94 50 94 S4 80 4 56 C4 36 16 20 34 14 Z');background:var(--jar-soft,var(--card));overflow:hidden}
+.jar .glass::before{content:"";position:absolute;left:14px;top:26px;width:5px;height:40%;border-radius:3px;background:rgba(255,255,255,.5);z-index:2}
+.jar .rim{position:absolute;left:30px;right:30px;top:2px;height:14px;border-radius:7px;background:var(--jar-rim,var(--jar,#5B93D6));opacity:.9}
+.jar .fill{position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(180deg,var(--jar-light,#5B93D6),var(--jar,var(--blue)));transition:height .8s var(--ease)}
+.jar .fill::after{content:"";position:absolute;left:-10%;right:-10%;top:-5px;height:10px;border-radius:50%;background:rgba(255,255,255,.3)}
 .jar .fill.warn{background:linear-gradient(180deg,#E9955A,var(--orange))}
+.jar .ic{position:absolute;left:0;right:0;top:36px;text-align:center;font-size:30px;line-height:1;z-index:3;filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.jar .crack{position:absolute;left:46px;top:56px;width:14px;height:34px;z-index:3;display:none;clip-path:polygon(40% 0,60% 0,30% 35%,70% 55%,45% 100%,30% 100%,55% 58%,15% 38%);background:rgba(90,40,10,.55)}
+.jar.cracked .crack{display:block}
+.jar .plus{position:absolute;right:4px;top:10px;width:22px;height:22px;border-radius:11px;background:var(--card);color:var(--blue);font-weight:800;font-size:15px;line-height:22px;text-align:center;box-shadow:var(--shadow);z-index:4;display:none}
+.jar.quiet .plus{display:block}
+.jar .nm .tick{color:var(--green);font-size:12px;margin-left:3px}
+.jar[data-jar="veg"]{--jar:#2E8B57;--jar-light:#5FBF85;--jar-soft:#E6F3EA}
+.jar[data-jar="fruit"]{--jar:#E07B1C;--jar-light:#F3A553;--jar-soft:#FBEEDC}
+.jar[data-jar="paneer"]{--jar:#C9A227;--jar-light:#E8C85A;--jar-soft:#FAF3DA}
+.jar[data-jar="fun"]{--jar:#7B4FBF;--jar-light:#A985DB;--jar-soft:#EFE8F8}
+.jar[data-jar="med"]{--jar:#C8423D;--jar-light:#E7736E;--jar-soft:#FBE6E5}
+.jar[data-jar="stat"]{--jar:#3F6B9E;--jar-light:#6F9BCB;--jar-soft:#E6EEF7}
+.jar[data-jar="deepak"]{--jar:#D98B1E;--jar-light:#F2B457;--jar-soft:#FBF0DC}
+.jar[data-jar="phool"]{--jar:#D5508A;--jar-light:#EC86B2;--jar-soft:#FBE7F0}
+.jar[data-jar="mandir"]{--jar:#E8641A;--jar-light:#F59A5E;--jar-soft:#FCE9DC}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .jar .glass{background:color-mix(in srgb,var(--jar,#5B93D6) 18%,var(--card))} }
 .jar .nm{font-size:13px;font-weight:700;line-height:1.15;min-height:18px;display:flex;align-items:flex-start;justify-content:center;word-break:break-word}
 .jar .lf{font-size:15px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .jar .dy{font-size:11px;padding:2px 8px;border-radius:8px;background:var(--soft);color:var(--muted);font-weight:600;white-space:nowrap}
@@ -552,7 +570,8 @@ html.elder .topbtns .lang-mini svg{width:26px;height:26px}
 .cat.fest{background:linear-gradient(180deg,var(--card),var(--orange-soft));border-color:var(--orange-tint)}
 .cat.fest.on{background:var(--blue-soft);border-color:var(--blue)}
 .jar{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:pan-y}
-.jar:active .glass{transform:scale(.97)}
+.jar:active .pot{transform:scale(.95)}
+.jar .pot{transition:transform .15s var(--ease)}
 /* sync footer */
 .sync button{margin-left:4px;min-height:32px;padding:0 10px;border-radius:9px;background:var(--soft);color:var(--ink2);font-size:12px;font-weight:600}
 .sync button:disabled{opacity:.5}
@@ -1358,7 +1377,9 @@ function renderHome(){
     const lasts = rate>0 ? Math.floor(left/rate) : DAYS_LEFT;
     const warn = left<=0 || lasts < DAYS_LEFT;
     const pct = j.plan>0 ? Math.max(0, Math.min(100, left/j.plan*100)) : 0;
-    return `<button class="jar" data-jar="${j.id}"><div class="glass"><div class="fill ${warn?'warn':''}" data-k="jar-${j.id}" data-w="${pct}" data-dim="h"></div></div><div class="nm">${nm(j)}</div><div class="lf">${inr(left)}</div><div class="dy ${warn?'warn':''}">${left<=0?'0':Math.min(lasts,99)} ${t('lasts')}</div></button>`;
+    const loggedToday = entries.some(e=>e.day===TODAY && jarMatch(e, j.id));
+    const ICONS = {veg:'🥬', fruit:'🍎', paneer:'🧀', fun:'🎬', med:'💊', stat:'✏️', deepak:'🪔', phool:'🌸', mandir:'🛕'};
+    return `<button class="jar ${loggedToday?'':'quiet'} ${pct<15?'cracked':''}" data-jar="${j.id}"><div class="pot"><div class="glass"><div class="fill ${warn?'warn':''}" data-k="jar-${j.id}" data-w="${pct}" data-dim="h"></div></div><div class="rim"></div><div class="ic">${ICONS[j.id]||'🫙'}</div><div class="crack"></div><div class="plus">+</div></div><div class="nm">${nm(j)}${loggedToday?'<span class="tick">✓</span>':''}</div><div class="lf">${inr(left)}</div><div class="dy ${warn?'warn':''}">${left<=0?'0':Math.min(lasts,99)} ${t('lasts')}</div></button>`;
   }).join('');
   document.querySelectorAll('[data-jar]').forEach(el=>{ el.onclick=()=>jarLedger(el.dataset.jar); longPress(el, ()=>quickJar(el.dataset.jar)); });
   renderFest();
