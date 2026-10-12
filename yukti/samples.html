@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free sample PDF & free first mock — Yukti Publications</title>
+<meta name="description" content="Download a free sample chapter PDF and get your first full mock test free on Yukti Pariksha.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Serif+Devanagari:wght@600;700&display=swap">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body data-page="samples">
+<header id="hdr"></header>
+<section class="sec"><div class="wrap split">
+  <div>
+    <div class="eyebrow" data-hi="मुफ़्त">Free</div>
+    <h1 style="margin-top:8px" data-hi="पहले पढ़ो, फिर ख़रीदो।">Read first. Buy after.</h1>
+    <p class="lead" style="margin-top:14px" data-hi="किसी भी किताब का सैंपल अध्याय PDF और Yukti Pariksha पर पहला पूरा मॉक टेस्ट — दोनों मुफ़्त। नाम और मोबाइल लिखें, WhatsApp पर पहुँचेगा।">A sample chapter PDF of any book, and your first full-length mock test on Yukti Pariksha — both free. Name and mobile, and it reaches you on WhatsApp.</p>
+    <ul style="margin:18px 0 0;padding-left:18px;color:var(--ink2)"><li data-hi="कोई OTP नहीं, कोई ऐप इंस्टॉल नहीं">No OTP, no app install</li><li data-hi="कोई स्पैम नहीं — केवल वह जो आपने माँगा">No spam — only what you asked for</li></ul>
+  </div>
+  <form class="form card" data-lead="sample">
+    <label data-hi="नाम">Name<input name="name" required autocomplete="name"></label>
+    <label data-hi="मोबाइल (WhatsApp)">Mobile (WhatsApp)<input name="phone" inputmode="numeric" required placeholder="10 digits" data-ph="10 अंक"></label>
+    <label data-hi="परीक्षा">Exam<select name="exam"></select></label>
+    <label data-hi="पुस्तक (वैकल्पिक)">Book (optional)<select name="book"></select></label>
+    <button class="btn saff" type="submit" data-hi="सैंपल PDF भेजें">Send me the sample PDF</button>
+    <a class="btn ghost" href="#" onclick="this.closest('form').dataset.lead='mock';this.closest('form').requestSubmit();return false" data-hi="पहला मॉक टेस्ट मुफ़्त चाहिए">I want the free first mock test</a>
+    <div class="ok" data-hi="धन्यवाद — WhatsApp पर मिलेगा।">Thank you — it will reach you on WhatsApp.</div>
+    <p class="note" data-hi="आपका नंबर केवल इसी के लिए इस्तेमाल होगा।">Your number is used only for this.</p>
+  </form>
+</div></section>
+<footer id="ftr"></footer>
+<script src="js/site.js"></script>
+</body>
+</html>
