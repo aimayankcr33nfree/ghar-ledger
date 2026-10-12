@@ -1151,10 +1151,12 @@ async function initStore(){
 }
 let lastSync = 0, syncing = false;
 function setSync(on){ shared = on; if(on) lastSync = Date.now(); renderSync(); }
+const BUILD = '12.10.0812';
 function renderSync(){ const el = document.getElementById('sync'); if(!el) return; el.classList.toggle('on', shared);
   let txt = shared ? t('sync') : t('offline');
   if(lastSync){ const m = Math.round((Date.now()-lastSync)/60000); txt += ' · ' + t('synced') + ' ' + (m<1 ? t('justnow') : m + ' ' + t('minago')); }
   el.querySelector('span').textContent = txt;
+  el.querySelector('span').textContent = txt + ' · v' + BUILD;
   const b = el.querySelector('button'); b.textContent = syncing ? t('syncing') : t('syncnow'); b.disabled = syncing || !sb; }
 document.getElementById('sync-now').onclick = async ()=>{ if(!sb || syncing) return; syncing = true; renderSync(); buzz(5); await pullAll(); syncing = false; renderSync(); toast('✓ ' + t('synced')); };
 setInterval(renderSync, 20000);
@@ -1839,8 +1841,8 @@ async function helperSheet(id){
   const sum = h.mode==='daily'
     ? `<div class="hsum"><div><small>${t('sofar')}</small><b>${c.qty} ${t('litre')}</b></div><div><small>${t('payable')} · ${t('sofar')}</small><b>${inr(c.amt)}</b></div><div><small>${t('fullmonth')}</small><b>${inr(c.full)}</b></div></div>`
     : `<div class="hsum"><div><small>${t('monthly')}</small><b>${inr(hAmt(h))}</b></div><div><small>${t('leaves')}</small><b>${c.leaves} ${t('dayslbl')}</b></div><div><small>${t('payable')}</small><b>${inr(c.amt)}</b></div></div>`;
-  const ded = h.mode==='leave' ? `<button class="chip ${h.deduct?'on':''}" id="h-ded">${h.deduct ? '✓ ' : ''}${t('deduct')}</button>` : `<button class="chip" id="h-rate">₹${h.rate||0}/${t('litre')} · ${t('chgrate')}</button><button class="chip" id="h-qty">${h.qty||0} ${t('litre')}/${t('dayone')} · ${t('chgqty')}</button>`;
-  const html = `<div class="hwrap">${sum}<div class="hlegend">${h.mode==='daily' ? t('tapmilk') : t('tapday')}</div><div class="cal">${DAYS[lang].map(w=>`<div class="wd">${w}</div>`).join('')}${cells.join('')}</div><div class="chips">${ded}</div></div>`;
+  const ded = h.mode==='leave' ? `<button class="chip ${h.deduct?'on':''}" id="h-ded">${h.deduct ? '✓ ' : ''}${t('deduct')}</button>` : `<button class="chip" id="h-rate" style="border:1.5px solid var(--line)">₹${h.rate||0}/${t('litre')} · ${t('chgrate')}</button><button class="chip" id="h-qty" style="border:1.5px solid var(--line)">${h.qty||0} ${t('litre')}/${t('dayone')} · ${t('chgqty')}</button>`;
+  const html = `<div class="hwrap">${sum}<div class="chips" style="flex-wrap:wrap">${ded}</div><div class="hlegend">${h.mode==='daily' ? t('tapmilk') : t('tapday')}</div><div class="cal">${DAYS[lang].map(w=>`<div class="wd">${w}</div>`).join('')}${cells.join('')}</div></div>`;
   await ask({title:`${h.ic||''} ${nm(h)}`, sub:`${MONTHS[lang][now.getMonth()]} · ${helperLine(h, c)}`, html, cancelText:t('closeb'), onOpen: body => {
     body.querySelectorAll('[data-d]').forEach(b=>b.onclick = async ()=>{ const d = +b.dataset.d;
       if(h.mode==='daily'){
