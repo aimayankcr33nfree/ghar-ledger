@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>घर खर्च</title>
+<meta name="description" content="पहले बचत, फिर बेफ़िक्र खर्च — पूरा घर, एक हिसाब।">
+<meta name="theme-color" content="#14532D">
+<meta name="color-scheme" content="light dark">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="app.css">
+<script>
+	try {
+		var d = JSON.parse(localStorage.getItem('gk3.dev') || '{}'), r = document.documentElement;
+		r.setAttribute('data-theme', d.theme === 'dark' || d.theme === 'light' ? d.theme : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		if (d.elder) r.classList.add('elder');
+		if (d.lang === 'en') r.lang = 'en';
+	} catch (e) {}
+</script>
+</head>
+<body>
+<div id="app"><div id="main"></div></div>
+<nav class="tabbar hide" id="tabbar" aria-label="मुख्य"></nav>
+<div id="sheets"></div>
+<div id="toast" aria-live="polite"></div>
+<div id="overlay"></div>
+<noscript>घर खर्च चलाने के लिए JavaScript चालू करें।</noscript>
+<script type="module" src="main.js"></script>
+</body>
+</html>
