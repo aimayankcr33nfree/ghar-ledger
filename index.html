@@ -968,7 +968,7 @@ const DAYS_LEFT = DIM - TODAY;
 const pad2 = n => String(n).padStart(2,'0');
 
 /* ---------- plan (from Mayank's October notebook) ---------- */
-const PLAN_VERSION = 15;
+const PLAN_VERSION = 16;
 const GROUPS = [
   {id:'home',    hi:'घर',        en:'Home',        ic:'🏠'},
   {id:'help',    hi:'सहायक',      en:'Helpers',     ic:'🧹'},
@@ -976,17 +976,19 @@ const GROUPS = [
   {id:'kitchen', hi:'रसोई',       en:'Kitchen',     ic:'🍲'},
   {id:'vehicle', hi:'गाड़ी',      en:'Vehicle',     ic:'🛵'},
   {id:'health',  hi:'सेहत',       en:'Health',      ic:'💊'},
+  {id:'healthy', hi:'स्वस्थ जीवन', en:'Healthy living', ic:'🥜'},
   {id:'emi',     hi:'EMI / कर्ज़', en:'EMI / loans', ic:'🏦'},
   {id:'other',   hi:'अन्य',       en:'Other',       ic:'•'} ];
 const GRP_KW = {
-  home:['society','rent','kiraya','किराया','सोसाइटी','bijli','electric','बिजली','pani','water','पानी','gas','गैस','wifi','internet','broadband','dth','tata sky','jio','airtel','phone','mobile','recharge','रिचार्ज','maintenance','मेंटेनेंस','newspaper','अख़बार','akhbar'],
+  home:['society','rent','kiraya','किराया','सोसाइटी','bijli','electric','बिजली','pani','water','पानी','wifi','internet','broadband','dth','tata sky','jio','airtel','phone','mobile','recharge','रिचार्ज','maintenance','मेंटेनेंस','newspaper','अख़बार','akhbar'],
+  healthy:['walnut','akhrot','अखरोट','khajur','खजूर','dates','almond','badam','बादाम','raisin','kishmish','किशमिश','seeds','बीज','chia','flax','alsi','अलसी','dry fruit','ड्राई फ्रूट','मेवा','makhana','मखाना','protein','oats','ओट्स','honey','शहद'],
   help:['milk','दूध','doodh','maid','amma','अम्मा','kaam','काम वाली','kuda','कूड़','kude','sweeper','driver','ड्राइवर','press','प्रेस','istri','इस्त्री','cook','खाना बनाने','mali','माली','guard'],
   kids:['school','स्कूल','fee','फ़ीस','फीस','tuition','ट्यूशन','coaching','कोचिंग','class','क्लास','bus','van','वैन','kids','बच्च','stationery','स्टेशनरी','copy','कॉपी','book','किताब','uniform','skating','dance','swimming','karate','music'],
-  kitchen:['grocery','किराना','kirana','ration','राशन','veg','sabji','सब्ज़ी','सब्जी','fruit','फल','paneer','पनीर','dairy','atta','आटा','oil','तेल','cylinder','सिलेंडर','water can','bisleri','bakery','bread','egg','अंडे','meat','chicken','masala','मसाला','dry fruit'],
+  kitchen:['gas','गैस','milk','दूध','doodh','grocery','किराना','kirana','ration','राशन','veg','sabji','सब्ज़ी','सब्जी','fruit','फल','paneer','पनीर','dairy','atta','आटा','oil','तेल','cylinder','सिलेंडर','water can','bisleri','bakery','bread','egg','अंडे','meat','chicken','masala','मसाला'],
   vehicle:['petrol','पेट्रोल','diesel','डीज़ल','cng','car','गाड़ी','bike','scooty','scooter','service','सर्विस','insurance car','parking','toll','fastag','puncture','tyre'],
   health:['med','दवा','dawa','medicine','doctor','डॉक्टर','hospital','अस्पताल','clinic','gym','जिम','yoga','health','insurance','बीमा','lab','test','चश्मा','dentist'],
   emi:['emi','ईएमआई','loan','लोन','कर्ज़','karz','credit card','क्रेडिट','instalment','किस्त','kist','chit','committee','कमेटी','lic','sip home'] };
-function guessGrp(x){ const txt = ((x.id||'')+' '+(x.name||'')+' '+(x.hi||'')).toLowerCase(); for(const g of ['help','kids','emi','vehicle','health','kitchen','home']){ if(GRP_KW[g].some(k=>txt.includes(k))) return g; } return 'other'; }
+function guessGrp(x){ const txt = ((x.id||'')+' '+(x.name||'')+' '+(x.hi||'')).toLowerCase(); for(const g of ['healthy','kids','emi','vehicle','health','kitchen','help','home']){ if(GRP_KW[g].some(k=>txt.includes(k))) return g; } return 'other'; }
 function grpOf(x){ return x.grp || guessGrp(x); }
 function gname(id){ const g = GROUPS.find(x=>x.id===id) || GROUPS[GROUPS.length-1]; return (lang==='hi' ? g.hi : g.en); }
 function gicon(id){ const g = GROUPS.find(x=>x.id===id); return g ? g.ic : '•'; }
@@ -1131,6 +1133,8 @@ function migrate(){
   }
   if(v <= 8){ plan.provCarry = plan.provCarry || {}; plan.emerTarget = plan.emerTarget || 0; }
   if(v <= 9){ plan.pin = plan.pin || ''; plan.festival = plan.festival || null; }
+  if(v <= 15){ const mk = plan.fixed.find(f=>f.id==='milk'); if(mk) mk.grp = 'kitchen'; plan.fixed.forEach(f=>{ const txt = ((f.id||'')+' '+(f.name||'')+' '+(f.hi||'')).toLowerCase(); if(/\bgas\b|गैस|cylinder|सिलेंडर/.test(txt)) f.grp = 'kitchen'; if(GRP_KW.healthy.some(k=>txt.includes(k))) f.grp = 'healthy'; });
+    [['walnut-khajur','Walnut + Khajur','अखरोट + खजूर'],['almond-raisin','Almonds + Raisins','बादाम + किशमिश'],['dates-seeds','Dates + Seeds','खजूर + बीज']].forEach(([id,en,hi])=>{ if(!plan.fixed.find(f=>f.id===id)) plan.fixed.push({id, name:en, hi, amt:0, due:0, kind:'rec', grp:'healthy'}); }); }
   if(v <= 14){ plan.fixed.forEach(f=>{ if(!f.grp) f.grp = (plan.helpers||[]).some(h=>h.fixedId===f.id) ? 'help' : guessGrp(f); }); plan.jars.forEach(j=>{ if(!j.grp) j.grp = guessGrp(j); }); }
   if(v <= 13){ plan.provCarry = {}; }
   if(v <= 12){ plan.kids = plan.kids || []; }
@@ -1241,7 +1245,7 @@ async function initStore(){
 }
 let lastSync = 0, syncing = false;
 function setSync(on){ shared = on; if(on) lastSync = Date.now(); renderSync(); }
-const BUILD = '12.10.1030';
+const BUILD = '12.10.1100';
 function renderSync(){ const el = document.getElementById('sync'); if(!el) return; el.classList.toggle('on', shared);
   let txt = shared ? t('sync') : t('offline');
   if(lastSync){ const m = Math.round((Date.now()-lastSync)/60000); txt += ' · ' + t('synced') + ' ' + (m<1 ? t('justnow') : m + ' ' + t('minago')); }
@@ -1667,13 +1671,14 @@ function renderHome(){
     const p = paid[f.id]; const hot = !p && f.due>0 && f.due<=TODAY;
     const dt = p ? `${t('paid')}<br>${shortDate(p.day)}` : (f.due>0 ? `${t('due')}<br>${shortDate(f.due)}` : (f.kind==='rec'?t('rec'):''));
     return `<button class="row44 ${p?'on':''}" data-fix="${f.id}"><div class="box ${p?'on':''} ${hot?'hot':''} ${lastPop===f.id?'pop':''}">${CHECK}</div><div class="nm">${nm(f)}</div><div class="amt">${p?fmt(p.amt):(f.amt?fmt(f.amt):'—')}</div><div class="dt ${hot?'hot':p?'ok':''}">${dt}</div></button>`; };
-  const gDone = g => plan.fixed.filter(f=>grpOf(f)===g).reduce((a,f)=>a + (helperIds.has(f.id) ? (paid[f.id] ? paid[f.id].amt : 0) : (f.kind==='rec' ? itemSpent(f.id) : (paid[f.id] ? paid[f.id].amt : 0))), 0) + entries.filter(e=>e.cat==='fix' && !plan.fixed.find(f=>f.id===e.catId) && g==='other').reduce((a,e)=>a+e.amt,0);
-  const gPlan = g => plan.fixed.filter(f=>grpOf(f)===g).reduce((a,f)=>a + (helperIds.has(f.id) ? hAmt((plan.helpers||[]).find(h=>h.fixedId===f.id)||{}) : (f.amt||0)), 0);
+  const gDone = g => plan.fixed.filter(f=>grpOf(f)===g && !helperIds.has(f.id)).reduce((a,f)=>a + (f.kind==='rec' ? itemSpent(f.id) : (paid[f.id] ? paid[f.id].amt : 0)), 0) + entries.filter(e=>e.cat==='fix' && !plan.fixed.find(f=>f.id===e.catId) && g==='other').reduce((a,e)=>a+e.amt,0);
+  const gPlan = g => plan.fixed.filter(f=>grpOf(f)===g && !helperIds.has(f.id)).reduce((a,f)=>a + (f.amt||0), 0);
+  const hGrp = h => { const f = plan.fixed.find(x=>x.id===h.fixedId); return f && f.grp ? f.grp : 'help'; };
   const blocks = GROUPS.map(G=>{
-    const grows = G.id==='help' ? (plan.helpers||[]) : rows.filter(f=>grpOf(f)===G.id);
-    if(!grows.length) return '';
+    const ghelp = (plan.helpers||[]).filter(h=>hGrp(h)===G.id); const grows = rows.filter(f=>grpOf(f)===G.id);
+    if(!grows.length && !ghelp.length) return '';
     const col = gcol.has(G.id);
-    return `<div class="gblk"><button class="gh" data-g="${G.id}"><span class="gi">${G.ic}</span><b>${G.id==='help'?t('helpers'):gname(G.id)}</b><span class="gs"><b class="num">${inr(G.id==='help' ? (plan.helpers||[]).reduce((a,h)=>{ const c = helperCalc(h); const f = plan.fixed.find(x=>x.id===h.fixedId); const pd = f && paid[f.id]; return a + (pd ? pd.amt : c.amt); },0) : gDone(G.id))}</b> / ${inr(G.id==='help' ? (plan.helpers||[]).reduce((a,h)=>{ const c = helperCalc(h); return a + (h.mode==='daily' ? c.full : hAmt(h)); },0) : gPlan(G.id))}</span><span class="chev">${col?'›':'⌄'}</span></button>${col?'':(G.id==='help' ? `<div class="card list" id="help-card"></div>` : `<div class="card list">${grows.map(rowHtml).join('')}</div>`)}</div>`;
+    return `<div class="gblk"><button class="gh" data-g="${G.id}"><span class="gi">${G.ic}</span><b>${G.id==='help'?t('helpers'):gname(G.id)}</b><span class="gs"><b class="num">${inr(ghelp.reduce((a,h)=>{ const c = helperCalc(h); const f = plan.fixed.find(x=>x.id===h.fixedId); const pd = f && paid[f.id]; return a + (pd ? pd.amt : c.amt); },0) + gDone(G.id))}</b> / ${inr(ghelp.reduce((a,h)=>{ const c = helperCalc(h); return a + (h.mode==='daily' ? c.full : hAmt(h)); },0) + gPlan(G.id))}</span><span class="chev">${col?'›':'⌄'}</span></button>${col?'':`<div class="card list">${ghelp.map(helperRowHtml).join('')}${grows.map(rowHtml).join('')}</div>`}</div>`;
   }).join('');
   document.getElementById('fix-list').innerHTML = blocks || `<div class="hint" style="padding:14px 0">${t('none')}</div>`;
   document.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{ const g = b.dataset.g; if(gcol.has(g)) gcol.delete(g); else gcol.add(g); try{ localStorage.setItem('gl-gcol', JSON.stringify(Array.from(gcol))); }catch(e){} buzz(4); renderHome(); });
@@ -1921,14 +1926,9 @@ function helperLine(h, c){
   if(h.mode==='daily') return `${c.qty} ${t('litre')} · ${c.days} ${t('milkdays')} · ₹${h.rate}/${t('litre')}`;
   return `${c.leaves} ${t('leaves')}${c.cut ? ' · −' + inr(c.cut) : ''}`;
 }
-function renderHelpers(){
-  const H = plan.helpers || [];
-  const el = document.getElementById('help-card'); if(!el) return; if(!H.length){ el.innerHTML=''; return; }
-  let tot = 0;
-  el.innerHTML = H.map(h=>{ const c = helperCalc(h); const f = plan.fixed.find(x=>x.id===h.fixedId); const p = f && paid[f.id]; tot += p ? p.amt : c.amt;
-    return `<button class="hrow" data-help="${h.id}"><div class="ic">${h.ic||'🙂'}</div><div class="nm"><b>${nm(h)}</b><small>${helperLine(h, c)}</small></div><div class="amt" ${p?'style="color:var(--blue)"':''}>${inr(p ? p.amt : c.amt)}<small>${p ? t('paid') : (h.mode==='daily' ? t('sofar') : t('payable'))}</small></div></button>`; }).join('');
-  el.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>helperSheet(b.dataset.help));
-}
+function helperRowHtml(h){ const c = helperCalc(h); const f = plan.fixed.find(x=>x.id===h.fixedId); const p = f && paid[f.id];
+  return `<button class="hrow" data-help="${h.id}"><div class="ic">${h.ic||'🙂'}</div><div class="nm"><b>${nm(h)}</b><small>${helperLine(h, c)}</small></div><div class="amt" ${p?'style="color:var(--blue)"':''}>${inr(p ? p.amt : c.amt)}<small>${p ? t('paid') : (h.mode==='daily' ? t('sofar') : t('payable'))}</small></div></button>`; }
+function renderHelpers(){ document.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>helperSheet(b.dataset.help)); }
 async function helperSheet(id){
   const h = (plan.helpers||[]).find(x=>x.id===id); if(!h) return;
   const L = hlog[h.id] = hlog[h.id] || {};
