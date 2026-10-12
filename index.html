@@ -747,6 +747,28 @@ html.elder.bahi .bh .kr{font-size:19px;min-height:44px}
 .skpick .pv.p2{background:#EDE6D8}.skpick .pv.p2 i:nth-child(1){left:6px;right:6px;top:6px;height:10px;background:#C8102E}.skpick .pv.p2 i:nth-child(2){left:6px;right:6px;top:16px;bottom:6px;background:#FBF7EE}.skpick .pv.p2 i:nth-child(3){left:12px;top:20px;width:18px;height:26px;border-radius:3px;background:#C8102E;opacity:.9}
 .skpick .pv.p3{background:#8E1B15}.skpick .pv.p3 i:nth-child(1){left:8px;right:8px;top:14px;bottom:0;background:#F6EEDC;background-image:repeating-linear-gradient(180deg,transparent 0 7px,rgba(120,80,40,.25) 7px 8px)}.skpick .pv.p3 i:nth-child(2){left:16px;top:14px;bottom:0;width:1px;background:#B3261E}.skpick .pv.p3 i:nth-child(3){right:12px;top:24px;width:22px;height:22px;border-radius:11px;border:2px solid #B8862B}
 .skpick .nm{font-size:13.5px;font-weight:700;text-align:center}
+/* month card (Book) */
+.mcard{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.mcard .mh{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.mcard .mh .l{font-size:12px;color:var(--muted);font-weight:600}
+.mcard .mh .v{font-size:28px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.1}
+.mcard .mh .v.neg{color:var(--orange)}
+.mcard .mh .v2{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+.mcard .mh .l2{font-size:12px;color:var(--muted)}
+.mcard .mh .side{text-align:right}
+.mcard .mr{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:8px;font-size:13.5px;min-height:28px}
+.mcard .mr .n{font-weight:700;white-space:nowrap}
+.mcard .mr .a{font-variant-numeric:tabular-nums;white-space:nowrap}
+.mcard .mr .a small{color:var(--muted)}
+.mcard .mr .tl{font-size:12px;white-space:nowrap;min-width:64px;text-align:right}
+.mcard .mr .todo{color:var(--orange);font-weight:700}
+.mcard .mr .ok{color:var(--green);font-weight:700}
+.mcard .mb{height:6px;border-radius:3px;background:var(--soft2);overflow:hidden;min-width:40px}
+.mcard .mb i{display:block;height:100%;border-radius:3px;background:var(--blue)}
+.mcard .mb i.s1{background:var(--green)}.mcard .mb i.s2{background:var(--orange)}.mcard .mb i.s3{background:var(--blue)}
+.mcard .mf{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding-top:6px;border-top:1px solid var(--line)}
+.mcard .mf b{color:var(--ink);font-variant-numeric:tabular-nums}
+@media(max-width:380px){ .mcard .mr{grid-template-columns:auto 1fr auto} .mcard .mr .tl{display:none} }
 /* fixed groups */
 .gblks{display:flex;flex-direction:column;gap:10px}
 .gblk{display:flex;flex-direction:column;gap:6px}
@@ -853,10 +875,7 @@ html.elder .gh{font-size:17px;min-height:44px}
 <section class="screen" id="s-book">
   <div class="top"><div><h1 data-i="book"></h1><div class="sub" id="book-sub"></div></div></div>
   <div class="msw" id="msw-book"></div>
-  <div class="kpi2">
-    <div class="card kpi"><div class="l" data-i="outsofar"></div><div class="v" id="b-out"></div></div>
-    <div class="card kpi"><div class="l" data-i="leftof"></div><div class="v" id="b-left"></div></div>
-  </div>
+  <div class="card mcard" id="b-month"></div>
   <div class="srch" id="srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="book-q" inputmode="search" autocomplete="off" enterkeyhint="search"><button id="book-qx" aria-label="clear">✕</button></div>
   <div class="chips" id="book-filter"></div>
   <button class="btn ghost" id="book-add" style="min-height:48px;font-size:15px"></button>
@@ -1250,7 +1269,7 @@ async function initStore(){
 }
 let lastSync = 0, syncing = false;
 function setSync(on){ shared = on; if(on) lastSync = Date.now(); renderSync(); }
-const BUILD = '12.10.1145';
+const BUILD = '12.10.1200';
 function renderSync(){ const el = document.getElementById('sync'); if(!el) return; el.classList.toggle('on', shared);
   let txt = shared ? t('sync') : t('offline');
   if(lastSync){ const m = Math.round((Date.now()-lastSync)/60000); txt += ' · ' + t('synced') + ' ' + (m<1 ? t('justnow') : m + ' ' + t('minago')); }
@@ -2341,6 +2360,27 @@ function entryNameP(e, P){
   const f = P.fixed.find(x=>x.id===e.catId); const base = f ? nm(f) : t('fixedother'); if(!e.note || (f && (e.note===nm(f) || e.note===f.name || e.note===f.hi))) return base; return f ? base + ' · ' + e.note : e.note;
 }
 
+/* ---------- month card at the top of the Book ---------- */
+function renderMonthCard(D, C){
+  const el = document.getElementById('b-month'); if(!el) return;
+  const P = D.plan, E = D.entries;
+  const left = C.income - C.out;
+  const jarPlan = C.jars.reduce((a,j)=>a+j.plan,0), jarUsed = C.jars.reduce((a,j)=>a+j.actual,0);
+  const closed = D.closed;
+  const lateIn = D.live ? lateTotal() : 0;
+  const bar = (dn, pl, cls) => `<div class="mb"><i class="${cls}" style="width:${pl?Math.min(100,dn/pl*100):0}%"></i></div>`;
+  const row = (n, dn, pl, tail, cls) => `<div class="mr"><span class="n">${n}</span>${bar(dn, pl, cls)}<span class="a"><b>${inr(dn)}</b><small> / ${inr(pl)}</small></span><span class="tl">${tail}</span></div>`;
+  const pend = x => x>0 ? `<span class="todo">${inr(x)} ${t('notdone')}</span>` : '<span class="ok">✓</span>';
+  const head = D.live ? `${t('day')} ${TODAY}/${DIM}` : (closed ? `${t('closedon')} ✓` : t('closed'));
+  el.innerHTML = `<div class="mh"><div><div class="l">${monthName(D.key)} · ${head}</div><div class="v ${left<0?'neg':''}">${inr(left)}</div><div class="l2">${D.live ? t('leftmonth') : t('saved2')}${lateIn ? ` · ${t('lateshort')} ${inr(lateIn)}` : ''}</div></div>
+      <div class="side"><div class="l">${t('received')}</div><div class="v2">${inr(C.received)}</div><div class="l2">${t('planned')} ${inr(C.income)}</div></div></div>
+    ${row(t('laneBab'), C.babActual, C.babPlan, pend(Math.max(0, C.babPlan - C.babActual)), 's1')}
+    ${row(t('laneFix'), C.fixActual, C.fixPlan, pend(Math.max(0, C.fixPlan - C.fixActual)), 's2')}
+    ${row(t('laneVar'), jarUsed, jarPlan, jarUsed>jarPlan ? `<span class="todo">${inr(jarUsed-jarPlan)} ${t('overby')}</span>` : `<span class="ok">${inr(jarPlan-jarUsed)} ${t('leftof').toLowerCase()}</span>`, 's3')}
+    ${closed ? `<div class="mf"><span>${t('jarsleft')} → ${t('emer')}</span><b style="color:var(--green)">+${inr(closed.sweep||0)}</b></div>` : ''}
+    ${C.potsUsed ? `<div class="mf"><span>${t('pot')} · ${t('potwithdraw')}</span><b>${inr(C.potsUsed)}</b></div>` : ''}`;
+}
+
 /* ---------- day book ---------- */
 let bookF = 'all', bookQ = '';
 const bookQI = document.getElementById('book-q');
@@ -2354,8 +2394,7 @@ function renderBook(){
   if(!D){ document.getElementById('book').innerHTML = `<div class="card hint" style="padding:18px">${t('loading')}</div>`; return; }
   const P = D.plan, C = calc(D);
   document.getElementById('book-sub').textContent = D.entries.length + ' ' + t('entries');
-  countTo(document.getElementById('b-out'), C.out);
-  countTo(document.getElementById('b-left'), C.income - C.out);
+  renderMonthCard(D, C);
   const fs = [['all',t('allf')],['in',t('moneyin')],['bab',t('babshort')],['fix',t('fixed')],['var',t('variable')],['prov',t('pot')],['up',t('upshort')]];
   document.getElementById('book-filter').innerHTML = fs.map(([k,l])=>`<button class="chip ${bookF===k?'on':''}" data-bf="${k}">${l}</button>`).join('');
   document.querySelectorAll('[data-bf]').forEach(b=>b.onclick=()=>{ bookF=b.dataset.bf; renderBook(); });
