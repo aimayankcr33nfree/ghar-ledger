@@ -1041,6 +1041,56 @@ html.v2 .skpick button{min-height:48px}
 html.v2 #dates button{min-height:44px}
 html.v2 .sheet .chip{min-height:44px}
 </style>
+<style>
+.ykstripw{display:flex;gap:8px;align-items:stretch}
+.ykstrip{flex:1;display:flex;align-items:center;gap:12px;background:var(--card);box-shadow:var(--shadow);border-radius:18px;padding:10px 14px;min-height:60px;text-align:left;color:var(--ink);min-width:0}
+.ykstrip .ic{font-size:24px;line-height:1}
+.ykstrip .tx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ykstrip .tx b{font-size:15px}
+.ykstrip .tx small{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ykplus{flex:0 0 60px;min-height:60px;border-radius:18px;background:var(--ink);color:var(--bg);font-size:28px;font-weight:700;box-shadow:var(--shadow)}
+html.v2 .ykplus{background:var(--blue);color:#fff}
+.ykm{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ykm b{font-size:17px}
+.ykm button{min-width:48px;min-height:44px;font-size:22px;border-radius:14px;background:var(--card);box-shadow:var(--shadow);color:var(--ink)}
+.ykm button:disabled{opacity:.35}
+.yktot{padding:16px;display:flex;flex-direction:column;gap:4px}
+.yktot .lbl{font-size:13px;color:var(--muted);font-weight:700}
+.yktot .big{font-size:34px;font-weight:800;line-height:1.15;color:var(--ink)}
+.yktot .sub{font-size:14px;color:var(--ink2)}
+.yktot .pend{font-size:13px;color:#B45309;font-weight:700}
+.ykcats{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.ykc .row{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--ink)}
+.ykc .row span:last-child{font-weight:700;white-space:nowrap}
+.ykc .bar{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:5px}
+.ykc .bar i{display:block;height:100%;background:var(--ink)}
+html.v2 .ykc .bar i{background:var(--blue)}
+.yklist{padding:2px 0}
+.ykday{font-size:12px;font-weight:700;color:var(--muted);padding:10px 14px 0}
+.ykr{display:flex;align-items:center;gap:12px;width:100%;padding:10px 14px;min-height:58px;text-align:left;color:var(--ink);background:none}
+.ykr .ic{font-size:22px;width:28px;text-align:center;flex:0 0 28px}
+.ykr .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ykr .tx b{font-size:15px}
+.ykr .tx small{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ykr .amt{font-weight:800;font-size:15px;white-space:nowrap}
+.ykf{display:flex;flex-direction:column;gap:8px;text-align:left;overflow-y:auto;min-height:0;flex:1 1 auto;overscroll-behavior:contain;margin:0 -4px;padding:0 4px 4px}
+.ykgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.ykgrid button{min-height:58px;border-radius:12px;background:var(--soft);color:var(--ink2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px 2px;font-size:13px;font-weight:600;line-height:1.15;text-align:center}
+.ykgrid button .e{font-size:20px;line-height:1}
+.ykgrid button.on{background:var(--ink);color:var(--bg)}
+html.v2 .ykgrid button.on{background:var(--blue);color:#fff}
+@media (max-width:370px){.ykgrid{grid-template-columns:repeat(3,1fr)}}
+.ykl{font-size:13px;font-weight:700;color:var(--ink2);margin-top:6px}
+.sheet input.ykamt{font-size:28px;font-weight:800}
+.ykf .chips .chip{min-height:44px}
+.ykerr{color:#B91C1C;font-size:14px;font-weight:700}
+.ykerr:empty{display:none}
+.ykdel{margin-top:6px}
+html:not(.v2) #s-yk .g2set{display:none}
+.ykf .chips .chip.on{background:var(--ink);color:var(--bg)}
+html.v2 .ykf .chips .chip.on{background:var(--blue);color:#fff}
+html.elder .ykr .tx b,html.elder .ykstrip .tx b{font-size:18px}
+</style>
 </head>
 <body>
 <div class="app">
@@ -1054,6 +1104,7 @@ html.v2 .sheet .chip{min-height:44px}
   <div id="close-card"></div>
   <div id="g2-save"></div>
   <div id="g2-att"></div>
+  <div id="yk-strip"></div>
   <div id="due-banner"></div>
   <div class="sec" id="elder-help"><div class="sec-h"><div class="t" data-i="helpers"></div></div><div class="card list" id="eh-list"></div></div>
   <div class="sec">
@@ -1181,6 +1232,12 @@ html.v2 .sheet .chip{min-height:44px}
   <div id="free-body" style="display:flex;flex-direction:column;gap:16px"></div>
 </section>
 
+<!-- YUKTI: separate business ledger -->
+<section class="screen" id="s-yk">
+  <div class="top"><div><h1 id="yk-title"></h1><div class="sub" id="yk-sub"></div></div><button class="lang-mini g2set" aria-label="Settings"></button></div>
+  <div id="yk-body" style="display:flex;flex-direction:column;gap:16px"></div>
+</section>
+
 <!-- SETTINGS -->
 <section class="screen" id="s-set">
   <div class="top"><div><h1 data-i="settings"></h1></div></div>
@@ -1188,6 +1245,7 @@ html.v2 .sheet .chip{min-height:44px}
     <div class="lang"><button id="l-hi">हिन्दी</button><button id="l-en">English</button></div></div>
   <div class="sec"><div class="sec-h"><div class="t" data-i="elder"></div></div><div class="hint" style="text-align:left;padding:0 2px" data-i="elderhint"></div><div class="lang"><button id="el-off"></button><button id="el-on"></button></div></div>
   <div class="sec"><div class="sec-h"><div class="t" data-i="look"></div></div><div class="hint" style="text-align:left;padding:0 2px" data-i="lookhint"></div><div class="skpick" id="sk-pick"></div></div>
+  <div class="sec" id="yk-set"></div>
   <div class="sec"><div class="sec-h"><div class="t" data-i="iam"></div><button class="a" id="mem-edit"></button></div><div class="who" id="who2"></div></div>
   <div class="sec"><div class="sec-h"><div class="t" data-i="income"></div></div><div class="card" id="f-income"></div></div>
   <div class="sec"><div class="sec-h"><div class="t" data-i="babylon"></div></div><div class="card" id="f-bab"></div></div>
@@ -1560,7 +1618,7 @@ async function initStore(){
 }
 let lastSync = 0, syncing = false;
 function setSync(on){ shared = on; if(on) lastSync = Date.now(); renderSync(); }
-const BUILD = '2.0 · 12.10';
+const BUILD = '2.0 · 13.10 युक्ति';
 function renderSync(){ const el = document.getElementById('sync'); if(!el) return; el.classList.toggle('on', shared);
   let txt = shared ? t('sync') : t('offline');
   if(lastSync){ const m = Math.round((Date.now()-lastSync)/60000); txt += ' · ' + t('synced') + ' ' + (m<1 ? t('justnow') : m + ' ' + t('minago')); }
@@ -3219,7 +3277,7 @@ async function exportExcel(){
   try{
     if(!window.XLSX) await loadScript('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
     let months = [], ents = [];
-    if(sb){ const m = await sb.from('months').select('*'); months = m.data||[]; const e = await sb.from('entries').select('*'); ents = e.data||[]; }
+    if(sb){ const m = await sb.from('months').select('*'); months = m.data||[]; const e = await sb.from('entries').select('*'); ents = (e.data||[]).filter(x=>!String(x.month||'').startsWith('Y-') && x.cat!=='yk'); }
     else { months = [{id:MKEY, data:{plan, corpus, paid, inflows}}]; ents = entries.map(e=>({id:e.id, month:MKEY, ts:e.ts, day:e.day, cat:e.cat, cat_id:e.catId, amt:e.amt, who:e.by, note:e.note, photo:e.photo})); }
     months.sort((a,b)=>a.id<b.id?-1:1); ents.sort((a,b)=>(a.month+pad2(a.day))<(b.month+pad2(b.day))?-1:(a.month+pad2(a.day))>(b.month+pad2(b.day))?1:(a.ts||0)-(b.ts||0));
     const planOf = mk => ((months.find(m=>m.id===mk)||{}).data||{}).plan || plan;
@@ -3755,6 +3813,253 @@ function g2All(){ g2Nav(); g2Msub(); g2Month(); g2Svc(); g2Free(); g2HomeExtras(
 })();
 
 initStore();
+</script>
+<script>
+/* ---------- युक्ति (Yukti): a separate business-expense ledger ----------
+   Rows live in the same `entries` table with cat = 'yk' and month = 'Y-YYYY-MM'.
+   Every home query reads entries by its own month key ('YYYY-MM'), by cat = 'up', or by month < this month,
+   so Yukti rows never reach any home figure (and the Excel export filters them out). */
+(function(){
+const PFX = 'Y-';
+const YS = {
+  hi:{ title:'युक्ति', sub:'बिज़नेस का अलग हिसाब · घर के किसी हिसाब में नहीं जुड़ता', strip:'युक्ति · अलग हिसाब', ent:'एंट्री', add:'+ युक्ति का खर्च लिखें', addt:'युक्ति का खर्च', edit:'युक्ति का खर्च बदलें',
+    month:'इस महीने युक्ति का खर्च', fy:'वित्त वर्ष {y}', bycat:'किस मद में', list:'सारे खर्च', empty:'इस महीने युक्ति का कोई खर्च नहीं लिखा।',
+    amount:'रकम (₹)', cat:'मद', note:'किसे दिया / क्या लिया', noteph:'जैसे: राम पेपर मार्ट, 20 रीम', date:'तारीख़', mode:'कैसे दिया', save:'लिखें', saveedit:'बदलें', del:'हटाएँ',
+    needamt:'रकम लिखें', needcat:'मद चुनें', needdate:'सही तारीख़ चुनें (आज तक की)', savedto:'युक्ति में लिखा', updated:'बदल दिया', deleted:'हटाया', restored:'वापस आ गया',
+    offline:'नेटवर्क नहीं — इसी फ़ोन पर रखा, नेटवर्क आते ही भेज देंगे', pending:'{n} एंट्री भेजना बाक़ी', pendingedit:'यह एंट्री अभी भेजी जानी बाक़ी है — नेटवर्क आने पर बदल सकेंगे',
+    needonline:'बदलने के लिए नेटवर्क चाहिए', bigq:'पक्का ₹{x}?', yes:'हाँ, लिखें', csv:'सारा युक्ति हिसाब CSV में (Excel में खुलेगा)', csvdone:'CSV तैयार',
+    settitle:'युक्ति (बिज़नेस) का हिसाब', sethint:'युक्ति के खर्च यहाँ अलग लिखे जाते हैं — घर के आज, महीने, बचत या Excel में कहीं नहीं जुड़ते।', setopen:'📚 युक्ति खोलें', setshow:'आज वाली स्क्रीन पर युक्ति का बटन (इसी फ़ोन पर)', on:'दिखाएँ', off:'छिपाएँ',
+    prev:'पिछला महीना', next:'अगला महीना', addshort:'युक्ति का खर्च लिखें' },
+  en:{ title:'Yukti', sub:'Separate business account · never counted in any home figure', strip:'Yukti · separate account', ent:'entries', add:'+ Add Yukti expense', addt:'Yukti expense', edit:'Edit Yukti expense',
+    month:'Yukti spend this month', fy:'Financial year {y}', bycat:'By category', list:'All expenses', empty:'No Yukti expense written this month.',
+    amount:'Amount (₹)', cat:'Category', note:'Paid to / for what', noteph:'e.g. Ram Paper Mart, 20 reams', date:'Date', mode:'Paid by', save:'Save', saveedit:'Update', del:'Delete',
+    needamt:'Enter the amount', needcat:'Pick a category', needdate:'Pick a valid date (up to today)', savedto:'saved to Yukti', updated:'Updated', deleted:'Deleted', restored:'Restored',
+    offline:'Offline — kept on this phone, will upload when online', pending:'{n} entries waiting to upload', pendingedit:'This entry is still waiting to upload — you can edit it once online',
+    needonline:'You need internet to change this', bigq:'Sure, ₹{x}?', yes:'Yes, save', csv:'All Yukti expenses as CSV (opens in Excel)', csvdone:'CSV ready',
+    settitle:'Yukti (business) account', sethint:'Yukti expenses are kept separately — never added to home Today, Month, savings or Excel.', setopen:'📚 Open Yukti', setshow:'Yukti button on Today (this phone)', on:'Show', off:'Hide',
+    prev:'Previous month', next:'Next month', addshort:'Add Yukti expense' } };
+const yt = k => (YS[lang] && YS[lang][k] != null) ? YS[lang][k] : (YS.en[k] != null ? YS.en[k] : k);
+const CATS = [
+  ['paper','📄','कागज़','Paper'], ['print','🖨️','छपाई','Printing'], ['bind','📚','बाइंडिंग','Binding'], ['dtp','⌨️','टाइपिंग-DTP','Typing & DTP'],
+  ['author','✍️','लेखक-रॉयल्टी','Authors & royalty'], ['staff','👷','स्टाफ़ सैलरी','Staff salary'], ['rent','🏢','किराया','Rent'], ['power','⚡','बिजली-पानी','Power & water'],
+  ['ship','🚚','ढुलाई-कूरियर','Transport & courier'], ['ads','📣','प्रचार-मार्केटिंग','Ads & marketing'], ['soft','💻','सॉफ़्टवेयर-इंटरनेट','Software & internet'], ['tax','🧾','GST-टैक्स-फ़ीस','GST, tax & fees'],
+  ['office','☕','ऑफ़िस-चाय-नाश्ता','Office & refreshments'], ['travel','🚗','यात्रा','Travel'], ['bank','🏦','बैंक-ब्याज','Bank & interest'], ['other','➕','अन्य','Other'] ];
+const MODES = [['upi','UPI','UPI'], ['cash','नकद','Cash'], ['bank','बैंक/चेक','Bank/cheque'], ['card','कार्ड','Card']];
+const catOf = k => CATS.find(c=>c[0]===k) || CATS[CATS.length-1];
+const catName = k => { const c = catOf(k); return lang === 'hi' ? c[2] : c[3]; };
+const modeName = (k, en) => { const m = MODES.find(x=>x[0]===k); return m ? ((en || lang !== 'hi') ? m[2] : m[1]) : ''; };
+const LS = { get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } }, set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
+const E = x => g2esc(x);
+let rows = LS.get('gl-yk-cache', []); if(!Array.isArray(rows)) rows = [];
+let queue = LS.get('gl-yk-q', []); if(!Array.isArray(queue)) queue = [];
+let ym = MKEY, loadedAt = 0, loading = null, busy = false;
+const isYk = r => r && r.cat === 'yk' && String(r.month||'').startsWith(PFX);
+const ymOf = r => String(r.month||'').slice(PFX.length);
+const parseId = r => { const p = String(r.cat_id||'').split('|'); return {cat:p[0] || 'other', mode:p[1] || ''}; };
+const fyOf = m => { const y = +m.slice(0,4), mo = +m.slice(5,7); return mo >= 4 ? y : y - 1; };
+const fyLabel = y => y + '-' + String((y + 1) % 100).padStart(2, '0');
+const all = () => rows.concat(queue.map(q=>Object.assign({pending:true}, q)));
+const monthRows = m => all().filter(r=>ymOf(r) === m).sort((a,b)=>(b.day - a.day) || ((b.ts||0) - (a.ts||0)));
+const sum = a => a.reduce((s,r)=>s + (+r.amt||0), 0);
+const monthName = m => MONTHS[lang][+m.slice(5,7) - 1] + ' ' + m.slice(0,4);
+const shiftM = (m, d) => { const dt = new Date(+m.slice(0,4), +m.slice(5,7) - 1 + d, 1); return dt.getFullYear() + '-' + pad2(dt.getMonth() + 1); };
+const locked = () => { try{ return typeof pinOk === 'function' && !pinOk(); }catch(e){ return false; } };
+function visible(){ try{ const v = localStorage.getItem('gl-yk'); if(v === '1') return true; if(v === '0') return false; }catch(e){} return /mayank|मयंक/i.test(me || ''); }
+function setVisible(on){ try{ localStorage.setItem('gl-yk', on ? '1' : '0'); }catch(e){} }
+
+async function flush(){
+  if(!sb || !queue.length) return;
+  const left = [];
+  for(const q of queue){ const row = Object.assign({}, q); delete row.lid;
+    try{ const r = await sb.from('entries').insert(row); if(r && r.error) left.push(q); }catch(e){ left.push(q); } }
+  queue = left; LS.set('gl-yk-q', queue);
+}
+function load(){
+  if(!sb) return Promise.resolve();
+  if(loading) return loading;
+  loading = (async()=>{
+    try{ await flush();
+      const r = await sb.from('entries').select('*').eq('cat', 'yk').order('ts');
+      if(r && !r.error){ rows = (r.data||[]).filter(isYk); LS.set('gl-yk-cache', rows); loadedAt = Date.now(); } }
+    catch(e){}
+    finally{ loading = null; }
+    paint();
+  })();
+  return loading;
+}
+window.ykLoad = load;
+
+function paint(){ paintStrip(); paintSet(); if(curScreen === 'yk') paintScreen(); }
+function paintStrip(){
+  const el = document.getElementById('yk-strip'); if(!el) return;
+  if(!visible() || locked()){ el.innerHTML = ''; return; }
+  const m = monthRows(MKEY);
+  el.innerHTML = `<div class="ykstripw"><button class="ykstrip" id="yk-go"><span class="ic" aria-hidden="true">📚</span><span class="tx"><b>${yt('strip')}</b><small>${MONTHS[lang][now.getMonth()]}: <span class="num">${inr(sum(m))}</span> · ${m.length} ${yt('ent')}</small></span></button><button class="ykplus" id="yk-qadd" aria-label="${E(yt('addshort'))}">+</button></div>`;
+  el.querySelector('#yk-go').onclick = ()=>{ buzz(4); go('yk'); };
+  el.querySelector('#yk-qadd').onclick = ()=>{ buzz(4); addFlow(); };
+}
+function paintSet(){
+  const el = document.getElementById('yk-set'); if(!el) return;
+  if(locked()){ el.innerHTML = ''; return; }
+  const v = visible();
+  el.innerHTML = `<div class="sec-h"><div class="t">📚 ${yt('settitle')}</div></div>
+    <div class="hint" style="text-align:left;padding:0 2px">${yt('sethint')}</div>
+    <button class="btn ghost" id="yk-open">${yt('setopen')}</button>
+    <div class="hint" style="text-align:left;padding:0 2px">${yt('setshow')}</div>
+    <div class="lang"><button id="yk-show" class="${v ? 'on' : ''}" aria-pressed="${v}">${yt('on')}</button><button id="yk-hide" class="${v ? '' : 'on'}" aria-pressed="${!v}">${yt('off')}</button></div>`;
+  el.querySelector('#yk-open').onclick = ()=>{ buzz(4); go('yk'); };
+  el.querySelector('#yk-show').onclick = ()=>{ buzz(4); setVisible(true); paint(); };
+  el.querySelector('#yk-hide').onclick = ()=>{ buzz(4); setVisible(false); paint(); };
+}
+function paintScreen(){
+  const b = document.getElementById('yk-body'); if(!b) return;
+  document.getElementById('yk-title').textContent = '📚 ' + yt('title');
+  document.getElementById('yk-sub').textContent = yt('sub');
+  document.querySelectorAll('#s-yk .g2set').forEach(x=>{ x.textContent = (me || '•').slice(0,1); x.setAttribute('aria-label', t('settings')); x.onclick = ()=>{ buzz(4); go('set'); }; });
+  if(locked()){ b.innerHTML = ''; return; }
+  if(ym > MKEY) ym = MKEY;
+  const R = monthRows(ym), tot = sum(R), fy = fyOf(ym);
+  const fyTot = sum(all().filter(r=>{ const m = ymOf(r); return m.length === 7 && fyOf(m) === fy && m <= MKEY; }));
+  const byCat = {}; R.forEach(r=>{ const c = parseId(r).cat; byCat[c] = (byCat[c]||0) + (+r.amt||0); });
+  const cats = Object.entries(byCat).sort((a,b)=>b[1] - a[1]), top = cats.length ? cats[0][1] : 1;
+  let lastDay = null, list = '';
+  R.forEach((r, i)=>{ const p = parseId(r), c = catOf(p.cat);
+    if(r.day !== lastDay){ lastDay = r.day; list += `<div class="ykday">${r.day} ${MONTHS[lang][+ym.slice(5,7) - 1]}</div>`; }
+    const bits = [r.note ? E(r.note) : '', modeName(p.mode), r.who ? E(r.who) : '', r.pending ? '⏳' : ''].filter(Boolean).join(' · ');
+    list += `<button class="ykr" data-yk="${i}"><span class="ic" aria-hidden="true">${c[1]}</span><span class="tx"><b>${E(catName(p.cat))}</b>${bits ? `<small>${bits}</small>` : ''}</span><span class="amt num">${inr(+r.amt||0)}</span></button>`; });
+  b.innerHTML = `<div class="ykm"><button id="yk-prev" aria-label="${E(yt('prev'))}">‹</button><b>${monthName(ym)}</b><button id="yk-next" aria-label="${E(yt('next'))}" ${ym >= MKEY ? 'disabled' : ''}>›</button></div>
+    <div class="card yktot"><div class="lbl">${ym === MKEY ? yt('month') : monthName(ym)}</div><div class="big num">${inr(tot)}</div>
+      <div class="sub">${R.length} ${yt('ent')} · ${yt('fy').replace('{y}', fyLabel(fy))}: <b class="num">${inr(fyTot)}</b></div>
+      ${queue.length ? `<div class="pend">⏳ ${yt('pending').replace('{n}', queue.length)}</div>` : ''}</div>
+    <button class="btn" id="yk-add">${yt('add')}</button>
+    ${cats.length ? `<div class="sec"><div class="sec-h"><div class="t">${yt('bycat')}</div></div><div class="card ykcats">${cats.map(([k,v])=>`<div class="ykc"><div class="row"><span>${catOf(k)[1]} ${E(catName(k))}</span><span class="num">${inr(v)}</span></div><div class="bar"><i style="width:${Math.max(3, Math.round(v / top * 100))}%"></i></div></div>`).join('')}</div></div>` : ''}
+    <div class="sec"><div class="sec-h"><div class="t">${yt('list')}</div><div class="tt num">${inr(tot)}</div></div>${R.length ? `<div class="card yklist">${list}</div>` : `<div class="hint">${yt('empty')}</div>`}</div>
+    <button class="btn ghost" id="yk-csv">${yt('csv')}</button>
+    <div class="hint">${yt('sethint')}</div>`;
+  b.querySelector('#yk-prev').onclick = ()=>{ buzz(4); ym = shiftM(ym, -1); paintScreen(); };
+  b.querySelector('#yk-next').onclick = ()=>{ if(ym >= MKEY) return; buzz(4); ym = shiftM(ym, 1); paintScreen(); };
+  b.querySelector('#yk-add').onclick = ()=>{ buzz(4); addFlow(); };
+  b.querySelector('#yk-csv').onclick = ()=>{ buzz(4); csv(); };
+  b.querySelectorAll('[data-yk]').forEach(x=>x.onclick = ()=>{ buzz(4); editFlow(R[+x.dataset.yk]); });
+}
+
+function form(r){
+  const isEdit = !!r, today = isoOf(new Date());
+  const p = r ? parseId(r) : {cat:'', mode:LS.get('gl-yk-mode', 'upi')};
+  const d0 = r ? (ymOf(r) + '-' + pad2(r.day)) : (ym === MKEY ? today : ym + '-01');
+  const freq = {}; rows.forEach(x=>{ const c = parseId(x).cat; freq[c] = (freq[c]||0) + 1; });
+  const order = CATS.map((c, i)=>[c, i]).sort((a,b)=>((freq[b[0][0]]||0) - (freq[a[0][0]]||0)) || (a[1] - b[1])).map(x=>x[0]);
+  const html = `<div class="ykf">
+    <label class="ykl" for="yk-amt">${yt('amount')}</label>
+    <input id="yk-amt" class="ykamt" inputmode="decimal" autocomplete="off" placeholder="0" value="${r ? (+r.amt||'') : ''}">
+    <div class="ykl">${yt('cat')}</div>
+    <div class="ykgrid" id="yk-cats">${order.map(c=>`<button type="button" class="${p.cat === c[0] ? 'on' : ''}" data-c="${c[0]}" aria-pressed="${p.cat === c[0]}"><span class="e" aria-hidden="true">${c[1]}</span><span>${E(lang === 'hi' ? c[2] : c[3])}</span></button>`).join('')}</div>
+    <label class="ykl" for="yk-note">${yt('note')}</label>
+    <input id="yk-note" class="txt" autocomplete="off" value="${E(r ? r.note : '')}" placeholder="${E(yt('noteph'))}">
+    <label class="ykl" for="yk-date">${yt('date')}</label>
+    <input id="yk-date" type="date" class="txt" value="${d0}" max="${today}">
+    <div class="ykl">${yt('mode')}</div>
+    <div class="chips" id="yk-modes">${MODES.map(m=>`<button type="button" class="chip${p.mode === m[0] ? ' on' : ''}" data-m="${m[0]}" aria-pressed="${p.mode === m[0]}">${lang === 'hi' ? m[1] : m[2]}</button>`).join('')}</div>
+    <div class="ykerr" id="yk-err" role="alert"></div>
+    ${isEdit ? `<button type="button" class="btn quiet ykdel" id="yk-del">🗑 ${yt('del')}</button>` : ''}
+  </div>`;
+  return ask({ title: isEdit ? yt('edit') : yt('addt'), html, okText: isEdit ? yt('saveedit') : yt('save'),
+    onOpen:(body, close)=>{
+      body.querySelectorAll('[data-c]').forEach(x=>x.onclick = ()=>{ body.querySelectorAll('[data-c]').forEach(y=>{ y.classList.toggle('on', y === x); y.setAttribute('aria-pressed', y === x); }); const er = body.querySelector('#yk-err'); if(er) er.textContent = ''; });
+      body.querySelectorAll('[data-m]').forEach(x=>x.onclick = ()=>{ const was = x.classList.contains('on'); body.querySelectorAll('[data-m]').forEach(y=>{ const on = y === x && !was; y.classList.toggle('on', on); y.setAttribute('aria-pressed', on); }); });
+      const del = body.querySelector('#yk-del'); if(del) del.onclick = ()=>close('del');
+      const a = body.querySelector('#yk-amt'); if(!isEdit && a) setTimeout(()=>{ try{ a.focus(); }catch(e){} }, 120);
+    },
+    collect: body => {
+      const er = body.querySelector('#yk-err'), a = body.querySelector('#yk-amt');
+      const amt = numIn(a.value), c = body.querySelector('[data-c].on'), date = body.querySelector('#yk-date').value, m = body.querySelector('[data-m].on');
+      if(!(amt > 0)){ er.textContent = yt('needamt'); a.focus(); return null; }
+      if(!c){ er.textContent = yt('needcat'); return null; }
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > isoOf(new Date())){ er.textContent = yt('needdate'); return null; }
+      return {amt, cat:c.dataset.c, date, note:body.querySelector('#yk-note').value.trim().slice(0, 200), mode:m ? m.dataset.m : ''};
+    } });
+}
+function toRow(v){
+  const today = isoOf(new Date());
+  return {month:PFX + v.date.slice(0,7), ts:v.date === today ? Date.now() : new Date(v.date + 'T12:00:00').getTime(), day:+v.date.slice(8,10),
+    cat:'yk', cat_id:v.cat + '|' + (v.mode||''), amt:v.amt, who:me || '', note:v.note || ''};
+}
+async function bigOk(amt){
+  if(amt < 500000) return true;
+  return !!(await ask({title:yt('bigq').replace('{x}', fmt(amt)), buttons:[{text:yt('yes'), value:1, cls:''}]}));
+}
+async function addFlow(){
+  if(busy) return; busy = true;
+  try{
+    const v = await form(null); if(!v || v === 'del') return;
+    if(!(await bigOk(v.amt))) return;
+    LS.set('gl-yk-mode', v.mode || '');
+    const row = toRow(v); let ok = false;
+    if(sb){ try{ const r = await sb.from('entries').insert(row).select(); if(r && !r.error){ ok = true; const nr = r.data && r.data[0]; if(nr) rows.push(nr); else await load(); } }catch(e){} }
+    if(ok){ LS.set('gl-yk-cache', rows); toast(`✓ ${inr(v.amt)} · ${catName(v.cat)} — ${yt('savedto')}`); }
+    else { queue.push(Object.assign({lid:'q' + Date.now()}, row)); LS.set('gl-yk-q', queue); toast(yt('offline')); }
+    ym = row.month.slice(PFX.length); buzz([10,30,10]); paint();
+  } finally { busy = false; }
+}
+async function editFlow(r){
+  if(!r) return;
+  if(r.pending){ toast(yt('pendingedit')); return; }
+  if(busy) return; busy = true;
+  try{
+    const v = await form(r); if(!v) return;
+    if(v === 'del'){ await delFlow(r); return; }
+    if(!(await bigOk(v.amt))) return;
+    if(!sb){ toast(yt('needonline')); return; }
+    const row = toRow(v); delete row.who;
+    if(ymOf(r) === row.month.slice(PFX.length) && +r.day === row.day) row.ts = r.ts;
+    let error = null; try{ const u = await sb.from('entries').update(row).eq('id', r.id); error = u && u.error; }catch(e){ error = e; }
+    if(error){ toast('⚠ ' + (error.message || yt('needonline'))); return; }
+    Object.assign(r, row); LS.set('gl-yk-cache', rows); ym = row.month.slice(PFX.length); paint(); toast('✓ ' + yt('updated'));
+  } finally { busy = false; }
+}
+async function delFlow(r){
+  if(!sb){ toast(yt('needonline')); return; }
+  let error = null; try{ const d = await sb.from('entries').delete().eq('id', r.id); error = d && d.error; }catch(e){ error = e; }
+  if(error){ toast('⚠ ' + (error.message || yt('needonline'))); return; }
+  rows = rows.filter(x=>x !== r); LS.set('gl-yk-cache', rows); paint();
+  const back = {month:r.month, ts:r.ts, day:r.day, cat:'yk', cat_id:r.cat_id, amt:r.amt, who:r.who || '', note:r.note || ''};
+  toast(`${yt('deleted')} · ${inr(+r.amt||0)}`, {action:t('undo'), fn:async ()=>{
+    try{ const x = await sb.from('entries').insert(back).select(); if(x && !x.error){ if(x.data && x.data[0]) rows.push(x.data[0]); else await load(); LS.set('gl-yk-cache', rows); paint(); toast(yt('restored')); } }catch(e){} }});
+}
+async function csv(){
+  await load();
+  const A = all().filter(r=>!r.pending).slice().sort((a,b)=>((ymOf(a) + pad2(a.day)) < (ymOf(b) + pad2(b.day)) ? -1 : (ymOf(a) + pad2(a.day)) > (ymOf(b) + pad2(b.day)) ? 1 : (a.ts||0) - (b.ts||0)));
+  const q = x => '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"';
+  const head = ['Date', 'Month', 'Financial year', 'Category', 'श्रेणी', 'Paid to / note', 'Paid by', 'Amount (Rs)', 'Entered by'];
+  const lines = [head.map(q).join(',')].concat(A.map(r=>{ const p = parseId(r), m = ymOf(r), c = catOf(p.cat);
+    return [m + '-' + pad2(r.day), m, fyLabel(fyOf(m)), c[3], c[2], r.note || '', modeName(p.mode, true), +r.amt || 0, r.who || ''].map(q).join(','); }));
+  const name = `yukti-kharch-${MKEY}.csv`, type = 'text/csv;charset=utf-8';
+  const blob = new Blob(['﻿' + lines.join('\r\n')], {type});
+  window.__ykCsv = lines;
+  try{ const file = new File([blob], name, {type:'text/csv'}); if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:'Yukti'}); toast('✓ ' + yt('csvdone')); return; } }
+  catch(e){ if(e && e.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 3000); toast('✓ ' + yt('csvdone'));
+}
+
+// hooks: open the screen, repaint with the rest of the app, refresh when the phone comes back
+const _go = go;
+go = async function(s, fromPop){
+  const r = await _go(s, fromPop);
+  if(s === 'yk'){ try{ if(localStorage.getItem('gl-yk') !== '0') localStorage.setItem('gl-yk', '1'); }catch(e){} paint(); if(Date.now() - loadedAt > 5000) load(); }
+  return r;
+};
+const _ra = renderAll;
+renderAll = function(){
+  const r = _ra.apply(this, arguments);
+  try{ paint(); if(sb && !loading && ((!loadedAt && (visible() || curScreen === 'yk')) || (curScreen === 'yk' && Date.now() - loadedAt > 20000))) load(); }catch(e){}
+  return r;
+};
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && sb && (visible() || curScreen === 'yk')) load(); });
+window.addEventListener('online', ()=>{ if(queue.length) load(); });
+window.__yk = { rows:()=>rows, queue:()=>queue, add:addFlow };
+try{ paint(); }catch(e){}
+})();
 </script>
 </body>
 </html>
