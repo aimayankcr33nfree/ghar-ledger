@@ -1086,6 +1086,12 @@ html.v2 .ykgrid button.on{background:var(--blue);color:#fff}
 .ykerr{color:#B91C1C;font-size:14px;font-weight:700}
 .ykerr:empty{display:none}
 .ykdel{margin-top:6px}
+.yksub{grid-template-columns:repeat(3,1fr)}
+.yksubw{display:flex;flex-direction:column;gap:6px;background:var(--soft);border-radius:14px;padding:4px 8px 8px}
+.yksubw .ykgrid button{background:var(--card)}
+.yksubw .ykgrid button.on{background:var(--ink);color:var(--bg)}
+html.v2 .yksubw .ykgrid button.on{background:var(--blue);color:#fff}
+.ykc .subs{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.5}
 html:not(.v2) #s-yk .g2set{display:none}
 .ykf .chips .chip.on{background:var(--ink);color:var(--bg)}
 html.v2 .ykf .chips .chip.on{background:var(--blue);color:#fff}
@@ -1618,7 +1624,7 @@ async function initStore(){
 }
 let lastSync = 0, syncing = false;
 function setSync(on){ shared = on; if(on) lastSync = Date.now(); renderSync(); }
-const BUILD = '2.0 · 13.10 युक्ति';
+const BUILD = '2.0 · 13.10 युक्ति·2';
 function renderSync(){ const el = document.getElementById('sync'); if(!el) return; el.classList.toggle('on', shared);
   let txt = shared ? t('sync') : t('offline');
   if(lastSync){ const m = Math.round((Date.now()-lastSync)/60000); txt += ' · ' + t('synced') + ' ' + (m<1 ? t('justnow') : m + ' ' + t('minago')); }
@@ -3825,7 +3831,7 @@ const YS = {
   hi:{ title:'युक्ति', sub:'बिज़नेस का अलग हिसाब · घर के किसी हिसाब में नहीं जुड़ता', strip:'युक्ति · अलग हिसाब', ent:'एंट्री', add:'+ युक्ति का खर्च लिखें', addt:'युक्ति का खर्च', edit:'युक्ति का खर्च बदलें',
     month:'इस महीने युक्ति का खर्च', fy:'वित्त वर्ष {y}', bycat:'किस मद में', list:'सारे खर्च', empty:'इस महीने युक्ति का कोई खर्च नहीं लिखा।',
     amount:'रकम (₹)', cat:'मद', note:'किसे दिया / क्या लिया', noteph:'जैसे: राम पेपर मार्ट, 20 रीम', date:'तारीख़', mode:'कैसे दिया', save:'लिखें', saveedit:'बदलें', del:'हटाएँ',
-    needamt:'रकम लिखें', needcat:'मद चुनें', needdate:'सही तारीख़ चुनें (आज तक की)', savedto:'युक्ति में लिखा', updated:'बदल दिया', deleted:'हटाया', restored:'वापस आ गया',
+    needamt:'रकम लिखें', needcat:'मद चुनें', needsub:'प्रिंटर में क्या — रिपेयर, रिफ़िल या रीम चुनें', subq:'ऑफ़िस प्रिंटर में क्या?', needdate:'सही तारीख़ चुनें (आज तक की)', savedto:'युक्ति में लिखा', updated:'बदल दिया', deleted:'हटाया', restored:'वापस आ गया',
     offline:'नेटवर्क नहीं — इसी फ़ोन पर रखा, नेटवर्क आते ही भेज देंगे', pending:'{n} एंट्री भेजना बाक़ी', pendingedit:'यह एंट्री अभी भेजी जानी बाक़ी है — नेटवर्क आने पर बदल सकेंगे',
     needonline:'बदलने के लिए नेटवर्क चाहिए', bigq:'पक्का ₹{x}?', yes:'हाँ, लिखें', csv:'सारा युक्ति हिसाब CSV में (Excel में खुलेगा)', csvdone:'CSV तैयार',
     settitle:'युक्ति (बिज़नेस) का हिसाब', sethint:'युक्ति के खर्च यहाँ अलग लिखे जाते हैं — घर के आज, महीने, बचत या Excel में कहीं नहीं जुड़ते।', setopen:'📚 युक्ति खोलें', setshow:'आज वाली स्क्रीन पर युक्ति का बटन (इसी फ़ोन पर)', on:'दिखाएँ', off:'छिपाएँ',
@@ -3833,19 +3839,24 @@ const YS = {
   en:{ title:'Yukti', sub:'Separate business account · never counted in any home figure', strip:'Yukti · separate account', ent:'entries', add:'+ Add Yukti expense', addt:'Yukti expense', edit:'Edit Yukti expense',
     month:'Yukti spend this month', fy:'Financial year {y}', bycat:'By category', list:'All expenses', empty:'No Yukti expense written this month.',
     amount:'Amount (₹)', cat:'Category', note:'Paid to / for what', noteph:'e.g. Ram Paper Mart, 20 reams', date:'Date', mode:'Paid by', save:'Save', saveedit:'Update', del:'Delete',
-    needamt:'Enter the amount', needcat:'Pick a category', needdate:'Pick a valid date (up to today)', savedto:'saved to Yukti', updated:'Updated', deleted:'Deleted', restored:'Restored',
+    needamt:'Enter the amount', needcat:'Pick a category', needsub:'Pick what for the printer — repair, refill or ream', subq:'What for the office printer?', needdate:'Pick a valid date (up to today)', savedto:'saved to Yukti', updated:'Updated', deleted:'Deleted', restored:'Restored',
     offline:'Offline — kept on this phone, will upload when online', pending:'{n} entries waiting to upload', pendingedit:'This entry is still waiting to upload — you can edit it once online',
     needonline:'You need internet to change this', bigq:'Sure, ₹{x}?', yes:'Yes, save', csv:'All Yukti expenses as CSV (opens in Excel)', csvdone:'CSV ready',
     settitle:'Yukti (business) account', sethint:'Yukti expenses are kept separately — never added to home Today, Month, savings or Excel.', setopen:'📚 Open Yukti', setshow:'Yukti button on Today (this phone)', on:'Show', off:'Hide',
     prev:'Previous month', next:'Next month', addshort:'Add Yukti expense' } };
 const yt = k => (YS[lang] && YS[lang][k] != null) ? YS[lang][k] : (YS.en[k] != null ? YS.en[k] : k);
 const CATS = [
-  ['paper','📄','कागज़','Paper'], ['print','🖨️','छपाई','Printing'], ['bind','📚','बाइंडिंग','Binding'], ['dtp','⌨️','टाइपिंग-DTP','Typing & DTP'],
+  ['paper','📄','कागज़','Paper'], ['print','🏭','छपाई','Printing'], ['bind','📚','बाइंडिंग','Binding'], ['dtp','⌨️','टाइपिंग-DTP','Typing & DTP'],
+  ['prn','🖨️','ऑफ़िस प्रिंटर','Office printer'], ['pet_mayank','⛽','पेट्रोल – मयंक','Petrol – Mayank'], ['pet_ashu','⛽','पेट्रोल – आशु','Petrol – Ashu'],
   ['author','✍️','लेखक-रॉयल्टी','Authors & royalty'], ['staff','👷','स्टाफ़ सैलरी','Staff salary'], ['rent','🏢','किराया','Rent'], ['power','⚡','बिजली-पानी','Power & water'],
   ['ship','🚚','ढुलाई-कूरियर','Transport & courier'], ['ads','📣','प्रचार-मार्केटिंग','Ads & marketing'], ['soft','💻','सॉफ़्टवेयर-इंटरनेट','Software & internet'], ['tax','🧾','GST-टैक्स-फ़ीस','GST, tax & fees'],
   ['office','☕','ऑफ़िस-चाय-नाश्ता','Office & refreshments'], ['travel','🚗','यात्रा','Travel'], ['bank','🏦','बैंक-ब्याज','Bank & interest'], ['other','➕','अन्य','Other'] ];
+// sub-categories: the entry stores the sub key; reports group it under its parent
+const SUBS = { prn: [['prn_repair','🔧','प्रिंटर रिपेयर','Printer repair'], ['prn_refill','🖋️','कार्ट्रिज रिफ़िल','Cartridge refill'], ['prn_ream','📄','प्रिंटर पेपर (रीम)','Printer paper (ream)']] };
+const SUBLIST = Object.entries(SUBS).reduce((a, [p, l])=>a.concat(l.map(x=>x.concat([p]))), []);
+const parentOf = k => { const x = SUBLIST.find(c=>c[0]===k); return x ? x[4] : k; };
 const MODES = [['upi','UPI','UPI'], ['cash','नकद','Cash'], ['bank','बैंक/चेक','Bank/cheque'], ['card','कार्ड','Card']];
-const catOf = k => CATS.find(c=>c[0]===k) || CATS[CATS.length-1];
+const catOf = k => SUBLIST.find(c=>c[0]===k) || CATS.find(c=>c[0]===k) || CATS[CATS.length-1];
 const catName = k => { const c = catOf(k); return lang === 'hi' ? c[2] : c[3]; };
 const modeName = (k, en) => { const m = MODES.find(x=>x[0]===k); return m ? ((en || lang !== 'hi') ? m[2] : m[1]) : ''; };
 const LS = { get(k, d){ try{ const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); }catch(e){ return d; } }, set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} } };
@@ -3920,19 +3931,19 @@ function paintScreen(){
   if(ym > MKEY) ym = MKEY;
   const R = monthRows(ym), tot = sum(R), fy = fyOf(ym);
   const fyTot = sum(all().filter(r=>{ const m = ymOf(r); return m.length === 7 && fyOf(m) === fy && m <= MKEY; }));
-  const byCat = {}; R.forEach(r=>{ const c = parseId(r).cat; byCat[c] = (byCat[c]||0) + (+r.amt||0); });
+  const byCat = {}, bySub = {}; R.forEach(r=>{ const k = parseId(r).cat, c = parentOf(k); byCat[c] = (byCat[c]||0) + (+r.amt||0); if(k !== c){ bySub[c] = bySub[c] || {}; bySub[c][k] = (bySub[c][k]||0) + (+r.amt||0); } });
   const cats = Object.entries(byCat).sort((a,b)=>b[1] - a[1]), top = cats.length ? cats[0][1] : 1;
   let lastDay = null, list = '';
-  R.forEach((r, i)=>{ const p = parseId(r), c = catOf(p.cat);
+  R.forEach((r, i)=>{ const p = parseId(r), c = catOf(p.cat), par = parentOf(p.cat);
     if(r.day !== lastDay){ lastDay = r.day; list += `<div class="ykday">${r.day} ${MONTHS[lang][+ym.slice(5,7) - 1]}</div>`; }
-    const bits = [r.note ? E(r.note) : '', modeName(p.mode), r.who ? E(r.who) : '', r.pending ? '⏳' : ''].filter(Boolean).join(' · ');
+    const bits = [par !== p.cat ? E(catName(par)) : '', r.note ? E(r.note) : '', modeName(p.mode), r.who ? E(r.who) : '', r.pending ? '⏳' : ''].filter(Boolean).join(' · ');
     list += `<button class="ykr" data-yk="${i}"><span class="ic" aria-hidden="true">${c[1]}</span><span class="tx"><b>${E(catName(p.cat))}</b>${bits ? `<small>${bits}</small>` : ''}</span><span class="amt num">${inr(+r.amt||0)}</span></button>`; });
   b.innerHTML = `<div class="ykm"><button id="yk-prev" aria-label="${E(yt('prev'))}">‹</button><b>${monthName(ym)}</b><button id="yk-next" aria-label="${E(yt('next'))}" ${ym >= MKEY ? 'disabled' : ''}>›</button></div>
     <div class="card yktot"><div class="lbl">${ym === MKEY ? yt('month') : monthName(ym)}</div><div class="big num">${inr(tot)}</div>
       <div class="sub">${R.length} ${yt('ent')} · ${yt('fy').replace('{y}', fyLabel(fy))}: <b class="num">${inr(fyTot)}</b></div>
       ${queue.length ? `<div class="pend">⏳ ${yt('pending').replace('{n}', queue.length)}</div>` : ''}</div>
     <button class="btn" id="yk-add">${yt('add')}</button>
-    ${cats.length ? `<div class="sec"><div class="sec-h"><div class="t">${yt('bycat')}</div></div><div class="card ykcats">${cats.map(([k,v])=>`<div class="ykc"><div class="row"><span>${catOf(k)[1]} ${E(catName(k))}</span><span class="num">${inr(v)}</span></div><div class="bar"><i style="width:${Math.max(3, Math.round(v / top * 100))}%"></i></div></div>`).join('')}</div></div>` : ''}
+    ${cats.length ? `<div class="sec"><div class="sec-h"><div class="t">${yt('bycat')}</div></div><div class="card ykcats">${cats.map(([k,v])=>`<div class="ykc"><div class="row"><span>${catOf(k)[1]} ${E(catName(k))}</span><span class="num">${inr(v)}</span></div><div class="bar"><i style="width:${Math.max(3, Math.round(v / top * 100))}%"></i></div>${bySub[k] ? `<div class="subs">${Object.entries(bySub[k]).sort((a,b)=>b[1] - a[1]).map(([sk, sv])=>`${catOf(sk)[1]} ${E(catName(sk))} <span class="num">${inr(sv)}</span>`).join(' · ')}</div>` : ''}</div>`).join('')}</div></div>` : ''}
     <div class="sec"><div class="sec-h"><div class="t">${yt('list')}</div><div class="tt num">${inr(tot)}</div></div>${R.length ? `<div class="card yklist">${list}</div>` : `<div class="hint">${yt('empty')}</div>`}</div>
     <button class="btn ghost" id="yk-csv">${yt('csv')}</button>
     <div class="hint">${yt('sethint')}</div>`;
@@ -3946,14 +3957,16 @@ function paintScreen(){
 function form(r){
   const isEdit = !!r, today = isoOf(new Date());
   const p = r ? parseId(r) : {cat:'', mode:LS.get('gl-yk-mode', 'upi')};
+  const pc = p.cat ? parentOf(p.cat) : '', subs0 = SUBS[pc] || null;
   const d0 = r ? (ymOf(r) + '-' + pad2(r.day)) : (ym === MKEY ? today : ym + '-01');
-  const freq = {}; rows.forEach(x=>{ const c = parseId(x).cat; freq[c] = (freq[c]||0) + 1; });
+  const freq = {}; rows.forEach(x=>{ const c = parentOf(parseId(x).cat); freq[c] = (freq[c]||0) + 1; });
   const order = CATS.map((c, i)=>[c, i]).sort((a,b)=>((freq[b[0][0]]||0) - (freq[a[0][0]]||0)) || (a[1] - b[1])).map(x=>x[0]);
   const html = `<div class="ykf">
     <label class="ykl" for="yk-amt">${yt('amount')}</label>
     <input id="yk-amt" class="ykamt" inputmode="decimal" autocomplete="off" placeholder="0" value="${r ? (+r.amt||'') : ''}">
     <div class="ykl">${yt('cat')}</div>
-    <div class="ykgrid" id="yk-cats">${order.map(c=>`<button type="button" class="${p.cat === c[0] ? 'on' : ''}" data-c="${c[0]}" aria-pressed="${p.cat === c[0]}"><span class="e" aria-hidden="true">${c[1]}</span><span>${E(lang === 'hi' ? c[2] : c[3])}</span></button>`).join('')}</div>
+    <div class="ykgrid" id="yk-cats">${order.map(c=>`<button type="button" class="${pc === c[0] ? 'on' : ''}" data-c="${c[0]}" aria-pressed="${pc === c[0]}"><span class="e" aria-hidden="true">${c[1]}</span><span>${E(lang === 'hi' ? c[2] : c[3])}${SUBS[c[0]] ? ' ›' : ''}</span></button>`).join('')}</div>
+    <div class="yksubw" id="yk-subw" style="${subs0 ? '' : 'display:none'}"><div class="ykl">${yt('subq')}</div><div class="ykgrid yksub" id="yk-subs">${subs0 ? subs0.map(x=>`<button type="button" class="${p.cat === x[0] ? 'on' : ''}" data-s="${x[0]}" aria-pressed="${p.cat === x[0]}"><span class="e" aria-hidden="true">${x[1]}</span><span>${E(lang === 'hi' ? x[2] : x[3])}</span></button>`).join('') : ''}</div></div>
     <label class="ykl" for="yk-note">${yt('note')}</label>
     <input id="yk-note" class="txt" autocomplete="off" value="${E(r ? r.note : '')}" placeholder="${E(yt('noteph'))}">
     <label class="ykl" for="yk-date">${yt('date')}</label>
@@ -3965,7 +3978,17 @@ function form(r){
   </div>`;
   return ask({ title: isEdit ? yt('edit') : yt('addt'), html, okText: isEdit ? yt('saveedit') : yt('save'),
     onOpen:(body, close)=>{
-      body.querySelectorAll('[data-c]').forEach(x=>x.onclick = ()=>{ body.querySelectorAll('[data-c]').forEach(y=>{ y.classList.toggle('on', y === x); y.setAttribute('aria-pressed', y === x); }); const er = body.querySelector('#yk-err'); if(er) er.textContent = ''; });
+      const bindSubs = ()=>body.querySelectorAll('[data-s]').forEach(x=>x.onclick = ()=>{ body.querySelectorAll('[data-s]').forEach(y=>{ y.classList.toggle('on', y === x); y.setAttribute('aria-pressed', y === x); }); const er = body.querySelector('#yk-err'); if(er) er.textContent = ''; });
+      bindSubs();
+      body.querySelectorAll('[data-c]').forEach(x=>x.onclick = ()=>{
+        const was = x.classList.contains('on');
+        body.querySelectorAll('[data-c]').forEach(y=>{ y.classList.toggle('on', y === x); y.setAttribute('aria-pressed', y === x); });
+        const er = body.querySelector('#yk-err'); if(er) er.textContent = '';
+        const sw = body.querySelector('#yk-subw'), sg = body.querySelector('#yk-subs'), L = SUBS[x.dataset.c];
+        if(L){ if(!was || !sg.children.length){ sg.innerHTML = L.map(c=>`<button type="button" data-s="${c[0]}" aria-pressed="false"><span class="e" aria-hidden="true">${c[1]}</span><span>${E(lang === 'hi' ? c[2] : c[3])}</span></button>`).join(''); bindSubs(); }
+          sw.style.display = ''; setTimeout(()=>{ try{ sw.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} }, 30); }
+        else { sw.style.display = 'none'; sg.innerHTML = ''; }
+      });
       body.querySelectorAll('[data-m]').forEach(x=>x.onclick = ()=>{ const was = x.classList.contains('on'); body.querySelectorAll('[data-m]').forEach(y=>{ const on = y === x && !was; y.classList.toggle('on', on); y.setAttribute('aria-pressed', on); }); });
       const del = body.querySelector('#yk-del'); if(del) del.onclick = ()=>close('del');
       const a = body.querySelector('#yk-amt'); if(!isEdit && a) setTimeout(()=>{ try{ a.focus(); }catch(e){} }, 120);
@@ -3975,8 +3998,10 @@ function form(r){
       const amt = numIn(a.value), c = body.querySelector('[data-c].on'), date = body.querySelector('#yk-date').value, m = body.querySelector('[data-m].on');
       if(!(amt > 0)){ er.textContent = yt('needamt'); a.focus(); return null; }
       if(!c){ er.textContent = yt('needcat'); return null; }
+      let cat = c.dataset.c;
+      if(SUBS[cat]){ const sb2 = body.querySelector('[data-s].on'); if(!sb2){ er.textContent = yt('needsub'); return null; } cat = sb2.dataset.s; }
       if(!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > isoOf(new Date())){ er.textContent = yt('needdate'); return null; }
-      return {amt, cat:c.dataset.c, date, note:body.querySelector('#yk-note').value.trim().slice(0, 200), mode:m ? m.dataset.m : ''};
+      return {amt, cat, date, note:body.querySelector('#yk-note').value.trim().slice(0, 200), mode:m ? m.dataset.m : ''};
     } });
 }
 function toRow(v){
@@ -4030,9 +4055,9 @@ async function csv(){
   await load();
   const A = all().filter(r=>!r.pending).slice().sort((a,b)=>((ymOf(a) + pad2(a.day)) < (ymOf(b) + pad2(b.day)) ? -1 : (ymOf(a) + pad2(a.day)) > (ymOf(b) + pad2(b.day)) ? 1 : (a.ts||0) - (b.ts||0)));
   const q = x => '"' + String(x == null ? '' : x).replace(/"/g, '""') + '"';
-  const head = ['Date', 'Month', 'Financial year', 'Category', 'श्रेणी', 'Paid to / note', 'Paid by', 'Amount (Rs)', 'Entered by'];
-  const lines = [head.map(q).join(',')].concat(A.map(r=>{ const p = parseId(r), m = ymOf(r), c = catOf(p.cat);
-    return [m + '-' + pad2(r.day), m, fyLabel(fyOf(m)), c[3], c[2], r.note || '', modeName(p.mode, true), +r.amt || 0, r.who || ''].map(q).join(','); }));
+  const head = ['Date', 'Month', 'Financial year', 'Category', 'श्रेणी', 'Sub-category', 'उप-श्रेणी', 'Paid to / note', 'Paid by', 'Amount (Rs)', 'Entered by'];
+  const lines = [head.map(q).join(',')].concat(A.map(r=>{ const p = parseId(r), m = ymOf(r), par = parentOf(p.cat), c = catOf(par), sc = par !== p.cat ? catOf(p.cat) : null;
+    return [m + '-' + pad2(r.day), m, fyLabel(fyOf(m)), c[3], c[2], sc ? sc[3] : '', sc ? sc[2] : '', r.note || '', modeName(p.mode, true), +r.amt || 0, r.who || ''].map(q).join(','); }));
   const name = `yukti-kharch-${MKEY}.csv`, type = 'text/csv;charset=utf-8';
   const blob = new Blob(['﻿' + lines.join('\r\n')], {type});
   window.__ykCsv = lines;
